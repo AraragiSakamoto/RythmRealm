@@ -1,0 +1,46 @@
+name: Android APK Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Android SDK
+        uses: r0adkll/setup-android@v2
+        with:
+          api-level: 33
+          target: android-33
+          ndk: '21.4.7075529'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build web assets
+        run: npm run build:web
+
+      - name: Install Capacitor CLI
+        run: npx cap sync android
+
+      - name: Build Android (Gradle)
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease -Pci=true
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: rhythmrealm-apk
+          path: android/app/build/outputs/apk/release/*.apk

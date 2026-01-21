@@ -1,0 +1,9 @@
+{
+  "appId": "com.rythmrealm.app",
+  "appName": "Rhythm Realm",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "cleartext": true
+  }
+}

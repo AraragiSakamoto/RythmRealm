@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
+import { supabase, authService, scoreService, achievementService, ACHIEVEMENTS, beatStorageService } from './supabase.js';
 
 // ==========================================
 // 1. GLOBAL STYLES & ANIMATIONS
@@ -23,6 +24,26 @@ const cssStyles = `
     .mobile-step { min-width: 28px; min-height: 40px; }
     .mobile-instrument-btn { min-height: 48px; }
     .mobile-controls { flex-wrap: wrap; gap: 8px; }
+    
+    /* Larger touch targets for mobile */
+    button { min-height: 44px; min-width: 44px; }
+    
+    /* Seek bar mobile optimization */
+    .seek-bar-touch { min-height: 48px; }
+  }
+  
+  /* Line clamp for text truncation */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  /* Safe area support for notched devices */
+  @supports (padding: max(0px)) {
+    .safe-area-top { padding-top: max(env(safe-area-inset-top), 16px); }
+    .safe-area-bottom { padding-bottom: max(env(safe-area-inset-bottom), 16px); }
   }
   
   /* Pixel Futuristic Animations */
@@ -136,64 +157,64 @@ const cssStyles = `
 // ==========================================
 const VISUAL_THEMES = [
   { 
-    id: 'ocean', 
-    name: 'Ocean',
-    primary: 'from-sky-400 to-blue-500',
-    bgColors: ['#0f172a', '#172554', '#0f172a'], // slate-900, blue-950, slate-900
-    gridColor: 'rgba(56, 189, 248, 0.3)',
-    noteColors: ['#38bdf8', '#0ea5e9', '#06b6d4', '#22d3ee', '#67e8f9', '#0284c7', '#0369a1'],
-    scanlineColor: '#22d3ee',
-    eqColors: ['#06b6d4', '#3b82f6', '#0ea5e9'], // cyan, blue, sky
+     id: 'ocean',
+     name: 'Ocean',
+     primary: 'from-sky-400 to-blue-500',
+     bgColors: ['#0f172a', '#172554', '#0f172a'], // slate-900, blue-950, slate-900
+     gridColor: 'rgba(56, 189, 248, 0.3)',
+     noteColors: ['#38bdf8', '#0ea5e9', '#06b6d4', '#22d3ee', '#67e8f9', '#0284c7', '#0369a1'],
+     scanlineColor: '#22d3ee',
+     eqColors: ['#06b6d4', '#3b82f6', '#0ea5e9'], // cyan, blue, sky
   },
   { 
-    id: 'sunset', 
-    name: 'Sunset',
-    primary: 'from-pink-400 to-rose-500',
-    bgColors: ['#0f172a', '#4c0519', '#0f172a'], // slate-900, rose-950, slate-900
-    gridColor: 'rgba(244, 63, 94, 0.3)',
-    noteColors: ['#fb7185', '#f43f5e', '#e11d48', '#ff6b6b', '#fda4af', '#ec4899', '#f472b6'],
-    scanlineColor: '#fb7185',
-    eqColors: ['#ec4899', '#f43f5e', '#ef4444'], // pink, rose, red
+     id: 'sunset',
+     name: 'Sunset',
+     primary: 'from-pink-400 to-rose-500',
+     bgColors: ['#0f172a', '#4c0519', '#0f172a'], // slate-900, rose-950, slate-900
+     gridColor: 'rgba(244, 63, 94, 0.3)',
+     noteColors: ['#fb7185', '#f43f5e', '#e11d48', '#ff6b6b', '#fda4af', '#ec4899', '#f472b6'],
+     scanlineColor: '#fb7185',
+     eqColors: ['#ec4899', '#f43f5e', '#ef4444'], // pink, rose, red
   },
   { 
-    id: 'golden', 
-    name: 'Golden',
-    primary: 'from-amber-400 to-orange-500',
-    bgColors: ['#0f172a', '#451a03', '#0f172a'], // slate-900, amber-950, slate-900
-    gridColor: 'rgba(251, 191, 36, 0.3)',
-    noteColors: ['#fbbf24', '#f59e0b', '#d97706', '#fcd34d', '#fde68a', '#ea580c', '#fb923c'],
-    scanlineColor: '#fbbf24',
-    eqColors: ['#eab308', '#f59e0b', '#f97316'], // yellow, amber, orange
+     id: 'golden',
+     name: 'Golden',
+     primary: 'from-amber-400 to-orange-500',
+     bgColors: ['#0f172a', '#451a03', '#0f172a'], // slate-900, amber-950, slate-900
+     gridColor: 'rgba(251, 191, 36, 0.3)',
+     noteColors: ['#fbbf24', '#f59e0b', '#d97706', '#fcd34d', '#fde68a', '#ea580c', '#fb923c'],
+     scanlineColor: '#fbbf24',
+     eqColors: ['#eab308', '#f59e0b', '#f97316'], // yellow, amber, orange
   },
   { 
-    id: 'forest', 
-    name: 'Forest',
-    primary: 'from-emerald-400 to-green-500',
-    bgColors: ['#0f172a', '#022c22', '#0f172a'], // slate-900, emerald-950, slate-900
-    gridColor: 'rgba(52, 211, 153, 0.3)',
-    noteColors: ['#34d399', '#10b981', '#059669', '#6ee7b7', '#a7f3d0', '#14b8a6', '#2dd4bf'],
-    scanlineColor: '#34d399',
-    eqColors: ['#22c55e', '#10b981', '#14b8a6'], // green, emerald, teal
+     id: 'forest',
+     name: 'Forest',
+     primary: 'from-emerald-400 to-green-500',
+     bgColors: ['#0f172a', '#022c22', '#0f172a'], // slate-900, emerald-950, slate-900
+     gridColor: 'rgba(52, 211, 153, 0.3)',
+     noteColors: ['#34d399', '#10b981', '#059669', '#6ee7b7', '#a7f3d0', '#14b8a6', '#2dd4bf'],
+     scanlineColor: '#34d399',
+     eqColors: ['#22c55e', '#10b981', '#14b8a6'], // green, emerald, teal
   },
   { 
-    id: 'neon', 
-    name: 'Neon',
-    primary: 'from-violet-400 to-purple-500',
-    bgColors: ['#0f172a', '#3b0764', '#0f172a'], // slate-900, purple-950, slate-900
-    gridColor: 'rgba(139, 92, 246, 0.3)',
-    noteColors: ['#ff00ff', '#00ffff', '#ffff00', '#ff6b6b', '#4ecdc4', '#a855f7', '#ec4899'],
-    scanlineColor: '#a855f7',
-    eqColors: ['#06b6d4', '#a855f7', '#ec4899'], // cyan, purple, pink
+     id: 'neon',
+     name: 'Neon',
+     primary: 'from-violet-400 to-purple-500',
+     bgColors: ['#0f172a', '#3b0764', '#0f172a'], // slate-900, purple-950, slate-900
+     gridColor: 'rgba(139, 92, 246, 0.3)',
+     noteColors: ['#ff00ff', '#00ffff', '#ffff00', '#ff6b6b', '#4ecdc4', '#a855f7', '#ec4899'],
+     scanlineColor: '#a855f7',
+     eqColors: ['#06b6d4', '#a855f7', '#ec4899'], // cyan, purple, pink
   },
   { 
-    id: 'midnight', 
-    name: 'Midnight',
-    primary: 'from-slate-400 to-slate-500',
-    bgColors: ['#020617', '#0f172a', '#020617'], // slate-950, slate-900, slate-950
-    gridColor: 'rgba(100, 116, 139, 0.3)',
-    noteColors: ['#94a3b8', '#64748b', '#475569', '#cbd5e1', '#e2e8f0', '#334155', '#1e293b'],
-    scanlineColor: '#94a3b8',
-    eqColors: ['#64748b', '#475569', '#334155'], // slate colors
+     id: 'midnight',
+     name: 'Midnight',
+     primary: 'from-slate-400 to-slate-500',
+     bgColors: ['#020617', '#0f172a', '#020617'], // slate-950, slate-900, slate-950
+     gridColor: 'rgba(100, 116, 139, 0.3)',
+     noteColors: ['#94a3b8', '#64748b', '#475569', '#cbd5e1', '#e2e8f0', '#334155', '#1e293b'],
+     scanlineColor: '#94a3b8',
+     eqColors: ['#64748b', '#475569', '#334155'], // slate colors
   },
 ];
 
@@ -318,7 +339,7 @@ const PixelMusicBackground = ({ theme = VISUAL_THEMES[4] }) => {
       {/* Pixel Music Symbols - Scattered */}
       <div className="absolute top-10 left-10 text-4xl opacity-30" style={{ color: theme.noteColors[0], imageRendering: 'pixelated' }}>🎹</div>
       <div className="absolute top-20 right-20 text-3xl opacity-20 animate-pulse" style={{ color: theme.noteColors[1], imageRendering: 'pixelated' }}>🎸</div>
-      <div className="absolute bottom-32 left-20 text-3xl opacity-25" style={{ color: theme.noteColors[2], imageRendering: 'pixelated', animation: 'float 4s ease-in-out infinite' }}>🥁</div>
+      <div className="absolute bottom-32 left-20 text-3xl opacity-25" style={{ color: theme.noteColors[2], imageRendering: 'pixelated', animation: 'float 4s ease-in-out infinite' }}>🥁</div>
       <div className="absolute bottom-40 right-10 text-4xl opacity-20 animate-bounce" style={{ color: theme.noteColors[3], imageRendering: 'pixelated' }}>🎤</div>
       
       {/* Corner Decorations - Pixel Style */}
@@ -478,7 +499,7 @@ const SoundLab = ({ instKey, config, onChange, onClose }) => {
         {/* Decay */}
         <div>
           <div className="flex justify-between mb-2">
-            <label className="text-xs font-bold text-slate-400 uppercase">📉 Decay</label>
+            <label className="text-xs font-bold text-slate-400 uppercase">📰 Decay</label>
             <span className="text-xs font-bold text-amber-400">{config.decay || 100}ms</span>
           </div>
           <input type="range" min="50" max="2000" value={config.decay || 100} onChange={(e) => onChange('decay', parseInt(e.target.value))} className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-amber-500" />
@@ -496,7 +517,7 @@ const SoundLab = ({ instKey, config, onChange, onClose }) => {
         {/* Reverb */}
         <div>
           <div className="flex justify-between mb-2">
-            <label className="text-xs font-bold text-slate-400 uppercase">🏛️ Reverb</label>
+            <label className="text-xs font-bold text-slate-400 uppercase">🏺️ Reverb</label>
             <span className="text-xs font-bold text-purple-400">{config.reverb || 0}%</span>
           </div>
           <input type="range" min="0" max="100" value={config.reverb || 0} onChange={(e) => onChange('reverb', parseInt(e.target.value))} className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-purple-500" />
@@ -514,7 +535,7 @@ const SoundLab = ({ instKey, config, onChange, onClose }) => {
         {/* Pan */}
         <div>
           <div className="flex justify-between mb-2">
-            <label className="text-xs font-bold text-slate-400 uppercase">↔️ Pan</label>
+            <label className="text-xs font-bold text-slate-400 uppercase">↔️ Pan</label>
             <span className="text-xs font-bold text-blue-400">{(config.pan || 0) === 0 ? 'Center' : (config.pan || 0) < 0 ? `Left ${Math.abs(config.pan || 0)}` : `Right ${config.pan || 0}`}</span>
           </div>
           <input type="range" min="-50" max="50" value={config.pan || 0} onChange={(e) => onChange('pan', parseInt(e.target.value))} className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500" />
@@ -523,7 +544,7 @@ const SoundLab = ({ instKey, config, onChange, onClose }) => {
         {/* Bend Effect */}
         <div>
           <div className="flex justify-between mb-2">
-            <label className="text-xs font-bold text-slate-400 uppercase">〰️ Bend</label>
+            <label className="text-xs font-bold text-slate-400 uppercase">〰️ Bend</label>
             <span className="text-xs font-bold text-pink-400">{config.bend || 0}%</span>
           </div>
           <input type="range" min="0" max="100" value={config.bend || 0} onChange={(e) => onChange('bend', parseInt(e.target.value))} className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-pink-500" />
@@ -586,7 +607,7 @@ const ONBOARDING_STEPS = [
   },
   {
     id: 'click-cell',
-    title: '👆 Try Clicking a Cell!',
+    title: '👠 Try Clicking a Cell!',
     content: "Click on any empty cell in the grid to add a beat. The cell will light up and you'll hear the sound!",
     target: 'grid',
     position: 'top',
@@ -640,8 +661,8 @@ const ONBOARDING_STEPS = [
   },
   {
     id: 'soundlab-features',
-    title: '🎚️ Sound Lab Features',
-    content: "In Sound Lab you can adjust: Volume 🔊, Pitch 🎹, Attack ⚡, Decay 📉, Filter 🌊, Reverb 🏛️, Distortion 🔥, Pan ↔️, and Bend 〰️",
+    title: '🎚️ Sound Lab Features',
+    content: "In Sound Lab you can adjust: Volume 🔊, Pitch 🎹, Attack ⚡, Decay 📰, Filter 🌊, Reverb 🏺️, Distortion 🔥, Pan ↔️, and Bend 〰️",
     target: null,
     position: 'center',
     action: 'next',
@@ -730,7 +751,7 @@ const OnboardingTutorial = ({ step, onNext, onSkip, onFinish }) => {
             )}
             {currentStep.action === 'click-grid' && (
               <div className="px-4 py-2 bg-amber-500/20 border border-amber-500/50 rounded-xl text-amber-400 font-bold text-xs animate-pulse">
-                👆 Click any cell in the grid!
+                👠 Click any cell in the grid!
               </div>
             )}
             {currentStep.action === 'finish' && (
@@ -771,9 +792,9 @@ const INSTRUMENTS_DATA = [
 const SOUND_VARIANTS = {
   kick: [
     { name: '808 Boom', icon: '💥', type: 'kick808', freq: 55, duration: 0.8, decay: 0.5 },
-    { name: 'Punchy', icon: '👊', type: 'kickPunch', freq: 150, duration: 0.3, decay: 0.2 },
+    { name: 'Punchy', icon: '👐', type: 'kickPunch', freq: 150, duration: 0.3, decay: 0.2 },
     { name: 'Sub Drop', icon: '🌊', type: 'kickSub', freq: 40, duration: 1.0, decay: 0.8 },
-    { name: 'Acoustic', icon: '🥁', type: 'kickAcoustic', freq: 80, duration: 0.4, decay: 0.3 }
+    { name: 'Acoustic', icon: '🥁', type: 'kickAcoustic', freq: 80, duration: 0.4, decay: 0.3 }
   ],
   snare: [
     { name: 'Crack', icon: '⚡', type: 'snareCrack', freq: 200, duration: 0.2, noise: 0.8 },
@@ -784,18 +805,18 @@ const SOUND_VARIANTS = {
   hihat: [
     { name: 'Closed', icon: '🎩', type: 'hihatClosed', freq: 8000, duration: 0.05, noise: 1.0 },
     { name: 'Open', icon: '🌟', type: 'hihatOpen', freq: 6000, duration: 0.3, noise: 0.9 },
-    { name: 'Pedal', icon: '👟', type: 'hihatPedal', freq: 4000, duration: 0.1, noise: 0.7 },
+    { name: 'Pedal', icon: '👘', type: 'hihatPedal', freq: 4000, duration: 0.1, noise: 0.7 },
     { name: 'Shaker', icon: '🧂', type: 'shaker', freq: 10000, duration: 0.08, noise: 1.0 }
   ],
   tom: [
-    { name: 'Floor', icon: '🛢️', type: 'tomLow', freq: 80, duration: 0.5, decay: 0.4 },
-    { name: 'Mid', icon: '🥁', type: 'tomMid', freq: 150, duration: 0.4, decay: 0.3 },
+    { name: 'Floor', icon: '🏛¢️', type: 'tomLow', freq: 80, duration: 0.5, decay: 0.4 },
+    { name: 'Mid', icon: '🥁', type: 'tomMid', freq: 150, duration: 0.4, decay: 0.3 },
     { name: 'High', icon: '🎯', type: 'tomHigh', freq: 250, duration: 0.3, decay: 0.2 },
     { name: 'Taiko', icon: '🏯', type: 'taiko', freq: 60, duration: 0.8, decay: 0.6 }
   ],
   perc: [
     { name: 'Conga', icon: '🪘', type: 'conga', freq: 200, duration: 0.3, decay: 0.2 },
-    { name: 'Bongo', icon: '🥁', type: 'bongo', freq: 350, duration: 0.15, decay: 0.1 },
+    { name: 'Bongo', icon: '🥁', type: 'bongo', freq: 350, duration: 0.15, decay: 0.1 },
     { name: 'Cowbell', icon: '🔔', type: 'cowbell', freq: 800, duration: 0.2, decay: 0.15 },
     { name: 'Woodblock', icon: '🪵', type: 'woodblock', freq: 1200, duration: 0.05, decay: 0.03 }
   ],
@@ -806,9 +827,9 @@ const SOUND_VARIANTS = {
     { name: 'Wobble', icon: '🌀', type: 'bassWobble', freq: 65, duration: 0.6, decay: 0.5 }
   ],
   synth: [
-    { name: 'Pad', icon: '☁️', type: 'synthPad', freq: 440, duration: 1.0, decay: 0.8 },
+    { name: 'Pad', icon: '🎶', type: 'synthPad', freq: 440, duration: 1.0, decay: 0.8 },
     { name: 'Pluck', icon: '✨', type: 'synthPluck', freq: 523, duration: 0.2, decay: 0.15 },
-    { name: 'Stab', icon: '⚔️', type: 'synthStab', freq: 392, duration: 0.15, decay: 0.1 },
+    { name: 'Stab', icon: 'âš”️', type: 'synthStab', freq: 392, duration: 0.15, decay: 0.1 },
     { name: 'Arp', icon: '🌈', type: 'synthArp', freq: 659, duration: 0.1, decay: 0.08 }
   ],
   fx: [
@@ -820,25 +841,25 @@ const SOUND_VARIANTS = {
   keys: [
     { name: 'Piano', icon: '🎹', type: 'keysPiano', freq: 523, duration: 0.8, decay: 0.6 },
     { name: 'Rhodes', icon: '🌙', type: 'keysRhodes', freq: 440, duration: 1.0, decay: 0.8 },
-    { name: 'Organ', icon: '⛪', type: 'keysOrgan', freq: 392, duration: 0.5, decay: 0.4 },
+    { name: 'Organ', icon: 'â›ª', type: 'keysOrgan', freq: 392, duration: 0.5, decay: 0.4 },
     { name: 'Bells', icon: '🔔', type: 'keysBells', freq: 880, duration: 1.2, decay: 1.0 }
   ],
   vox: [
     { name: 'Ooh', icon: '😮', type: 'voxOoh', freq: 400, duration: 0.5, decay: 0.4 },
     { name: 'Aah', icon: '😲', type: 'voxAah', freq: 500, duration: 0.6, decay: 0.5 },
-    { name: 'Hey', icon: '🗣️', type: 'voxHey', freq: 350, duration: 0.2, decay: 0.15 },
+    { name: 'Hey', icon: '🗣️', type: 'voxHey', freq: 350, duration: 0.2, decay: 0.15 },
     { name: 'Choir', icon: '👼', type: 'voxChoir', freq: 440, duration: 1.0, decay: 0.8 }
   ],
   lead: [
     { name: 'Saw', icon: '🪚', type: 'leadSaw', freq: 659, duration: 0.4, decay: 0.3 },
-    { name: 'Square', icon: '⬜', type: 'leadSquare', freq: 523, duration: 0.35, decay: 0.25 },
+    { name: 'Square', icon: 'â¬œ', type: 'leadSquare', freq: 523, duration: 0.35, decay: 0.25 },
     { name: 'Pluck', icon: '🎻', type: 'leadPluck', freq: 784, duration: 0.15, decay: 0.1 },
     { name: 'Screech', icon: '🦅', type: 'leadScreech', freq: 1046, duration: 0.5, decay: 0.4 }
   ],
   orch: [
     { name: 'Strings', icon: '🎻', type: 'orchStrings', freq: 294, duration: 1.0, decay: 0.8 },
     { name: 'Brass', icon: '🎺', type: 'orchBrass', freq: 349, duration: 0.4, decay: 0.3 },
-    { name: 'Timpani', icon: '🥁', type: 'orchTimpani', freq: 73, duration: 0.8, decay: 0.6 },
+    { name: 'Timpani', icon: '🥁', type: 'orchTimpani', freq: 73, duration: 0.8, decay: 0.6 },
     { name: 'Harp', icon: '🪕', type: 'orchHarp', freq: 523, duration: 0.6, decay: 0.5 }
   ]
 };
@@ -855,7 +876,7 @@ const BEAT_GUIDES = [
     pattern: { kick: [0, 7, 10, 16, 23, 26], snare: [4, 12, 20, 28], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], bass: [0, 7, 16, 23] } 
   },
   { 
-    name: "House 💃", 
+    name: "House 💿", 
     desc: "Four on the floor - classic club beat", 
     pattern: { kick: [0, 4, 8, 12, 16, 20, 24, 28], snare: [4, 12, 20, 28], hihat: [2, 6, 10, 14, 18, 22, 26, 30], bass: [0, 6, 8, 14, 16, 22, 24, 30] } 
   },
@@ -875,7 +896,7 @@ const BEAT_GUIDES = [
     pattern: { kick: [0, 10, 16, 26], snare: [4, 12, 14, 20, 28, 30], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], bass: [0, 3, 6, 10, 16, 19, 22, 26] } 
   },
   { 
-    name: "Disco Funk 🕺", 
+    name: "Disco Funk 🚺", 
     desc: "Groovy funk beat with offbeat bass", 
     pattern: { kick: [0, 4, 8, 12, 16, 20, 24, 28], snare: [4, 12, 20, 28], hihat: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31], bass: [2, 6, 10, 14, 18, 22, 26, 30] } 
   },
@@ -895,7 +916,7 @@ const BEAT_GUIDES = [
     pattern: { kick: [0, 4, 8, 12, 16, 20, 24, 28], snare: [8, 24], hihat: [2, 6, 10, 14, 18, 22, 26, 30], synth: [0, 8, 16, 24] } 
   },
   { 
-    name: "Bossa Nova 🏖️", 
+    name: "Bossa Nova 🏓️", 
     desc: "Brazilian jazz rhythm", 
     pattern: { kick: [0, 10, 16, 26], snare: [6, 14, 22, 30], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], bass: [0, 6, 10, 16, 22, 26] } 
   },
@@ -977,8 +998,8 @@ const SCENARIOS = [
     id: 1, name: "Chill Night 🌙", bpm: 75, desc: "Relaxed, lo-fi, late night mood", locked: false, theme: "from-slate-600 to-indigo-800", bgClass: "bg-slate-900", ambience: "rain",
     tutorial: [
       { text: "🌙 Lo-Fi Tutorial! SLOWER tempo (75 BPM) with a SWUNG feel. Kicks on 1 and the 'and' of 2!", targetInstrument: 'kick', targetSteps: [0, 5, 16, 21], soundVariant: 2 },
-      { text: "Lo-Fi snares are LAZY 💤 Ghost notes make it human! Main hits on 2 & 6 with soft flams!", targetInstrument: 'snare', targetSteps: [4, 7, 20, 23], soundVariant: 2 },
-      { text: "Gentle hi-hats 🍃 Swung 8ths with ghost notes create that dusty vinyl feel!", targetInstrument: 'hihat', targetSteps: [0, 3, 4, 7, 8, 11, 12, 15, 16, 19, 20, 23, 24, 27, 28, 31], soundVariant: 2 },
+      { text: "Lo-Fi snares are LAZY 👤 Ghost notes make it human! Main hits on 2 & 6 with soft flams!", targetInstrument: 'snare', targetSteps: [4, 7, 20, 23], soundVariant: 2 },
+      { text: "Gentle hi-hats 🍿 Swung 8ths with ghost notes create that dusty vinyl feel!", targetInstrument: 'hihat', targetSteps: [0, 3, 4, 7, 8, 11, 12, 15, 16, 19, 20, 23, 24, 27, 28, 31], soundVariant: 2 },
       { text: "🎹 RHODES KEYS are the soul! 7th chords on 1 and 5 with passing tones!", targetInstrument: 'keys', targetSteps: [0, 6, 16, 22], soundVariant: 1 },
       { text: "🎸 Mellow BASS walks through chord tones - jazzy and warm!", targetInstrument: 'bass', targetSteps: [0, 5, 8, 12, 16, 21, 24, 28], soundVariant: 2 },
       { text: "✨ SYNTH PAD breathes in and out - long sustained atmosphere!", targetInstrument: 'synth', targetSteps: [0, 16], soundVariant: 0 },
@@ -1000,7 +1021,7 @@ const SCENARIOS = [
     )
   },
   { 
-    id: 2, name: "Neon City 🌆", bpm: 126, desc: "Electronic, urban, energetic beats", locked: false, theme: "from-pink-500 to-purple-600", bgClass: "bg-purple-950", ambience: "city",
+    id: 2, name: "Neon City 🌠", bpm: 126, desc: "Electronic, urban, energetic beats", locked: false, theme: "from-pink-500 to-purple-600", bgClass: "bg-purple-950", ambience: "city",
     tutorial: [
       { text: "🏠 HOUSE MUSIC! Four-on-the-floor with a tasteful ghost kick for groove!", targetInstrument: 'kick', targetSteps: [0, 4, 8, 11, 12, 16, 20, 24, 27, 28], soundVariant: 1 },
       { text: "👏 Clap on 2 and 4 with a pickup clap! Classic house with extra bounce!", targetInstrument: 'snare', targetSteps: [4, 12, 15, 20, 28, 31], soundVariant: 1 },
@@ -1032,12 +1053,12 @@ const SCENARIOS = [
     id: 3, name: "Desert Sunset 🏜️", bpm: 98, desc: "Warm, groovy, world music vibes", locked: false, theme: "from-orange-500 to-red-500", bgClass: "bg-orange-900", ambience: "desert",
     tutorial: [
       { text: "🌍 AFROBEAT groove! The '3-2 clave' kick pattern - syncopated magic that makes you MOVE!", targetInstrument: 'kick', targetSteps: [0, 6, 12, 16, 20, 26], soundVariant: 3 },
-      { text: "🥁 Cross-stick snare on 2 & 4 plus ghost notes - tight and funky!", targetInstrument: 'snare', targetSteps: [4, 7, 12, 20, 23, 28], soundVariant: 0 },
+      { text: "🥁 Cross-stick snare on 2 & 4 plus ghost notes - tight and funky!", targetInstrument: 'snare', targetSteps: [4, 7, 12, 20, 23, 28], soundVariant: 0 },
       { text: "🧂 SHAKER drives the groove with 16th notes - constant flowing energy!", targetInstrument: 'hihat', targetSteps: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], soundVariant: 3 },
       { text: "🪘 CONGA plays the TUMBA pattern! Traditional 6/8 polyrhythm over 4/4!", targetInstrument: 'perc', targetSteps: [0, 3, 6, 10, 12, 15, 16, 19, 22, 26, 28, 31], soundVariant: 0 },
       { text: "🎸 BASS locks with the kick - dancehall-style bounce pattern!", targetInstrument: 'bass', targetSteps: [0, 6, 10, 12, 16, 20, 26, 28], soundVariant: 2 },
       { text: "🎹 KEYS play jazzy maj7 chords - that sunny Afro-Cuban color!", targetInstrument: 'keys', targetSteps: [0, 3, 8, 16, 19, 24], soundVariant: 2 },
-      { text: "🌅 6 instruments with POLYRHYTHM! Heart of African & Latin music! PLAY! 🌍", targetInstrument: null, targetSteps: [] }
+      { text: "🌦 6 instruments with POLYRHYTHM! Heart of African & Latin music! PLAY! 🌍", targetInstrument: null, targetSteps: [] }
     ],
     beat: { kick: [0, 6, 12, 16, 20, 26], snare: [4, 7, 12, 20, 23, 28], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], perc: [0, 3, 6, 10, 12, 15, 16, 19, 22, 26, 28, 31], bass: [0, 6, 10, 12, 16, 20, 26, 28], keys: [0, 3, 8, 16, 19, 24] },
     renderScene: (pulse, accuracy) => (
@@ -1059,7 +1080,7 @@ const SCENARIOS = [
       { text: "🌀 REESE BASS - the legendary D&B bass! Rolling 16ths that fill the space!", targetInstrument: 'bass', targetSteps: [0, 2, 4, 6, 10, 14, 16, 18, 20, 22, 26, 30], soundVariant: 3 },
       { text: "🎹 SYNTH PAD - cosmic atmosphere that breathes through the track!", targetInstrument: 'synth', targetSteps: [0, 16], soundVariant: 0 },
       { text: "💫 FX IMPACTS mark the phrases - cinematic power!", targetInstrument: 'fx', targetSteps: [0, 14, 16, 30], soundVariant: 1 },
-      { text: "🚀 6 layers of D&B! ENERGY and SPEED! Launch into hyperspace! 🌌", targetInstrument: null, targetSteps: [] }
+      { text: "🚀 6 layers of D&B! ENERGY and SPEED! Launch into hyperspace! 🌈", targetInstrument: null, targetSteps: [] }
     ],
     beat: { kick: [0, 10, 14, 16, 26, 30], snare: [4, 12, 13, 20, 28, 29, 30], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], bass: [0, 2, 4, 6, 10, 14, 16, 18, 20, 22, 26, 30], synth: [0, 16], fx: [0, 14, 16, 30] },
     renderScene: (pulse, accuracy) => (
@@ -1112,13 +1133,13 @@ const SCENARIOS = [
     id: 6, name: "Reggaeton 🔥", bpm: 98, desc: "Latin urban rhythm with the dembow beat", locked: false, theme: "from-yellow-500 to-red-600", bgClass: "bg-red-900", ambience: "reggaeton",
     tutorial: [
       { text: "🔥 REGGAETON! The 'DEMBOW' beat! Kick on 1, 'and' of 2, and repeat - feel that BOUNCE!", targetInstrument: 'kick', targetSteps: [0, 5, 8, 13, 16, 21, 24, 29], soundVariant: 1 },
-      { text: "💃 The DEMBOW snare is magic! Off-beat hits create the irresistible swing!", targetInstrument: 'snare', targetSteps: [3, 7, 11, 15, 19, 23, 27, 31], soundVariant: 1 },
+      { text: "💿 The DEMBOW snare is magic! Off-beat hits create the irresistible swing!", targetInstrument: 'snare', targetSteps: [3, 7, 11, 15, 19, 23, 27, 31], soundVariant: 1 },
       { text: "Hi-hats add Latin FLAVOR! 🎶 Consistent 8ths with ghost notes!", targetInstrument: 'hihat', targetSteps: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], soundVariant: 0 },
       { text: "🎸 Bass LOCKS with the kick - deep and punchy dance floor shake!", targetInstrument: 'bass', targetSteps: [0, 5, 8, 13, 16, 21, 24, 29], soundVariant: 1 },
       { text: "🪘 Congas add PERREO! 🔥 Traditional tumba meets urban heat!", targetInstrument: 'perc', targetSteps: [0, 3, 6, 8, 11, 14, 16, 19, 22, 24, 27, 30], soundVariant: 0 },
       { text: "🎹 Piano montuno pattern - that tropical Caribbean color!", targetInstrument: 'keys', targetSteps: [0, 3, 6, 8, 11, 16, 19, 22, 24, 27], soundVariant: 3 },
       { text: "🎵 LEAD melody - the memorable hook! Catchy synth phrase!", targetInstrument: 'lead', targetSteps: [0, 4, 8, 12, 16, 20, 24, 28], soundVariant: 1 },
-      { text: "🔥 DALE! Full REGGAETON heat with 7 layers! PLAY and PERREO! 💃", targetInstrument: null, targetSteps: [] }
+      { text: "🔥 DALE! Full REGGAETON heat with 7 layers! PLAY and PERREO! 💿", targetInstrument: null, targetSteps: [] }
     ],
     beat: { kick: [0, 5, 8, 13, 16, 21, 24, 29], snare: [3, 7, 11, 15, 19, 23, 27, 31], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], bass: [0, 5, 8, 13, 16, 21, 24, 29], perc: [0, 3, 6, 8, 11, 14, 16, 19, 22, 24, 27, 30], keys: [0, 3, 6, 8, 11, 16, 19, 22, 24, 27], lead: [0, 4, 8, 12, 16, 20, 24, 28] },
     renderScene: (pulse, accuracy) => (
@@ -1131,7 +1152,7 @@ const SCENARIOS = [
             opacity: 0.6
           }}>🔥</div>
         ))}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-6xl" style={{ transform: `translate(-50%, -50%) scale(${1 + pulse * 0.2})` }}>💃</div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-6xl" style={{ transform: `translate(-50%, -50%) scale(${1 + pulse * 0.2})` }}>💿</div>
       </div>
     )
   },
@@ -1143,7 +1164,7 @@ const SCENARIOS = [
       { text: "🎩 Swung hi-hats are ESSENTIAL! The shuffle feel makes heads nod!", targetInstrument: 'hihat', targetSteps: [0, 3, 4, 7, 8, 11, 12, 15, 16, 19, 20, 23, 24, 27, 28, 31], soundVariant: 0 },
       { text: "🎸 Upright bass sound - jazzy walking line with chromatic fills!", targetInstrument: 'bass', targetSteps: [0, 5, 8, 10, 16, 21, 24, 26], soundVariant: 2 },
       { text: "🎹 Dusty piano chops - sampled soul feel that defines boom bap!", targetInstrument: 'keys', targetSteps: [0, 6, 8, 14, 16, 22, 24, 30], soundVariant: 0 },
-      { text: "🥁 Tom fills add that classic J Dilla flavor - unexpected hits!", targetInstrument: 'tom', targetSteps: [6, 14, 15, 22, 30, 31], soundVariant: 0 },
+      { text: "🥁 Tom fills add that classic J Dilla flavor - unexpected hits!", targetInstrument: 'tom', targetSteps: [6, 14, 15, 22, 30, 31], soundVariant: 0 },
       { text: "🎵 Shaker for that dusty vinyl texture - old school authenticity!", targetInstrument: 'perc', targetSteps: [2, 6, 10, 14, 18, 22, 26, 30], soundVariant: 3 },
       { text: "🎤 CLASSIC BOOM BAP! 7 layers of golden era hip hop! DROP THE BEAT!", targetInstrument: null, targetSteps: [] }
     ],
@@ -1163,11 +1184,11 @@ const SCENARIOS = [
     tutorial: [
       { text: "🎸 ROCK DRUMS! Driving kick with an extra hit before beat 3 for power!", targetInstrument: 'kick', targetSteps: [0, 6, 8, 14, 16, 22, 24, 30], soundVariant: 3 },
       { text: "Rock snare CRACKS on 2 & 4! 💥 With a pickup note for energy!", targetInstrument: 'snare', targetSteps: [4, 12, 15, 20, 28, 31], soundVariant: 0 },
-      { text: "🥁 Ride cymbal pattern - steady 8ths with accent on the beat!", targetInstrument: 'hihat', targetSteps: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], soundVariant: 0 },
+      { text: "🥁 Ride cymbal pattern - steady 8ths with accent on the beat!", targetInstrument: 'hihat', targetSteps: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], soundVariant: 0 },
       { text: "🎸 Bass guitar drives the rhythm - lock with the kick!", targetInstrument: 'bass', targetSteps: [0, 6, 8, 14, 16, 22, 24, 30], soundVariant: 2 },
       { text: "🎹 Hammond organ power chords - that classic rock sound!", targetInstrument: 'keys', targetSteps: [0, 8, 16, 24], soundVariant: 2 },
       { text: "🎵 Guitar riff lead line - memorable melodic hook!", targetInstrument: 'lead', targetSteps: [0, 3, 6, 8, 11, 16, 19, 22, 24, 27], soundVariant: 2 },
-      { text: "🥁 Tom fills build to the next section - classic rock transition!", targetInstrument: 'tom', targetSteps: [12, 13, 14, 28, 29, 30, 31], soundVariant: 1 },
+      { text: "🥁 Tom fills build to the next section - classic rock transition!", targetInstrument: 'tom', targetSteps: [12, 13, 14, 28, 29, 30, 31], soundVariant: 1 },
       { text: "🎸 ROCK ON! 7 layers of pure rock power! CRANK IT UP!", targetInstrument: null, targetSteps: [] }
     ],
     beat: { kick: [0, 6, 8, 14, 16, 22, 24, 30], snare: [4, 12, 15, 20, 28, 31], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], bass: [0, 6, 8, 14, 16, 22, 24, 30], keys: [0, 8, 16, 24], lead: [0, 3, 6, 8, 11, 16, 19, 22, 24, 27], tom: [12, 13, 14, 28, 29, 30, 31] },
@@ -1193,7 +1214,7 @@ const SCENARIOS = [
       { text: "👏 Minimal claps on 2 & 4 with a rimshot accent pattern!", targetInstrument: 'snare', targetSteps: [4, 12, 14, 20, 28, 30], soundVariant: 1 },
       { text: "🎩 Open hi-hats on offbeats plus 16th shaker texture!", targetInstrument: 'hihat', targetSteps: [2, 6, 10, 14, 18, 22, 26, 30], soundVariant: 0 },
       { text: "🔊 Sub bass POUNDS with the kick - feel it in your chest!", targetInstrument: 'bass', targetSteps: [0, 4, 8, 12, 16, 20, 24, 28], soundVariant: 0 },
-      { text: "🌌 Pad EVOLVES slowly - building hypnotic atmosphere!", targetInstrument: 'synth', targetSteps: [0, 16], soundVariant: 0 },
+      { text: "🌈 Pad EVOLVES slowly - building hypnotic atmosphere!", targetInstrument: 'synth', targetSteps: [0, 16], soundVariant: 0 },
       { text: "🎵 Acid lead sequence - the 303 pattern that defined techno!", targetInstrument: 'lead', targetSteps: [0, 3, 4, 7, 8, 11, 12, 15, 16, 19, 20, 23, 24, 27, 28, 31], soundVariant: 0 },
       { text: "🌟 FX textures add movement - risers and sweeps!", targetInstrument: 'fx', targetSteps: [0, 8, 16, 24], soundVariant: 0 },
       { text: "🤖 HYPNOTIC TECHNO! 7 layers of machine precision! ENTER THE TRANCE!", targetInstrument: null, targetSteps: [] }
@@ -1218,6 +1239,252 @@ const SCENARIOS = [
 ];
 
 // DEFAULT SCENARIO for Free Play
+
+// ==========================================
+// GAME LEVELS - Progressive Learning System
+// ==========================================
+const GAME_LEVELS = [
+  {
+    id: 1,
+    name: "First Beat",
+    difficulty: "Beginner",
+    stars: 0,
+    maxStars: 3,
+    xpReward: 50,
+    icon: "🥁",
+    description: "Learn the basics! Place kicks and snares to create your first beat.",
+    objective: "Create a simple beat with KICK and SNARE",
+    requirements: {
+      instruments: ['kick', 'snare'],
+      minNotes: 4,
+      mustInclude: { kick: 2, snare: 2 }
+    },
+    hints: [
+      "💡 Start with the KICK drum - it's the heartbeat of your music!",
+      "💡 Place kicks on beats 1 and 3 (steps 0, 8, 16, 24)",
+      "💡 Add SNARE on beats 2 and 4 (steps 4, 12, 20, 28) for the backbeat",
+      "💡 Hit PLAY to hear your creation!"
+    ],
+    tempo: 100,
+    unlocked: true
+  },
+  {
+    id: 2,
+    name: "Add the Groove",
+    difficulty: "Beginner",
+    stars: 0,
+    maxStars: 3,
+    xpReward: 75,
+    icon: "🎩",
+    description: "Hi-hats add rhythm and energy. Learn to layer!",
+    objective: "Add HI-HATS to your kick and snare pattern",
+    requirements: {
+      instruments: ['kick', 'snare', 'hihat'],
+      minNotes: 8,
+      mustInclude: { kick: 2, snare: 2, hihat: 4 }
+    },
+    hints: [
+      "💡 Hi-hats create the 'tick-tick-tick' rhythm!",
+      "💡 Try placing hi-hats on every other step for 8th notes",
+      "💡 The hi-hat fills the space between kick and snare",
+      "💡 Experiment with different patterns!"
+    ],
+    tempo: 100,
+    unlocked: true
+  },
+  {
+    id: 3,
+    name: "Bass Drop",
+    difficulty: "Easy",
+    stars: 0,
+    maxStars: 3,
+    xpReward: 100,
+    icon: "🎸",
+    description: "Bass gives your beat weight and power!",
+    objective: "Create a beat with KICK, SNARE, and BASS",
+    requirements: {
+      instruments: ['kick', 'snare', 'bass'],
+      minNotes: 6,
+      mustInclude: { kick: 2, snare: 2, bass: 2 }
+    },
+    hints: [
+      "💡 Bass usually follows the kick drum",
+      "💡 Try placing bass notes where your kicks are",
+      "💡 Add some bass notes in between for groove",
+      "💡 Lower sounds = more power!"
+    ],
+    tempo: 95,
+    unlocked: false
+  },
+  {
+    id: 4,
+    name: "Four on the Floor",
+    difficulty: "Easy",
+    stars: 0,
+    maxStars: 3,
+    xpReward: 125,
+    icon: "🏠",
+    description: "Learn the classic house music pattern!",
+    objective: "Create a house beat with kick on every beat",
+    requirements: {
+      instruments: ['kick', 'snare', 'hihat'],
+      minNotes: 12,
+      mustInclude: { kick: 4, snare: 2, hihat: 4 }
+    },
+    hints: [
+      "💡 'Four on the floor' means kick on beats 1, 2, 3, 4",
+      "💡 Place kicks on steps 0, 8, 16, 24",
+      "💡 Claps/snares go on 2 and 4 (steps 8, 24)",
+      "💡 Hi-hats go on the OFF-beats for that house bounce!"
+    ],
+    tempo: 124,
+    unlocked: false
+  },
+  {
+    id: 5,
+    name: "Synth Magic",
+    difficulty: "Medium",
+    stars: 0,
+    maxStars: 3,
+    xpReward: 150,
+    icon: "🎹",
+    description: "Add melody and chords with the synthesizer!",
+    objective: "Create a beat using 4 different instruments including SYNTH",
+    requirements: {
+      instruments: ['kick', 'snare', 'hihat', 'synth'],
+      minNotes: 12,
+      mustInclude: { kick: 2, snare: 2, hihat: 4, synth: 2 }
+    },
+    hints: [
+      "💡 Synth adds melody and harmony to your beat",
+      "💡 Try placing synth notes on off-beats",
+      "💡 Synth chords work well with bass lines",
+      "💡 Less is more - don't overcrowd!"
+    ],
+    tempo: 110,
+    unlocked: false
+  },
+  {
+    id: 6,
+    name: "Percussion Party",
+    difficulty: "Medium",
+    stars: 0,
+    maxStars: 3,
+    xpReward: 175,
+    icon: "🪘",
+    description: "Layer percussion for complex rhythms!",
+    objective: "Use 5 instruments including PERCUSSION",
+    requirements: {
+      instruments: ['kick', 'snare', 'hihat', 'perc', 'bass'],
+      minNotes: 16,
+      mustInclude: { kick: 2, snare: 2, hihat: 4, perc: 4, bass: 2 }
+    },
+    hints: [
+      "💡 Percussion adds texture and fills gaps",
+      "💡 Shakers and congas work great off the main beat",
+      "💡 Try polyrhythms - patterns that contrast!",
+      "💡 World music uses lots of percussion layers"
+    ],
+    tempo: 98,
+    unlocked: false
+  },
+  {
+    id: 7,
+    name: "Lo-Fi Chill",
+    difficulty: "Medium",
+    stars: 0,
+    maxStars: 3,
+    xpReward: 200,
+    icon: "🌙",
+    description: "Create a relaxing lo-fi beat with keys!",
+    objective: "Make a chill beat with KEYS and slow tempo",
+    requirements: {
+      instruments: ['kick', 'snare', 'hihat', 'keys', 'bass'],
+      minNotes: 14,
+      mustInclude: { kick: 2, snare: 2, hihat: 4, keys: 2, bass: 2 }
+    },
+    hints: [
+      "💡 Lo-fi beats are SLOW - around 70-85 BPM",
+      "💡 Keys add that jazzy, nostalgic feel",
+      "💡 Leave SPACE in your beat - silence is powerful",
+      "💡 Ghost notes (quiet hits) add human feel"
+    ],
+    tempo: 75,
+    unlocked: false
+  },
+  {
+    id: 8,
+    name: "Full Production",
+    difficulty: "Hard",
+    stars: 0,
+    maxStars: 3,
+    xpReward: 250,
+    icon: "🎧",
+    description: "Use ALL instruments to create a full track!",
+    objective: "Create a complete beat using 6+ instruments",
+    requirements: {
+      instruments: ['kick', 'snare', 'hihat', 'bass', 'synth', 'keys'],
+      minNotes: 24,
+      mustInclude: { kick: 4, snare: 4, hihat: 8, bass: 4, synth: 2, keys: 2 }
+    },
+    hints: [
+      "💡 Build in layers - start with drums, add bass, then melody",
+      "💡 Make sure instruments don't clash - give each space",
+      "💡 The best beats have contrast - loud and quiet parts",
+      "💡 You're ready to be a producer!"
+    ],
+    tempo: 105,
+    unlocked: false
+  },
+  {
+    id: 9,
+    name: "Speed Demon",
+    difficulty: "Hard",
+    stars: 0,
+    maxStars: 3,
+    xpReward: 300,
+    icon: "⚡",
+    description: "Fast tempo challenge - can you keep up?",
+    objective: "Create a high-energy beat at 140+ BPM",
+    requirements: {
+      instruments: ['kick', 'snare', 'hihat', 'bass', 'synth'],
+      minNotes: 20,
+      mustInclude: { kick: 4, snare: 4, hihat: 8, bass: 2, synth: 2 }
+    },
+    hints: [
+      "💡 Fast tempos need simpler patterns",
+      "💡 Drum & Bass and Jungle run at 160-180 BPM!",
+      "💡 Keep the rhythm tight and punchy",
+      "💡 Less notes per bar at high speeds"
+    ],
+    tempo: 145,
+    unlocked: false
+  },
+  {
+    id: 10,
+    name: "Master Beat",
+    difficulty: "Expert",
+    stars: 0,
+    maxStars: 3,
+    xpReward: 500,
+    icon: "👑",
+    description: "The ultimate challenge - prove your mastery!",
+    objective: "Create a complex beat with 7 instruments and 30+ notes",
+    requirements: {
+      instruments: ['kick', 'snare', 'hihat', 'bass', 'synth', 'keys', 'perc'],
+      minNotes: 30,
+      mustInclude: { kick: 4, snare: 4, hihat: 8, bass: 4, synth: 4, keys: 2, perc: 4 }
+    },
+    hints: [
+      "💡 This is everything you've learned combined!",
+      "💡 Think like a real producer - arrangement matters",
+      "💡 Use dynamics - vary the intensity",
+      "💡 You've mastered Rhythm Realm! 👑"
+    ],
+    tempo: 115,
+    unlocked: false
+  }
+];
 
 // ==========================================
 // 5. AUDIO ENGINE - Advanced Synthesizer
@@ -1282,6 +1549,21 @@ const AudioEngine = {
       try { node.disconnect(); } catch(e) {}
     });
     AudioEngine.ambienceNodes = [];
+  },
+  
+  // Stop all playing sounds by suspending and resuming context
+  stopAll: () => {
+    if (AudioEngine.ctx) {
+      // Suspend immediately stops scheduled sounds
+      AudioEngine.ctx.suspend().then(() => {
+        // Resume after a tiny delay so new sounds can play
+        setTimeout(() => {
+          if (AudioEngine.ctx && AudioEngine.ctx.state === 'suspended') {
+            AudioEngine.ctx.resume();
+          }
+        }, 50);
+      }).catch(() => {});
+    }
   },
   
   trigger: (variant, time = 0, config = { pitch: 0, chord: null, bend: 0, volume: 100, muted: false, attack: 0, decay: 100, filter: 100, reverb: 0, distortion: 0, pan: 0 }) => {
@@ -1912,6 +2194,86 @@ export default function RhythmRealm() {
   const [showVictory, setShowVictory] = useState(false);
   const [beatPulse, setBeatPulse] = useState(0);
   
+  // ==========================================
+  // AUTHENTICATION & USER STATE
+  // ==========================================
+  const [user, setUser] = useState(null);
+  const [userProfile, setUserProfile] = useState(null);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authMode, setAuthMode] = useState('login'); // 'login' or 'register'
+  const [authEmail, setAuthEmail] = useState('');
+  const [authPassword, setAuthPassword] = useState('');
+  const [authUsername, setAuthUsername] = useState('');
+  const [authError, setAuthError] = useState('');
+  const [authLoading, setAuthLoading] = useState(false);
+  
+  // ==========================================
+  // LEADERBOARD & RANKING STATE
+  // ==========================================
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [leaderboardData, setLeaderboardData] = useState([]);
+  const [leaderboardLoading, setLeaderboardLoading] = useState(false);
+  const [userRank, setUserRank] = useState(null);
+  
+  // ==========================================
+  // ACHIEVEMENTS STATE
+  // ==========================================
+  const [showAchievements, setShowAchievements] = useState(false);
+  const [userAchievements, setUserAchievements] = useState([]);
+  const [achievementsLoading, setAchievementsLoading] = useState(false);
+  const [newAchievementUnlocked, setNewAchievementUnlocked] = useState(null);
+  const [hasPlayedBeat, setHasPlayedBeat] = useState(false);
+  const [usedDJMode, setUsedDJMode] = useState(false);
+  
+  // ==========================================
+  // LEVEL SYSTEM STATE
+  // ==========================================
+  const [currentLevel, setCurrentLevel] = useState(null);
+  const [levelProgress, setLevelProgress] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('rhythmRealm_levelProgress');
+      return saved ? JSON.parse(saved) : {};
+    }
+    return {};
+  });
+  const [currentHintIndex, setCurrentHintIndex] = useState(0);
+  const [showHint, setShowHint] = useState(false);
+  const [levelComplete, setLevelComplete] = useState(false);
+  const [levelScore, setLevelScore] = useState(0);
+  const [showProfile, setShowProfile] = useState(false);
+  
+  // ==========================================
+  // USER STATS FOR ACHIEVEMENTS
+  // ==========================================
+  const [userStats, setUserStats] = useState(() => {
+    // Initialize level stats from localStorage
+    let levelsCompleted = 0;
+    let threeStarLevels = 0;
+    if (typeof window !== 'undefined') {
+      const savedProgress = localStorage.getItem('rhythmRealm_levelProgress');
+      if (savedProgress) {
+        const progress = JSON.parse(savedProgress);
+        levelsCompleted = Object.values(progress).filter(p => p?.completed).length;
+        threeStarLevels = Object.values(progress).filter(p => p?.stars >= 3).length;
+      }
+    }
+    return {
+      totalBeatsCreated: 0,
+      tutorialsCompleted: 0,
+      totalScore: 0,
+      hasPlayed: false,
+      accuracy: 0,
+      instrumentsUsed: 0,
+      tempo: 100,
+      usedDJMode: false,
+      currentStreak: 0,
+      leaderboardRank: null,
+      levelsCompleted,
+      threeStarLevels
+    };
+  });
+  
   // Background Music State
   const [bgMusicEnabled, setBgMusicEnabled] = useState(true);
   const bgMusicRef = useRef(null);
@@ -1966,21 +2328,397 @@ export default function RhythmRealm() {
   const speechSynthRef = useRef(null);
   const recognitionRef = useRef(null);
 
+  // ==========================================
+  // AUTHENTICATION EFFECTS & FUNCTIONS
+  // ==========================================
+  
+  // Check auth state on mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const session = await authService.getSession();
+        console.log('Session check:', session);
+        if (session?.user) {
+          setUser(session.user);
+          try {
+            const profile = await authService.getUserProfile(session.user.id);
+            console.log('Profile from session:', profile);
+            if (profile) {
+              setUserProfile(profile);
+              // Update user stats from profile
+              setUserStats(prev => ({
+                ...prev,
+                totalBeatsCreated: profile.total_beats_created || 0,
+                tutorialsCompleted: profile.total_tutorials_completed || 0,
+                totalScore: profile.total_score || 0,
+                currentStreak: profile.current_streak || 0
+              }));
+            } else {
+              // Create profile from user metadata if not found
+              const username = session.user.user_metadata?.username || session.user.email?.split('@')[0] || 'Player';
+              const newProfile = {
+                id: session.user.id,
+                username: username,
+                email: session.user.email,
+                total_score: 0,
+                total_beats_created: 0,
+                level: 1,
+                rank_title: 'Beginner',
+                experience_points: 0
+              };
+              setUserProfile(newProfile);
+            }
+          } catch (profileError) {
+            console.error('Profile fetch error on mount:', profileError);
+            // Create a fallback profile
+            const username = session.user.user_metadata?.username || session.user.email?.split('@')[0] || 'Player';
+            setUserProfile({
+              id: session.user.id,
+              username: username,
+              email: session.user.email,
+              total_score: 0,
+              total_beats_created: 0,
+              level: 1,
+              rank_title: 'Beginner',
+              experience_points: 0
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+      } finally {
+        setIsAuthLoading(false);
+      }
+    };
+    checkAuth();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        // Only update if not already set (handleLogin already sets these)
+        setUser(prev => prev?.id === session.user.id ? prev : session.user);
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+        setUserProfile(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // Handle login
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setAuthError('');
+    setAuthLoading(true);
+    
+    try {
+      console.log('Attempting sign in with:', authEmail);
+      const data = await authService.signIn(authEmail, authPassword);
+      console.log('Sign in response:', data);
+      
+      const signedInUser = data?.user;
+      
+      // Check if email confirmation is required
+      if (data?.user && !data?.session) {
+        setAuthError('Please verify your email before logging in. Check your inbox for the confirmation link.');
+        setAuthLoading(false);
+        return;
+      }
+      
+      if (!signedInUser) {
+        setAuthError('Login failed. Please check your credentials.');
+        setAuthLoading(false);
+        return;
+      }
+      
+      // Immediately close modal and set user for instant feedback
+      setShowAuthModal(false);
+      setUser(signedInUser);
+      setAuthEmail('');
+      setAuthPassword('');
+      setAuthLoading(false);
+      
+      // Fetch profile in background (don't block UI)
+      authService.getUserProfile(signedInUser.id).then(profile => {
+        console.log('Profile fetched:', profile);
+        if (profile) {
+          setUserProfile(profile);
+          setUserStats(prev => ({
+            ...prev,
+            totalBeatsCreated: profile.total_beats_created || 0,
+            tutorialsCompleted: profile.total_tutorials_completed || 0,
+            totalScore: profile.total_score || 0,
+            currentStreak: profile.current_streak || 0
+          }));
+        } else {
+          // Profile doesn't exist, create one from user metadata
+          console.log('No profile found, creating from user metadata');
+          const username = signedInUser.user_metadata?.username || signedInUser.email?.split('@')[0] || 'Player';
+          const newProfile = {
+            id: signedInUser.id,
+            username: username,
+            email: signedInUser.email,
+            total_score: 0,
+            total_beats_created: 0,
+            level: 1,
+            rank_title: 'Beginner',
+            experience_points: 0
+          };
+          setUserProfile(newProfile);
+          // Try to create profile in database
+          authService.createUserProfile(signedInUser.id, username, signedInUser.email)
+            .catch(e => console.log('Profile creation error (may already exist):', e));
+        }
+      }).catch(err => {
+        console.error('Profile fetch error:', err);
+        // Create a default profile from user data
+        const username = signedInUser.user_metadata?.username || signedInUser.email?.split('@')[0] || 'Player';
+        setUserProfile({
+          id: signedInUser.id,
+          username: username,
+          email: signedInUser.email,
+          total_score: 0,
+          total_beats_created: 0,
+          level: 1,
+          rank_title: 'Beginner',
+          experience_points: 0
+        });
+      });
+      
+    } catch (error) {
+      console.error('Sign in error:', error);
+      setAuthError(error.message || 'Login failed. Please try again.');
+      setAuthLoading(false);
+    }
+  };
+
+  // Handle register
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setAuthError('');
+    setAuthLoading(true);
+    try {
+      if (authUsername.length < 3) {
+        throw new Error('Username must be at least 3 characters');
+      }
+      await authService.signUp(authEmail, authPassword, authUsername);
+      setShowAuthModal(false);
+      setAuthEmail('');
+      setAuthPassword('');
+      setAuthUsername('');
+      // Show success message
+      alert('Registration successful! Please check your email to verify your account.');
+    } catch (error) {
+      setAuthError(error.message);
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  // Handle logout with confirmation
+  const handleLogout = async (closeModal = false) => {
+    if (!window.confirm('Are you sure you want to logout?')) {
+      return;
+    }
+    try {
+      // Stop any playing audio
+      setIsPlaying(false);
+      AudioEngine.stopAll();
+      
+      await authService.signOut();
+      setUser(null);
+      setUserProfile(null);
+      if (closeModal) {
+        setShowProfile(false);
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
+  // Load leaderboard
+  const loadLeaderboard = async () => {
+    setLeaderboardLoading(true);
+    try {
+      const data = await scoreService.getGlobalLeaderboard(100);
+      setLeaderboardData(data);
+      
+      // Find user's rank
+      if (user && data) {
+        const rank = data.findIndex(p => p.id === user.id) + 1;
+        if (rank > 0) {
+          setUserRank(rank);
+          setUserStats(prev => ({ ...prev, leaderboardRank: rank }));
+        }
+      }
+    } catch (error) {
+      console.error('Leaderboard error:', error);
+    } finally {
+      setLeaderboardLoading(false);
+    }
+  };
+
+  // Load user achievements
+  const loadUserAchievements = async () => {
+    if (!user) return;
+    setAchievementsLoading(true);
+    try {
+      const data = await achievementService.getUserAchievements(user.id);
+      setUserAchievements(data);
+    } catch (error) {
+      console.error('Achievements error:', error);
+    } finally {
+      setAchievementsLoading(false);
+    }
+  };
+
+  // Play achievement sound
+  const playAchievementSound = () => {
+    if (!AudioEngine.ctx) {
+      AudioEngine.init();
+    }
+    if (!AudioEngine.ctx) return;
+    try {
+      const ctx = AudioEngine.ctx;
+      const now = ctx.currentTime;
+      
+      // Create a cheerful achievement sound
+      const osc1 = ctx.createOscillator();
+      const osc2 = ctx.createOscillator();
+      const gain = ctx.createGain();
+      
+      osc1.type = 'sine';
+      osc2.type = 'sine';
+      osc1.frequency.setValueAtTime(523.25, now); // C5
+      osc1.frequency.setValueAtTime(659.25, now + 0.15); // E5
+      osc1.frequency.setValueAtTime(783.99, now + 0.3); // G5
+      osc2.frequency.setValueAtTime(783.99, now); 
+      osc2.frequency.setValueAtTime(987.77, now + 0.15); // B5
+      osc2.frequency.setValueAtTime(1046.5, now + 0.3); // C6
+      
+      gain.gain.setValueAtTime(0.3, now);
+      gain.gain.linearRampToValueAtTime(0.01, now + 0.6);
+      
+      osc1.connect(gain);
+      osc2.connect(gain);
+      gain.connect(ctx.destination);
+      
+      osc1.start(now);
+      osc2.start(now);
+      osc1.stop(now + 0.6);
+      osc2.stop(now + 0.6);
+    } catch (e) {
+      console.log('Achievement sound error:', e);
+    }
+  };
+
+  // Check for new achievements
+  const checkForAchievements = async () => {
+    if (!user) return;
+    try {
+      console.log('Checking achievements with stats:', userStats);
+      const unlocked = await achievementService.checkAchievements(user.id, userStats);
+      console.log('Unlocked achievements:', unlocked);
+      if (unlocked && unlocked.length > 0) {
+        // Show each unlocked achievement with delay
+        for (let i = 0; i < unlocked.length; i++) {
+          setTimeout(() => {
+            playAchievementSound();
+            setNewAchievementUnlocked(unlocked[i]);
+            setTimeout(() => setNewAchievementUnlocked(null), 4000);
+          }, i * 4500);
+        }
+        // Refresh profile after all achievements shown
+        setTimeout(async () => {
+          const profile = await authService.getUserProfile(user.id);
+          setUserProfile(profile);
+        }, unlocked.length * 4500);
+      }
+    } catch (error) {
+      console.error('Achievement check error:', error);
+    }
+  };
+
+  // Track first play for achievement
+  const trackFirstPlay = () => {
+    if (!userStats.hasPlayed) {
+      setUserStats(prev => ({
+        ...prev,
+        hasPlayed: true,
+        instrumentsUsed: activeInstrumentIds.length,
+        tempo: tempo
+      }));
+      // Check achievements after a small delay
+      setTimeout(() => checkForAchievements(), 1000);
+    }
+  };
+
+  // Save score when tutorial completed
+  const saveTutorialScore = async (scenarioId, scenarioName, accuracy) => {
+    if (!user) return;
+    try {
+      const score = Math.round(accuracy * 10);
+      await scoreService.saveScore(
+        user.id,
+        scenarioId,
+        scenarioName,
+        score,
+        accuracy,
+        tempo,
+        activeInstrumentIds
+      );
+      await scoreService.incrementTutorialsCompleted(user.id);
+      
+      // Update local stats
+      setUserStats(prev => ({
+        ...prev,
+        tutorialsCompleted: prev.tutorialsCompleted + 1,
+        totalScore: prev.totalScore + score,
+        accuracy: accuracy
+      }));
+      
+      // Check for achievements
+      await checkForAchievements();
+      
+      // Refresh profile
+      const profile = await authService.getUserProfile(user.id);
+      setUserProfile(profile);
+    } catch (error) {
+      console.error('Save score error:', error);
+    }
+  };
+
+  // Increment beats created
+  const incrementBeatsCreated = async () => {
+    if (!user) return;
+    try {
+      await scoreService.incrementBeatsCreated(user.id);
+      setUserStats(prev => ({
+        ...prev,
+        totalBeatsCreated: prev.totalBeatsCreated + 1
+      }));
+      await checkForAchievements();
+    } catch (error) {
+      console.error('Increment beats error:', error);
+    }
+  };
+
   // Language Translations
   const LANGUAGES = {
-    en: { code: 'en-US', name: 'English', flag: '🇺🇸' },
-    es: { code: 'es-ES', name: 'Español', flag: '🇪🇸' },
-    fr: { code: 'fr-FR', name: 'Français', flag: '🇫🇷' },
-    de: { code: 'de-DE', name: 'Deutsch', flag: '🇩🇪' },
-    it: { code: 'it-IT', name: 'Italiano', flag: '🇮🇹' },
-    pt: { code: 'pt-BR', name: 'Português', flag: '🇧🇷' },
-    ja: { code: 'ja-JP', name: '日本語', flag: '🇯🇵' },
-    ko: { code: 'ko-KR', name: '한국어', flag: '🇰🇷' },
-    zh: { code: 'zh-CN', name: '中文', flag: '🇨🇳' },
-    tl: { code: 'fil-PH', name: 'Tagalog', flag: '🇵🇭' },
-    hi: { code: 'hi-IN', name: 'हिन्दी', flag: '🇮🇳' },
-    ar: { code: 'ar-SA', name: 'العربية', flag: '🇸🇦' },
-  };
+    en: { code: 'en-US', name: 'English', flag: 'US' },
+    es: { code: 'es-ES', name: 'Español', flag: 'ES' },
+    fr: { code: 'fr-FR', name: 'Français', flag: 'FR' },
+    de: { code: 'de-DE', name: 'Deutsch', flag: 'DE' },
+    it: { code: 'it-IT', name: 'Italiano', flag: 'IT' },
+    pt: { code: 'pt-BR', name: 'Português', flag: 'BR' },
+    ja: { code: 'ja-JP', name: '日本語', flag: 'JP' },
+    ko: { code: 'ko-KR', name: '한국어', flag: 'KR' },
+    zh: { code: 'zh-CN', name: '中文', flag: 'CN' },
+    tl: { code: 'fil-PH', name: 'Tagalog', flag: 'PH' },
+    hi: { code: 'hi-IN', name: 'Hindi', flag: 'IN' },
+    ar: { code: 'ar-SA', name: 'Arabic', flag: 'SA' },
+  }
 
   const TRANSLATIONS = {
     en: {
@@ -2026,7 +2764,7 @@ export default function RhythmRealm() {
     es: {
       appTitle: 'REINO DEL RITMO',
       createBeat: 'Crea Tu Ritmo',
-      letsPlay: '¡A Jugar!',
+      letsPlay: '¡A jugar!',
       modes: 'Modos',
       settings: 'Ajustes',
       freePlay: 'Juego Libre',
@@ -2057,7 +2795,7 @@ export default function RhythmRealm() {
       back: 'Atrás',
       home: 'Inicio',
       masterVolume: 'Volumen Principal',
-      backgroundMusic: 'Música de Fondo',
+      backgroundMusic: 'MÃºsica de Fondo',
       visualThemes: 'Temas Visuales',
       about: 'Acerca de',
       enableAll: 'Activar Todas las Funciones de Accesibilidad',
@@ -2065,43 +2803,43 @@ export default function RhythmRealm() {
     },
     fr: {
       appTitle: 'ROYAUME DU RYTHME',
-      createBeat: 'Créez Votre Rythme',
+      createBeat: 'CrÃ©ez Votre Rythme',
       letsPlay: 'Jouons!',
       modes: 'Modes',
-      settings: 'Paramètres',
+      settings: 'ParamÃ¨tres',
       freePlay: 'Jeu Libre',
-      freePlayDesc: 'Créez vos propres rythmes sans limites!',
+      freePlayDesc: 'CrÃ©ez vos propres rythmes sans limites!',
       tutorial: 'Tutoriel',
-      tutorialDesc: 'Apprenez différents styles et ambiances!',
-      beatLibrary: 'Bibliothèque de Rythmes',
-      beatLibraryDesc: 'Explorez des rythmes de différents genres!',
+      tutorialDesc: 'Apprenez diffÃ©rents styles et ambiances!',
+      beatLibrary: 'BibliothÃ¨que de Rythmes',
+      beatLibraryDesc: 'Explorez des rythmes de diffÃ©rents genres!',
       djMode: 'Mode DJ',
-      djModeDesc: 'Mode performance live! Mixez en temps réel.',
-      accessibility: 'Accessibilité',
-      textToSpeech: 'Synthèse Vocale',
+      djModeDesc: 'Mode performance live! Mixez en temps rÃ©el.',
+      accessibility: 'AccessibilitÃ©',
+      textToSpeech: 'SynthÃ¨se Vocale',
       textToSpeechDesc: 'Survolez pour entendre les descriptions',
-      highContrast: 'Contraste Élevé',
+      highContrast: 'Contraste Ã‰levÃ©',
       highContrastDesc: 'Augmenter le contraste des couleurs',
       largeText: 'Grand Texte',
       largeTextDesc: 'Augmenter la taille du texte et des boutons',
       keyboardNav: 'Navigation Clavier',
-      keyboardNavDesc: 'Navigation améliorée avec Tab',
-      voiceControl: 'Contrôle Vocal',
-      voiceControlDesc: 'Mains libres! Contrôlez l\'app avec votre voix',
+      keyboardNavDesc: 'Navigation amÃ©liorÃ©e avec Tab',
+      voiceControl: 'ContrÃ´le Vocal',
+      voiceControlDesc: 'Mains libres! ContrÃ´lez l\'app avec votre voix',
       language: 'Langue',
       languageDesc: 'Changer la langue de l\'app',
       play: 'Jouer',
-      stop: 'Arrêter',
+      stop: 'ArrÃªter',
       tempo: 'Tempo',
       volume: 'Volume',
       back: 'Retour',
       home: 'Accueil',
       masterVolume: 'Volume Principal',
       backgroundMusic: 'Musique de Fond',
-      visualThemes: 'Thèmes Visuels',
-      about: 'À Propos',
-      enableAll: 'Activer Toutes les Fonctions d\'Accessibilité',
-      allEnabled: 'Toutes les Fonctions Activées',
+      visualThemes: 'ThÃ¨mes Visuels',
+      about: 'Ã€ Propos',
+      enableAll: 'Activer Toutes les Fonctions d\'AccessibilitÃ©',
+      allEnabled: 'Toutes les Fonctions ActivÃ©es',
     },
     tl: {
       appTitle: 'KAHARIAN NG RITMO',
@@ -2144,124 +2882,124 @@ export default function RhythmRealm() {
       allEnabled: 'Lahat ng Features ay Enabled',
     },
     ja: {
-      appTitle: 'リズムレルム',
-      createBeat: 'ビートを作ろう',
-      letsPlay: 'プレイ！',
-      modes: 'モード',
-      settings: '設定',
-      freePlay: 'フリープレイ',
-      freePlayDesc: '制限なしで自分だけのビートを作ろう！',
-      tutorial: 'チュートリアル',
-      tutorialDesc: 'いろんなスタイルとムードを学ぼう！',
-      beatLibrary: 'ビートライブラリ',
-      beatLibraryDesc: 'いろんなジャンルのビートを探検しよう！',
-      djMode: 'DJモード',
-      djModeDesc: 'ライブパフォーマンスモード！リアルタイムでミックス。',
-      accessibility: 'アクセシビリティ',
-      textToSpeech: '読み上げ',
-      textToSpeechDesc: 'ホバーで説明を聞く',
-      highContrast: 'ハイコントラスト',
-      highContrastDesc: '色のコントラストを上げる',
-      largeText: '大きい文字',
-      largeTextDesc: 'テキストとボタンを大きくする',
-      keyboardNav: 'キーボードナビ',
-      keyboardNavDesc: 'Tabキーのナビゲーション強化',
-      voiceControl: '音声コントロール',
-      voiceControlDesc: 'ハンズフリー！声でアプリを操作',
-      language: '言語',
-      languageDesc: 'アプリの言語を変更',
-      play: '再生',
-      stop: '停止',
-      tempo: 'テンポ',
-      volume: '音量',
-      back: '戻る',
-      home: 'ホーム',
-      masterVolume: 'マスター音量',
+      appTitle: 'ãƒªã‚ºãƒ ãƒ¬ãƒ«ãƒ ',
+      createBeat: 'ãƒ“ãƒ¼ãƒˆã‚’ä½œã‚ã†',
+      letsPlay: 'ãƒ—ãƒ¬ã‚¤ï¼',
+      modes: 'ãƒ¢ãƒ¼ãƒ‰',
+      settings: 'è¨­å®š',
+      freePlay: 'ãƒ•ãƒªãƒ¼ãƒ—ãƒ¬ã‚¤',
+      freePlayDesc: 'åˆ¶é™ãªã—ã§è‡ªåˆ†ã ã‘ã®ãƒ“ãƒ¼ãƒˆã‚’ä½œã‚ã†ï¼',
+      tutorial: 'ãƒãƒ¥ãƒ¼ãƒˆãƒªã‚¢ãƒ«',
+      tutorialDesc: 'ã„ã‚ã‚“ãªã‚¹ã‚¿ã‚¤ãƒ«ã¨ãƒ ãƒ¼ãƒ‰ã‚’å­¦ã¼ã†ï¼',
+      beatLibrary: 'ãƒ“ãƒ¼ãƒˆãƒ©ã‚¤ãƒ–ãƒ©ãƒª',
+      beatLibraryDesc: 'ã„ã‚ã‚“ãªã‚¸ãƒ£ãƒ³ãƒ«ã®ãƒ“ãƒ¼ãƒˆã‚’æŽ¢æ¤œã—ã‚ˆã†ï¼',
+      djMode: 'DJãƒ¢ãƒ¼ãƒ‰',
+      djModeDesc: 'ãƒ©ã‚¤ãƒ–ãƒ‘ãƒ•ã‚©ãƒ¼ãƒžãƒ³ã‚¹ãƒ¢ãƒ¼ãƒ‰ï¼ãƒªã‚¢ãƒ«ã‚¿ã‚¤ãƒ ã§ãƒŸãƒƒã‚¯ã‚¹ã€‚',
+      accessibility: 'ã‚¢ã‚¯ã‚»ã‚·ãƒ“ãƒªãƒ†ã‚£',
+      textToSpeech: 'èª­ã¿ä¸Šã’',
+      textToSpeechDesc: 'ãƒ›ãƒãƒ¼ã§èª¬æ˜Žã‚’èžã',
+      highContrast: 'ãƒã‚¤ã‚³ãƒ³ãƒˆãƒ©ã‚¹ãƒˆ',
+      highContrastDesc: 'è‰²ã®ã‚³ãƒ³ãƒˆãƒ©ã‚¹ãƒˆã‚’ä¸Šã’ã‚‹',
+      largeText: 'å¤§ãã„æ–‡å­—',
+      largeTextDesc: 'ãƒ†ã‚­ã‚¹ãƒˆã¨ãƒœã‚¿ãƒ³ã‚’å¤§ããã™ã‚‹',
+      keyboardNav: 'ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ãƒŠãƒ“',
+      keyboardNavDesc: 'Tabã‚­ãƒ¼ã®ãƒŠãƒ“ã‚²ãƒ¼ã‚·ãƒ§ãƒ³å¼·åŒ–',
+      voiceControl: 'éŸ³å£°ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«',
+      voiceControlDesc: 'ãƒãƒ³ã‚ºãƒ•ãƒªãƒ¼ï¼å£°ã§ã‚¢ãƒ—ãƒªã‚’æ“ä½œ',
+      language: 'è¨€èªž',
+      languageDesc: 'ã‚¢ãƒ—ãƒªã®è¨€èªžã‚’å¤‰æ›´',
+      play: 'å†ç”Ÿ',
+      stop: 'åœæ­¢',
+      tempo: 'ãƒ†ãƒ³ãƒ',
+      volume: 'éŸ³é‡',
+      back: 'æˆ»ã‚‹',
+      home: 'ãƒ›ãƒ¼ãƒ ',
+      masterVolume: 'ãƒžã‚¹ã‚¿ãƒ¼éŸ³é‡',
       backgroundMusic: 'BGM',
-      visualThemes: 'ビジュアルテーマ',
-      about: 'アプリについて',
-      enableAll: 'すべてのアクセシビリティ機能を有効にする',
-      allEnabled: 'すべての機能が有効',
+      visualThemes: 'ãƒ“ã‚¸ãƒ¥ã‚¢ãƒ«ãƒ†ãƒ¼ãƒž',
+      about: 'ã‚¢ãƒ—ãƒªã«ã¤ã„ã¦',
+      enableAll: 'ã™ã¹ã¦ã®ã‚¢ã‚¯ã‚»ã‚·ãƒ“ãƒªãƒ†ã‚£æ©Ÿèƒ½ã‚’æœ‰åŠ¹ã«ã™ã‚‹',
+      allEnabled: 'ã™ã¹ã¦ã®æ©Ÿèƒ½ãŒæœ‰åŠ¹',
     },
     ko: {
-      appTitle: '리듬 렐름',
-      createBeat: '비트를 만들어요',
-      letsPlay: '플레이!',
-      modes: '모드',
-      settings: '설정',
-      freePlay: '자유 플레이',
-      freePlayDesc: '제한 없이 나만의 비트를 만들어요!',
-      tutorial: '튜토리얼',
-      tutorialDesc: '다양한 스타일과 무드를 배워요!',
-      beatLibrary: '비트 라이브러리',
-      beatLibraryDesc: '다양한 장르의 비트를 탐험해요!',
-      djMode: 'DJ 모드',
-      djModeDesc: '라이브 퍼포먼스! 실시간으로 믹스해요.',
-      accessibility: '접근성',
-      textToSpeech: '음성 안내',
-      textToSpeechDesc: '호버하면 설명을 들을 수 있어요',
-      highContrast: '고대비',
-      highContrastDesc: '색상 대비를 높여요',
-      largeText: '큰 글자',
-      largeTextDesc: '텍스트와 버튼 크기를 키워요',
-      keyboardNav: '키보드 내비게이션',
-      keyboardNavDesc: 'Tab 키 내비게이션 강화',
-      voiceControl: '음성 제어',
-      voiceControlDesc: '핸즈프리! 목소리로 앱을 제어해요',
-      language: '언어',
-      languageDesc: '앱 언어 변경',
-      play: '재생',
-      stop: '정지',
-      tempo: '템포',
-      volume: '볼륨',
-      back: '뒤로',
-      home: '홈',
-      masterVolume: '마스터 볼륨',
-      backgroundMusic: '배경 음악',
-      visualThemes: '비주얼 테마',
-      about: '앱 정보',
-      enableAll: '모든 접근성 기능 활성화',
-      allEnabled: '모든 기능 활성화됨',
+      appTitle: 'ë¦¬ë“¬ ë ë¦„',
+      createBeat: 'ë¹„íŠ¸ë¥¼ ë§Œë“¤ì–´ìš”',
+      letsPlay: 'í”Œë ˆì´!',
+      modes: 'ëª¨ë“œ',
+      settings: 'ì„¤ì •',
+      freePlay: 'ìžìœ  í”Œë ˆì´',
+      freePlayDesc: 'ì œí•œ ì—†ì´ ë‚˜ë§Œì˜ ë¹„íŠ¸ë¥¼ ë§Œë“¤ì–´ìš”!',
+      tutorial: 'íŠœí† ë¦¬ì–¼',
+      tutorialDesc: 'ë‹¤ì–‘í•œ ìŠ¤íƒ€ì¼ê³¼ ë¬´ë“œë¥¼ ë°°ì›Œìš”!',
+      beatLibrary: 'ë¹„íŠ¸ ë¼ì´ë¸ŒëŸ¬ë¦¬',
+      beatLibraryDesc: 'ë‹¤ì–‘í•œ ìž¥ë¥´ì˜ ë¹„íŠ¸ë¥¼ íƒí—˜í•´ìš”!',
+      djMode: 'DJ ëª¨ë“œ',
+      djModeDesc: 'ë¼ì´ë¸Œ í¼í¬ë¨¼ìŠ¤! ì‹¤ì‹œê°„ìœ¼ë¡œ ë¯¹ìŠ¤í•´ìš”.',
+      accessibility: 'ì ‘ê·¼ì„±',
+      textToSpeech: 'ìŒì„± ì•ˆë‚´',
+      textToSpeechDesc: 'í˜¸ë²„í•˜ë©´ ì„¤ëª…ì„ ë“¤ì„ ìˆ˜ ìžˆì–´ìš”',
+      highContrast: 'ê³ ëŒ€ë¹„',
+      highContrastDesc: 'ìƒ‰ìƒ ëŒ€ë¹„ë¥¼ ë†’ì—¬ìš”',
+      largeText: 'í° ê¸€ìž',
+      largeTextDesc: 'í…ìŠ¤íŠ¸ì™€ ë²„íŠ¼ í¬ê¸°ë¥¼ í‚¤ì›Œìš”',
+      keyboardNav: 'í‚¤ë³´ë“œ ë‚´ë¹„ê²Œì´ì…˜',
+      keyboardNavDesc: 'Tab í‚¤ ë‚´ë¹„ê²Œì´ì…˜ ê°•í™”',
+      voiceControl: 'ìŒì„± ì œì–´',
+      voiceControlDesc: 'í•¸ì¦ˆí”„ë¦¬! ëª©ì†Œë¦¬ë¡œ ì•±ì„ ì œì–´í•´ìš”',
+      language: 'ì–¸ì–´',
+      languageDesc: 'ì•± ì–¸ì–´ ë³€ê²½',
+      play: 'ìž¬ìƒ',
+      stop: 'ì •ì§€',
+      tempo: 'í…œí¬',
+      volume: 'ë³¼ë¥¨',
+      back: 'ë’¤ë¡œ',
+      home: 'í™ˆ',
+      masterVolume: 'ë§ˆìŠ¤í„° ë³¼ë¥¨',
+      backgroundMusic: 'ë°°ê²½ ìŒì•…',
+      visualThemes: 'ë¹„ì£¼ì–¼ í…Œë§ˆ',
+      about: 'ì•± ì •ë³´',
+      enableAll: 'ëª¨ë“  ì ‘ê·¼ì„± ê¸°ëŠ¥ í™œì„±í™”',
+      allEnabled: 'ëª¨ë“  ê¸°ëŠ¥ í™œì„±í™”ë¨',
     },
     zh: {
-      appTitle: '节奏王国',
-      createBeat: '创建你的节拍',
-      letsPlay: '开始玩！',
-      modes: '模式',
-      settings: '设置',
-      freePlay: '自由模式',
-      freePlayDesc: '无限制地创建你自己的节拍！',
-      tutorial: '教程',
-      tutorialDesc: '学习不同的风格和氛围！',
-      beatLibrary: '节拍库',
-      beatLibraryDesc: '探索不同类型的节拍！',
-      djMode: 'DJ模式',
-      djModeDesc: '现场表演模式！实时混音。',
-      accessibility: '无障碍',
-      textToSpeech: '语音播报',
-      textToSpeechDesc: '悬停听取描述',
-      highContrast: '高对比度',
-      highContrastDesc: '增加颜色对比度',
-      largeText: '大字体',
-      largeTextDesc: '增大文字和按钮大小',
-      keyboardNav: '键盘导航',
-      keyboardNavDesc: '增强Tab键导航',
-      voiceControl: '语音控制',
-      voiceControlDesc: '解放双手！用声音控制应用',
-      language: '语言',
-      languageDesc: '更改应用语言',
-      play: '播放',
-      stop: '停止',
-      tempo: '节拍',
-      volume: '音量',
-      back: '返回',
-      home: '主页',
-      masterVolume: '主音量',
-      backgroundMusic: '背景音乐',
-      visualThemes: '视觉主题',
-      about: '关于',
-      enableAll: '启用所有无障碍功能',
-      allEnabled: '所有功能已启用',
+      appTitle: 'èŠ‚å¥çŽ‹å›½',
+      createBeat: 'åˆ›å»ºä½ çš„èŠ‚æ‹',
+      letsPlay: 'å¼€å§‹çŽ©ï¼',
+      modes: 'æ¨¡å¼',
+      settings: 'è®¾ç½®',
+      freePlay: 'è‡ªç”±æ¨¡å¼',
+      freePlayDesc: 'æ— é™åˆ¶åœ°åˆ›å»ºä½ è‡ªå·±çš„èŠ‚æ‹ï¼',
+      tutorial: 'æ•™ç¨‹',
+      tutorialDesc: 'å­¦ä¹ ä¸åŒçš„é£Žæ ¼å’Œæ°›å›´ï¼',
+      beatLibrary: 'èŠ‚æ‹åº“',
+      beatLibraryDesc: 'æŽ¢ç´¢ä¸åŒç±»åž‹çš„èŠ‚æ‹ï¼',
+      djMode: 'DJæ¨¡å¼',
+      djModeDesc: 'çŽ°åœºè¡¨æ¼”æ¨¡å¼ï¼å®žæ—¶æ··éŸ³ã€‚',
+      accessibility: 'æ— éšœç¢',
+      textToSpeech: 'è¯­éŸ³æ’­æŠ¥',
+      textToSpeechDesc: 'æ‚¬åœå¬å–æè¿°',
+      highContrast: 'é«˜å¯¹æ¯”åº¦',
+      highContrastDesc: 'å¢žåŠ é¢œè‰²å¯¹æ¯”åº¦',
+      largeText: 'å¤§å­—ä½“',
+      largeTextDesc: 'å¢žå¤§æ–‡å­—å’ŒæŒ‰é’®å¤§å°',
+      keyboardNav: 'é”®ç›˜å¯¼èˆª',
+      keyboardNavDesc: 'å¢žå¼ºTabé”®å¯¼èˆª',
+      voiceControl: 'è¯­éŸ³æŽ§åˆ¶',
+      voiceControlDesc: 'è§£æ”¾åŒæ‰‹ï¼ç”¨å£°éŸ³æŽ§åˆ¶åº”ç”¨',
+      language: 'è¯­è¨€',
+      languageDesc: 'æ›´æ”¹åº”ç”¨è¯­è¨€',
+      play: 'æ’­æ”¾',
+      stop: 'åœæ­¢',
+      tempo: 'èŠ‚æ‹',
+      volume: 'éŸ³é‡',
+      back: 'è¿”å›ž',
+      home: 'ä¸»é¡µ',
+      masterVolume: 'ä¸»éŸ³é‡',
+      backgroundMusic: 'èƒŒæ™¯éŸ³ä¹',
+      visualThemes: 'è§†è§‰ä¸»é¢˜',
+      about: 'å…³äºŽ',
+      enableAll: 'å¯ç”¨æ‰€æœ‰æ— éšœç¢åŠŸèƒ½',
+      allEnabled: 'æ‰€æœ‰åŠŸèƒ½å·²å¯ç”¨',
     },
     de: {
       appTitle: 'RHYTHMUS REICH',
@@ -2279,27 +3017,27 @@ export default function RhythmRealm() {
       djModeDesc: 'Live-Performance! Mixe in Echtzeit.',
       accessibility: 'Barrierefreiheit',
       textToSpeech: 'Sprachausgabe',
-      textToSpeechDesc: 'Hover für Beschreibungen',
+      textToSpeechDesc: 'Hover fÃ¼r Beschreibungen',
       highContrast: 'Hoher Kontrast',
-      highContrastDesc: 'Farbkontrast erhöhen',
-      largeText: 'Große Schrift',
-      largeTextDesc: 'Text und Buttons vergrößern',
+      highContrastDesc: 'Farbkontrast erhÃ¶hen',
+      largeText: 'GroÃŸe Schrift',
+      largeTextDesc: 'Text und Buttons vergrÃ¶ÃŸern',
       keyboardNav: 'Tastaturnavigation',
       keyboardNavDesc: 'Verbesserte Tab-Navigation',
       voiceControl: 'Sprachsteuerung',
-      voiceControlDesc: 'Freihändig! Steuere die App mit deiner Stimme',
+      voiceControlDesc: 'FreihÃ¤ndig! Steuere die App mit deiner Stimme',
       language: 'Sprache',
-      languageDesc: 'App-Sprache ändern',
+      languageDesc: 'App-Sprache Ã¤ndern',
       play: 'Abspielen',
       stop: 'Stopp',
       tempo: 'Tempo',
-      volume: 'Lautstärke',
-      back: 'Zurück',
+      volume: 'LautstÃ¤rke',
+      back: 'ZurÃ¼ck',
       home: 'Startseite',
-      masterVolume: 'Hauptlautstärke',
+      masterVolume: 'HauptlautstÃ¤rke',
       backgroundMusic: 'Hintergrundmusik',
       visualThemes: 'Visuelle Themen',
-      about: 'Über',
+      about: 'Ãœber',
       enableAll: 'Alle Barrierefreiheit-Funktionen aktivieren',
       allEnabled: 'Alle Funktionen aktiviert',
     },
@@ -2307,7 +3045,7 @@ export default function RhythmRealm() {
       appTitle: 'REGNO DEL RITMO',
       createBeat: 'Crea il Tuo Ritmo',
       letsPlay: 'Giochiamo!',
-      modes: 'Modalità',
+      modes: 'ModalitÃ ',
       settings: 'Impostazioni',
       freePlay: 'Gioco Libero',
       freePlayDesc: 'Crea i tuoi ritmi senza limiti!',
@@ -2315,9 +3053,9 @@ export default function RhythmRealm() {
       tutorialDesc: 'Impara stili e mood diversi!',
       beatLibrary: 'Libreria Ritmi',
       beatLibraryDesc: 'Esplora ritmi di generi diversi!',
-      djMode: 'Modalità DJ',
+      djMode: 'ModalitÃ  DJ',
       djModeDesc: 'Performance dal vivo! Mixa in tempo reale.',
-      accessibility: 'Accessibilità',
+      accessibility: 'AccessibilitÃ ',
       textToSpeech: 'Sintesi Vocale',
       textToSpeechDesc: 'Passa sopra per ascoltare le descrizioni',
       highContrast: 'Alto Contrasto',
@@ -2340,7 +3078,7 @@ export default function RhythmRealm() {
       backgroundMusic: 'Musica di Sottofondo',
       visualThemes: 'Temi Visivi',
       about: 'Info',
-      enableAll: 'Abilita Tutte le Funzioni di Accessibilità',
+      enableAll: 'Abilita Tutte le Funzioni di AccessibilitÃ ',
       allEnabled: 'Tutte le Funzioni Abilitate',
     },
     pt: {
@@ -2348,26 +3086,26 @@ export default function RhythmRealm() {
       createBeat: 'Crie Sua Batida',
       letsPlay: 'Vamos Jogar!',
       modes: 'Modos',
-      settings: 'Configurações',
+      settings: 'ConfiguraÃ§Ãµes',
       freePlay: 'Jogo Livre',
-      freePlayDesc: 'Crie suas próprias batidas sem limites!',
+      freePlayDesc: 'Crie suas prÃ³prias batidas sem limites!',
       tutorial: 'Tutorial',
       tutorialDesc: 'Aprenda diferentes estilos e climas!',
       beatLibrary: 'Biblioteca de Batidas',
-      beatLibraryDesc: 'Explore batidas de diferentes gêneros!',
+      beatLibraryDesc: 'Explore batidas de diferentes gÃªneros!',
       djMode: 'Modo DJ',
       djModeDesc: 'Modo performance ao vivo! Mixe em tempo real.',
       accessibility: 'Acessibilidade',
       textToSpeech: 'Texto para Fala',
-      textToSpeechDesc: 'Passe o mouse para ouvir descrições',
+      textToSpeechDesc: 'Passe o mouse para ouvir descriÃ§Ãµes',
       highContrast: 'Alto Contraste',
       highContrastDesc: 'Aumentar contraste das cores',
       largeText: 'Texto Grande',
-      largeTextDesc: 'Aumentar tamanho do texto e botões',
-      keyboardNav: 'Navegação por Teclado',
-      keyboardNavDesc: 'Navegação Tab melhorada',
+      largeTextDesc: 'Aumentar tamanho do texto e botÃµes',
+      keyboardNav: 'NavegaÃ§Ã£o por Teclado',
+      keyboardNavDesc: 'NavegaÃ§Ã£o Tab melhorada',
       voiceControl: 'Controle por Voz',
-      voiceControlDesc: 'Mãos livres! Controle o app com a voz',
+      voiceControlDesc: 'MÃ£os livres! Controle o app com a voz',
       language: 'Idioma',
       languageDesc: 'Mudar idioma do app',
       play: 'Tocar',
@@ -2375,93 +3113,93 @@ export default function RhythmRealm() {
       tempo: 'Andamento',
       volume: 'Volume',
       back: 'Voltar',
-      home: 'Início',
+      home: 'InÃ­cio',
       masterVolume: 'Volume Principal',
-      backgroundMusic: 'Música de Fundo',
+      backgroundMusic: 'MÃºsica de Fundo',
       visualThemes: 'Temas Visuais',
       about: 'Sobre',
-      enableAll: 'Ativar Todas as Funções de Acessibilidade',
-      allEnabled: 'Todas as Funções Ativadas',
+      enableAll: 'Ativar Todas as FunÃ§Ãµes de Acessibilidade',
+      allEnabled: 'Todas as FunÃ§Ãµes Ativadas',
     },
     hi: {
-      appTitle: 'रिदम रीयल्म',
-      createBeat: 'अपना बीट बनाएं',
-      letsPlay: 'चलो खेलें!',
-      modes: 'मोड्स',
-      settings: 'सेटिंग्स',
-      freePlay: 'फ्री प्ले',
-      freePlayDesc: 'बिना किसी सीमा के अपना बीट बनाएं!',
-      tutorial: 'ट्यूटोरियल',
-      tutorialDesc: 'विभिन्न शैलियों और मूड सीखें!',
-      beatLibrary: 'बीट लाइब्रेरी',
-      beatLibraryDesc: 'विभिन्न शैलियों के बीट खोजें!',
-      djMode: 'DJ मोड',
-      djModeDesc: 'लाइव परफॉर्मेंस! रियल-टाइम में मिक्स करें।',
-      accessibility: 'एक्सेसिबिलिटी',
-      textToSpeech: 'टेक्स्ट-टू-स्पीच',
-      textToSpeechDesc: 'विवरण सुनने के लिए होवर करें',
-      highContrast: 'हाई कंट्रास्ट',
-      highContrastDesc: 'रंग कंट्रास्ट बढ़ाएं',
-      largeText: 'बड़ा टेक्स्ट',
-      largeTextDesc: 'टेक्स्ट और बटन का आकार बढ़ाएं',
-      keyboardNav: 'कीबोर्ड नेविगेशन',
-      keyboardNavDesc: 'बेहतर Tab नेविगेशन',
-      voiceControl: 'वॉइस कंट्रोल',
-      voiceControlDesc: 'हैंड्स-फ्री! आवाज़ से ऐप कंट्रोल करें',
-      language: 'भाषा',
-      languageDesc: 'ऐप की भाषा बदलें',
-      play: 'प्ले',
-      stop: 'रोकें',
-      tempo: 'टेम्पो',
-      volume: 'वॉल्यूम',
-      back: 'वापस',
-      home: 'होम',
-      masterVolume: 'मास्टर वॉल्यूम',
-      backgroundMusic: 'बैकग्राउंड म्यूजिक',
-      visualThemes: 'विज़ुअल थीम्स',
-      about: 'के बारे में',
-      enableAll: 'सभी एक्सेसिबिलिटी सुविधाएं सक्षम करें',
-      allEnabled: 'सभी सुविधाएं सक्षम',
+      appTitle: 'à¤°à¤¿à¤¦à¤® à¤°à¥€à¤¯à¤²à¥à¤®',
+      createBeat: 'à¤…à¤ªà¤¨à¤¾ à¤¬à¥€à¤Ÿ à¤¬à¤¨à¤¾à¤à¤‚',
+      letsPlay: 'à¤šà¤²à¥‹ à¤–à¥‡à¤²à¥‡à¤‚!',
+      modes: 'à¤®à¥‹à¤¡à¥à¤¸',
+      settings: 'à¤¸à¥‡à¤Ÿà¤¿à¤‚à¤—à¥à¤¸',
+      freePlay: 'à¤«à¥à¤°à¥€ à¤ªà¥à¤²à¥‡',
+      freePlayDesc: 'à¤¬à¤¿à¤¨à¤¾ à¤•à¤¿à¤¸à¥€ à¤¸à¥€à¤®à¤¾ à¤•à¥‡ à¤…à¤ªà¤¨à¤¾ à¤¬à¥€à¤Ÿ à¤¬à¤¨à¤¾à¤à¤‚!',
+      tutorial: 'à¤Ÿà¥à¤¯à¥‚à¤Ÿà¥‹à¤°à¤¿à¤¯à¤²',
+      tutorialDesc: 'à¤µà¤¿à¤­à¤¿à¤¨à¥à¤¨ à¤¶à¥ˆà¤²à¤¿à¤¯à¥‹à¤‚ à¤”à¤° à¤®à¥‚à¤¡ à¤¸à¥€à¤–à¥‡à¤‚!',
+      beatLibrary: 'à¤¬à¥€à¤Ÿ à¤²à¤¾à¤‡à¤¬à¥à¤°à¥‡à¤°à¥€',
+      beatLibraryDesc: 'à¤µà¤¿à¤­à¤¿à¤¨à¥à¤¨ à¤¶à¥ˆà¤²à¤¿à¤¯à¥‹à¤‚ à¤•à¥‡ à¤¬à¥€à¤Ÿ à¤–à¥‹à¤œà¥‡à¤‚!',
+      djMode: 'DJ à¤®à¥‹à¤¡',
+      djModeDesc: 'à¤²à¤¾à¤‡à¤µ à¤ªà¤°à¤«à¥‰à¤°à¥à¤®à¥‡à¤‚à¤¸! à¤°à¤¿à¤¯à¤²-à¤Ÿà¤¾à¤‡à¤® à¤®à¥‡à¤‚ à¤®à¤¿à¤•à¥à¤¸ à¤•à¤°à¥‡à¤‚à¥¤',
+      accessibility: 'à¤à¤•à¥à¤¸à¥‡à¤¸à¤¿à¤¬à¤¿à¤²à¤¿à¤Ÿà¥€',
+      textToSpeech: 'à¤Ÿà¥‡à¤•à¥à¤¸à¥à¤Ÿ-à¤Ÿà¥‚-à¤¸à¥à¤ªà¥€à¤š',
+      textToSpeechDesc: 'à¤µà¤¿à¤µà¤°à¤£ à¤¸à¥à¤¨à¤¨à¥‡ à¤•à¥‡ à¤²à¤¿à¤ à¤¹à¥‹à¤µà¤° à¤•à¤°à¥‡à¤‚',
+      highContrast: 'à¤¹à¤¾à¤ˆ à¤•à¤‚à¤Ÿà¥à¤°à¤¾à¤¸à¥à¤Ÿ',
+      highContrastDesc: 'à¤°à¤‚à¤— à¤•à¤‚à¤Ÿà¥à¤°à¤¾à¤¸à¥à¤Ÿ à¤¬à¤¢à¤¼à¤¾à¤à¤‚',
+      largeText: 'à¤¬à¤¡à¤¼à¤¾ à¤Ÿà¥‡à¤•à¥à¤¸à¥à¤Ÿ',
+      largeTextDesc: 'à¤Ÿà¥‡à¤•à¥à¤¸à¥à¤Ÿ à¤”à¤° à¤¬à¤Ÿà¤¨ à¤•à¤¾ à¤†à¤•à¤¾à¤° à¤¬à¤¢à¤¼à¤¾à¤à¤‚',
+      keyboardNav: 'à¤•à¥€à¤¬à¥‹à¤°à¥à¤¡ à¤¨à¥‡à¤µà¤¿à¤—à¥‡à¤¶à¤¨',
+      keyboardNavDesc: 'à¤¬à¥‡à¤¹à¤¤à¤° Tab à¤¨à¥‡à¤µà¤¿à¤—à¥‡à¤¶à¤¨',
+      voiceControl: 'à¤µà¥‰à¤‡à¤¸ à¤•à¤‚à¤Ÿà¥à¤°à¥‹à¤²',
+      voiceControlDesc: 'à¤¹à¥ˆà¤‚à¤¡à¥à¤¸-à¤«à¥à¤°à¥€! à¤†à¤µà¤¾à¤œà¤¼ à¤¸à¥‡ à¤à¤ª à¤•à¤‚à¤Ÿà¥à¤°à¥‹à¤² à¤•à¤°à¥‡à¤‚',
+      language: 'à¤­à¤¾à¤·à¤¾',
+      languageDesc: 'à¤à¤ª à¤•à¥€ à¤­à¤¾à¤·à¤¾ à¤¬à¤¦à¤²à¥‡à¤‚',
+      play: 'à¤ªà¥à¤²à¥‡',
+      stop: 'à¤°à¥‹à¤•à¥‡à¤‚',
+      tempo: 'à¤Ÿà¥‡à¤®à¥à¤ªà¥‹',
+      volume: 'à¤µà¥‰à¤²à¥à¤¯à¥‚à¤®',
+      back: 'à¤µà¤¾à¤ªà¤¸',
+      home: 'à¤¹à¥‹à¤®',
+      masterVolume: 'à¤®à¤¾à¤¸à¥à¤Ÿà¤° à¤µà¥‰à¤²à¥à¤¯à¥‚à¤®',
+      backgroundMusic: 'à¤¬à¥ˆà¤•à¤—à¥à¤°à¤¾à¤‰à¤‚à¤¡ à¤®à¥à¤¯à¥‚à¤œà¤¿à¤•',
+      visualThemes: 'à¤µà¤¿à¤œà¤¼à¥à¤…à¤² à¤¥à¥€à¤®à¥à¤¸',
+      about: 'à¤•à¥‡ à¤¬à¤¾à¤°à¥‡ à¤®à¥‡à¤‚',
+      enableAll: 'à¤¸à¤­à¥€ à¤à¤•à¥à¤¸à¥‡à¤¸à¤¿à¤¬à¤¿à¤²à¤¿à¤Ÿà¥€ à¤¸à¥à¤µà¤¿à¤§à¤¾à¤à¤‚ à¤¸à¤•à¥à¤·à¤® à¤•à¤°à¥‡à¤‚',
+      allEnabled: 'à¤¸à¤­à¥€ à¤¸à¥à¤µà¤¿à¤§à¤¾à¤à¤‚ à¤¸à¤•à¥à¤·à¤®',
     },
     ar: {
-      appTitle: 'عالم الإيقاع',
-      createBeat: 'أنشئ إيقاعك',
-      letsPlay: 'هيا نلعب!',
-      modes: 'الأوضاع',
-      settings: 'الإعدادات',
-      freePlay: 'اللعب الحر',
-      freePlayDesc: 'أنشئ إيقاعاتك بدون حدود!',
-      tutorial: 'الدروس',
-      tutorialDesc: 'تعلم أنماط وأجواء مختلفة!',
-      beatLibrary: 'مكتبة الإيقاعات',
-      beatLibraryDesc: 'استكشف إيقاعات من أنواع مختلفة!',
-      djMode: 'وضع DJ',
-      djModeDesc: 'أداء مباشر! امزج في الوقت الحقيقي.',
-      accessibility: 'إمكانية الوصول',
-      textToSpeech: 'تحويل النص إلى كلام',
-      textToSpeechDesc: 'مرر للاستماع للوصف',
-      highContrast: 'تباين عالي',
-      highContrastDesc: 'زيادة تباين الألوان',
-      largeText: 'نص كبير',
-      largeTextDesc: 'تكبير حجم النص والأزرار',
-      keyboardNav: 'التنقل بلوحة المفاتيح',
-      keyboardNavDesc: 'تنقل محسن بمفتاح Tab',
-      voiceControl: 'التحكم الصوتي',
-      voiceControlDesc: 'بدون يدين! تحكم بالتطبيق بصوتك',
-      language: 'اللغة',
-      languageDesc: 'تغيير لغة التطبيق',
-      play: 'تشغيل',
-      stop: 'إيقاف',
-      tempo: 'السرعة',
-      volume: 'الصوت',
-      back: 'رجوع',
-      home: 'الرئيسية',
-      masterVolume: 'الصوت الرئيسي',
-      backgroundMusic: 'موسيقى الخلفية',
-      visualThemes: 'المظاهر',
-      about: 'حول',
-      enableAll: 'تمكين جميع ميزات إمكانية الوصول',
-      allEnabled: 'جميع الميزات مفعلة',
+      appTitle: 'Ø¹Ø§Ù„Ù… Ø§Ù„Ø¥ÙŠÙ‚Ø§Ø¹',
+      createBeat: 'Ø£Ù†Ø´Ø¦ Ø¥ÙŠÙ‚Ø§Ø¹Ùƒ',
+      letsPlay: 'Ù‡ÙŠØ§ Ù†Ù„Ø¹Ø¨!',
+      modes: 'Ø§Ù„Ø£ÙˆØ¶Ø§Ø¹',
+      settings: 'Ø§Ù„Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª',
+      freePlay: 'Ø§Ù„Ù„Ø¹Ø¨ Ø§Ù„Ø­Ø±',
+      freePlayDesc: 'Ø£Ù†Ø´Ø¦ Ø¥ÙŠÙ‚Ø§Ø¹Ø§ØªÙƒ Ø¨Ø¯ÙˆÙ† Ø­Ø¯ÙˆØ¯!',
+      tutorial: 'Ø§Ù„Ø¯Ø±ÙˆØ³',
+      tutorialDesc: 'ØªØ¹Ù„Ù… Ø£Ù†Ù…Ø§Ø· ÙˆØ£Ø¬ÙˆØ§Ø¡ Ù…Ø®ØªÙ„ÙØ©!',
+      beatLibrary: 'Ù…ÙƒØªØ¨Ø© Ø§Ù„Ø¥ÙŠÙ‚Ø§Ø¹Ø§Øª',
+      beatLibraryDesc: 'Ø§Ø³ØªÙƒØ´Ù Ø¥ÙŠÙ‚Ø§Ø¹Ø§Øª Ù…Ù† Ø£Ù†ÙˆØ§Ø¹ Ù…Ø®ØªÙ„ÙØ©!',
+      djMode: 'ÙˆØ¶Ø¹ DJ',
+      djModeDesc: 'Ø£Ø¯Ø§Ø¡ Ù…Ø¨Ø§Ø´Ø±! Ø§Ù…Ø²Ø¬ ÙÙŠ Ø§Ù„ÙˆÙ‚Øª Ø§Ù„Ø­Ù‚ÙŠÙ‚ÙŠ.',
+      accessibility: 'Ø¥Ù…ÙƒØ§Ù†ÙŠØ© Ø§Ù„ÙˆØµÙˆÙ„',
+      textToSpeech: 'ØªØ­ÙˆÙŠÙ„ Ø§Ù„Ù†Øµ Ø¥Ù„Ù‰ ÙƒÙ„Ø§Ù…',
+      textToSpeechDesc: 'Ù…Ø±Ø± Ù„Ù„Ø§Ø³ØªÙ…Ø§Ø¹ Ù„Ù„ÙˆØµÙ',
+      highContrast: 'ØªØ¨Ø§ÙŠÙ† Ø¹Ø§Ù„ÙŠ',
+      highContrastDesc: 'Ø²ÙŠØ§Ø¯Ø© ØªØ¨Ø§ÙŠÙ† Ø§Ù„Ø£Ù„ÙˆØ§Ù†',
+      largeText: 'Ù†Øµ ÙƒØ¨ÙŠØ±',
+      largeTextDesc: 'ØªÙƒØ¨ÙŠØ± Ø­Ø¬Ù… Ø§Ù„Ù†Øµ ÙˆØ§Ù„Ø£Ø²Ø±Ø§Ø±',
+      keyboardNav: 'Ø§Ù„ØªÙ†Ù‚Ù„ Ø¨Ù„ÙˆØ­Ø© Ø§Ù„Ù…ÙØ§ØªÙŠØ­',
+      keyboardNavDesc: 'ØªÙ†Ù‚Ù„ Ù…Ø­Ø³Ù† Ø¨Ù…ÙØªØ§Ø­ Tab',
+      voiceControl: 'Ø§Ù„ØªØ­ÙƒÙ… Ø§Ù„ØµÙˆØªÙŠ',
+      voiceControlDesc: 'Ø¨Ø¯ÙˆÙ† ÙŠØ¯ÙŠÙ†! ØªØ­ÙƒÙ… Ø¨Ø§Ù„ØªØ·Ø¨ÙŠÙ‚ Ø¨ØµÙˆØªÙƒ',
+      language: 'Ø§Ù„Ù„ØºØ©',
+      languageDesc: 'ØªØºÙŠÙŠØ± Ù„ØºØ© Ø§Ù„ØªØ·Ø¨ÙŠÙ‚',
+      play: 'ØªØ´ØºÙŠÙ„',
+      stop: 'Ø¥ÙŠÙ‚Ø§Ù',
+      tempo: 'Ø§Ù„Ø³Ø±Ø¹Ø©',
+      volume: 'Ø§Ù„ØµÙˆØª',
+      back: 'Ø±Ø¬ÙˆØ¹',
+      home: 'Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠØ©',
+      masterVolume: 'Ø§Ù„ØµÙˆØª Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠ',
+      backgroundMusic: 'Ù…ÙˆØ³ÙŠÙ‚Ù‰ Ø§Ù„Ø®Ù„ÙÙŠØ©',
+      visualThemes: 'Ø§Ù„Ù…Ø¸Ø§Ù‡Ø±',
+      about: 'Ø­ÙˆÙ„',
+      enableAll: 'ØªÙ…ÙƒÙŠÙ† Ø¬Ù…ÙŠØ¹ Ù…ÙŠØ²Ø§Øª Ø¥Ù…ÙƒØ§Ù†ÙŠØ© Ø§Ù„ÙˆØµÙˆÙ„',
+      allEnabled: 'Ø¬Ù…ÙŠØ¹ Ø§Ù„Ù…ÙŠØ²Ø§Øª Ù…ÙØ¹Ù„Ø©',
     },
   };
 
@@ -2496,6 +3234,11 @@ export default function RhythmRealm() {
   const [showLoadModal, setShowLoadModal] = useState(false);
   const [saveBeatName, setSaveBeatName] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState(null); // Beat to confirm deletion
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false); // Filter favorites
+  
+  // Seek bar state
+  const [isDraggingSeek, setIsDraggingSeek] = useState(false);
+  const seekBarRef = useRef(null);
 
   const [instrumentConfig, setInstrumentConfig] = useState({ kick: 0, snare: 0, hihat: 0, tom: 0, perc: 0, bass: 0, synth: 0, fx: 0, keys: 0, vox: 0, lead: 0, orch: 0 });
   const [soundSettings, setSoundSettings] = useState({});
@@ -2829,8 +3572,8 @@ export default function RhythmRealm() {
     }
   }, []);
 
-  // Save beat function
-  const saveBeat = (name) => {
+  // Save beat function - saves to database if logged in, otherwise localStorage
+  const saveBeat = async (name) => {
     const beat = {
       id: Date.now(),
       name: name || `Beat ${savedBeats.length + 1}`,
@@ -2840,11 +3583,49 @@ export default function RhythmRealm() {
       activeInstrumentIds: activeInstrumentIds,
       instrumentConfig: instrumentConfig,
     };
-    const newSavedBeats = [...savedBeats, beat];
-    setSavedBeats(newSavedBeats);
-    localStorage.setItem('rhythmRealm_savedBeats', JSON.stringify(newSavedBeats));
+    
+    // If user is logged in, save to database
+    if (user) {
+      try {
+        const savedBeat = await beatStorageService.saveBeat(user.id, {
+          name: beat.name,
+          grid: beat.grid,
+          tempo: beat.tempo,
+          activeInstrumentIds: beat.activeInstrumentIds,
+          instrumentConfig: beat.instrumentConfig,
+          isPublic: false
+        });
+        
+        // Add the database beat to local state with DB id
+        const dbBeat = {
+          ...beat,
+          id: savedBeat.id,
+          cloudSaved: true
+        };
+        const newSavedBeats = [...savedBeats, dbBeat];
+        setSavedBeats(newSavedBeats);
+        localStorage.setItem('rhythmRealm_savedBeats', JSON.stringify(newSavedBeats));
+        
+        console.log('Beat saved to cloud!');
+      } catch (error) {
+        console.error('Failed to save to cloud, saving locally:', error);
+        // Fallback to local storage only
+        const newSavedBeats = [...savedBeats, beat];
+        setSavedBeats(newSavedBeats);
+        localStorage.setItem('rhythmRealm_savedBeats', JSON.stringify(newSavedBeats));
+      }
+    } else {
+      // Not logged in - save to localStorage only
+      const newSavedBeats = [...savedBeats, beat];
+      setSavedBeats(newSavedBeats);
+      localStorage.setItem('rhythmRealm_savedBeats', JSON.stringify(newSavedBeats));
+    }
+    
     setShowSaveModal(false);
     setSaveBeatName('');
+    
+    // Track beat creation for achievements
+    incrementBeatsCreated();
   };
 
   // Load beat function
@@ -2856,11 +3637,93 @@ export default function RhythmRealm() {
     setShowLoadModal(false);
   };
 
-  // Delete beat function
-  const deleteBeat = (beatId) => {
+  // Delete beat function - deletes from database if logged in
+  const deleteBeat = async (beatId) => {
+    const beatToDelete = savedBeats.find(b => b.id === beatId);
+    
+    // If beat was saved to cloud and user is logged in, delete from database
+    if (user && beatToDelete?.cloudSaved) {
+      try {
+        await beatStorageService.deleteBeat(beatId, user.id);
+        console.log('Beat deleted from cloud');
+      } catch (error) {
+        console.error('Failed to delete from cloud:', error);
+      }
+    }
+    
     const newSavedBeats = savedBeats.filter(b => b.id !== beatId);
     setSavedBeats(newSavedBeats);
     localStorage.setItem('rhythmRealm_savedBeats', JSON.stringify(newSavedBeats));
+  };
+
+  // Load beats from database when user logs in
+  const loadBeatsFromCloud = async () => {
+    if (!user) return;
+    
+    try {
+      const cloudBeats = await beatStorageService.getUserBeats(user.id);
+      if (cloudBeats && cloudBeats.length > 0) {
+        // Convert cloud beats to local format
+        const formattedBeats = cloudBeats.map(b => ({
+          id: b.id,
+          name: b.name,
+          date: new Date(b.created_at).toLocaleDateString(),
+          grid: b.grid,
+          tempo: b.tempo,
+          activeInstrumentIds: b.instruments,
+          instrumentConfig: b.instrument_config,
+          cloudSaved: true,
+          favorite: b.favorite || false
+        }));
+        
+        // Merge with local beats (avoid duplicates by id)
+        const localOnlyBeats = savedBeats.filter(local => 
+          !formattedBeats.some(cloud => cloud.id === local.id)
+        );
+        
+        const mergedBeats = [...formattedBeats, ...localOnlyBeats];
+        setSavedBeats(mergedBeats);
+        localStorage.setItem('rhythmRealm_savedBeats', JSON.stringify(mergedBeats));
+      }
+    } catch (error) {
+      console.error('Failed to load beats from cloud:', error);
+    }
+  };
+
+  // Load cloud beats when user changes
+  React.useEffect(() => {
+    if (user) {
+      loadBeatsFromCloud();
+    }
+  }, [user]);
+
+  // Toggle beat favorite
+  const toggleFavorite = (beatId) => {
+    const newSavedBeats = savedBeats.map(b => 
+      b.id === beatId ? { ...b, favorite: !b.favorite } : b
+    );
+    setSavedBeats(newSavedBeats);
+    localStorage.setItem('rhythmRealm_savedBeats', JSON.stringify(newSavedBeats));
+  };
+
+  // Seek to specific step
+  const seekToStep = (step) => {
+    const newStep = Math.max(0, Math.min(STEPS - 1, step));
+    setCurrentStep(newStep);
+    currentStepRef.current = newStep;
+    if (isPlaying && AudioEngine.ctx) {
+      nextNoteTimeRef.current = AudioEngine.ctx.currentTime + 0.05;
+    }
+  };
+
+  // Handle seek bar interaction
+  const handleSeekBarInteraction = (e) => {
+    if (!seekBarRef.current) return;
+    const rect = seekBarRef.current.getBoundingClientRect();
+    const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    const percentage = Math.max(0, Math.min(1, x / rect.width));
+    const step = Math.floor(percentage * STEPS);
+    seekToStep(step);
   };
 
   // Background Music System
@@ -3345,6 +4208,470 @@ export default function RhythmRealm() {
   };
 
   // --- RENDER ---
+  
+  // ==========================================
+  // AUTHENTICATION MODAL - Rendered inline to prevent remount on state change
+  // ==========================================
+  const authModalContent = showAuthModal ? (
+    <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={(e) => e.stopPropagation()}>
+      <div className="bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-purple-500/50 rounded-3xl w-full max-w-md shadow-2xl shadow-purple-500/20 animate-bounce-in" onClick={(e) => e.stopPropagation()}>
+        <div className="p-6 border-b border-slate-700 flex items-center justify-between">
+            <h2 className="text-2xl font-black text-white flex items-center gap-3">
+            <span className="text-3xl">{authMode === 'login' ? '🔐' : '✨'}</span>
+            {authMode === 'login' ? 'Welcome Back!' : 'Join Rhythm Realm'}
+          </h2>
+          <button onClick={() => setShowAuthModal(false)} className="p-2 hover:bg-slate-700 rounded-xl transition-all text-slate-400 hover:text-white">
+            <Icons.Close />
+          </button>
+        </div>
+        
+        <form onSubmit={authMode === 'login' ? handleLogin : handleRegister} className="p-6 space-y-4" autoComplete="off">
+          {authError && (
+            <div className="p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-300 text-sm">
+              ⚠️ {authError}
+            </div>
+          )}
+          
+          {authMode === 'register' && (
+            <div>
+              <label className="block text-sm font-bold text-slate-400 mb-2">Username</label>
+              <input
+                type="text"
+                value={authUsername}
+                onChange={(e) => setAuthUsername(e.target.value)}
+                onKeyDown={(e) => e.stopPropagation()}
+                placeholder="Your display name"
+                className="w-full p-4 bg-slate-800 border-2 border-slate-700 rounded-xl text-white focus:border-purple-500 focus:outline-none transition-all"
+                required
+                minLength={3}
+                autoComplete="off"
+              />
+            </div>
+          )}
+          
+          <div>
+            <label className="block text-sm font-bold text-slate-400 mb-2">Email</label>
+            <input
+              type="email"
+              value={authEmail}
+              onChange={(e) => setAuthEmail(e.target.value)}
+              onKeyDown={(e) => e.stopPropagation()}
+              placeholder="your@email.com"
+              className="w-full p-4 bg-slate-800 border-2 border-slate-700 rounded-xl text-white focus:border-purple-500 focus:outline-none transition-all"
+              required
+              autoComplete="off"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-bold text-slate-400 mb-2">Password</label>
+            <input
+              type="password"
+              value={authPassword}
+              onChange={(e) => setAuthPassword(e.target.value)}
+              onKeyDown={(e) => e.stopPropagation()}
+              placeholder="••••••••"
+              className="w-full p-4 bg-slate-800 border-2 border-slate-700 rounded-xl text-white focus:border-purple-500 focus:outline-none transition-all"
+              required
+              minLength={6}
+              autoComplete="new-password"
+            />
+          </div>
+          
+          <button
+            type="submit"
+            disabled={authLoading}
+            className="w-full p-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-400 hover:to-pink-400 rounded-xl font-bold text-white text-lg transition-all shadow-lg shadow-purple-500/30 disabled:opacity-50"
+          >
+            {authLoading ? '⏳ Please wait...' : (authMode === 'login' ? '🚀 Login' : '🎉 Create Account')}
+          </button>
+          
+          <div className="text-center text-slate-400 text-sm">
+            {authMode === 'login' ? (
+              <>Don't have an account? <button type="button" onClick={() => { setAuthMode('register'); setAuthError(''); }} className="text-purple-400 hover:text-purple-300 font-bold">Sign up</button></>
+            ) : (
+              <>Already have an account? <button type="button" onClick={() => { setAuthMode('login'); setAuthError(''); }} className="text-purple-400 hover:text-purple-300 font-bold">Login</button></>
+            )}
+          </div>
+        </form>
+      </div>
+    </div>
+  ) : null;
+
+  // ==========================================
+  // USER PROFILE HEADER COMPONENT
+  // ==========================================
+  const UserProfileHeader = () => {
+    // Show login button even during loading, just show loading state for profile
+    return (
+      <div className="absolute top-4 right-4 z-50 flex items-center gap-2">
+        {user ? (
+          <>
+            {/* Leaderboard Button */}
+            <button
+              onClick={() => { loadLeaderboard(); setShowLeaderboard(true); }}
+              className="p-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 rounded-xl shadow-lg transition-all hover:scale-105"
+              title="Leaderboard"
+            >
+              <span className="text-xl">🏆</span>
+            </button>
+            
+            {/* Achievements Button */}
+            <button
+              onClick={() => { loadUserAchievements(); setShowAchievements(true); }}
+              className="p-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 rounded-xl shadow-lg transition-all hover:scale-105"
+              title="Achievements"
+            >
+              <span className="text-xl">🏅</span>
+            </button>
+            
+            {/* User Profile - Clickable to open profile */}
+            <button
+              onClick={() => setShowProfile(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-slate-800/80 backdrop-blur-sm rounded-xl border border-slate-700 hover:bg-slate-700/80 transition-all cursor-pointer"
+              title="View Profile"
+            >
+              <div className="text-right">
+                <div className="text-sm font-bold text-white">{userProfile?.username || 'Player'}</div>
+                <div className="text-xs text-slate-400">Lvl {userProfile?.level || 1} • {userProfile?.rank_title || 'Beginner'}</div>
+              </div>
+              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-lg font-black text-white">
+                {(userProfile?.username || 'P')[0].toUpperCase()}
+              </div>
+            </button>
+            
+            {/* Logout Button */}
+            <button
+              onClick={() => handleLogout(false)}
+              className="p-3 bg-slate-800/80 hover:bg-red-500/30 rounded-xl text-slate-400 hover:text-red-400 transition-all border border-slate-700 hover:border-red-500/50"
+              title="Logout"
+            >
+              <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
+              </svg>
+            </button>
+          </>
+        ) : (
+          <button
+            onClick={() => setShowAuthModal(true)}
+            className="px-5 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-400 hover:to-pink-400 rounded-xl font-bold text-white shadow-lg shadow-purple-500/30 transition-all hover:scale-105 flex items-center gap-2"
+          >
+            <span className="text-lg">👤</span> Login / Sign Up
+          </button>
+        )}
+      </div>
+    );
+  };
+
+  // ==========================================
+  // LEADERBOARD MODAL COMPONENT
+  // ==========================================
+  const LeaderboardModal = () => (
+    <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-amber-500/50 rounded-3xl w-full max-w-2xl shadow-2xl shadow-amber-500/20 animate-bounce-in max-h-[80vh] flex flex-col">
+        <div className="p-6 border-b border-slate-700 flex items-center justify-between shrink-0">
+          <h2 className="text-2xl font-black text-white flex items-center gap-3">
+            <span className="text-3xl">🏆</span> Global Leaderboard
+          </h2>
+          <button onClick={() => setShowLeaderboard(false)} className="p-2 hover:bg-slate-700 rounded-xl transition-all text-slate-400 hover:text-white">
+            <Icons.Close />
+          </button>
+        </div>
+        
+        <div className="flex-1 overflow-y-auto p-4">
+          {leaderboardLoading ? (
+            <div className="text-center py-12 text-slate-400">
+              <div className="text-5xl mb-4 animate-bounce">⏳</div>
+              <p>Loading leaderboard...</p>
+            </div>
+          ) : leaderboardData.length === 0 ? (
+            <div className="text-center py-12 text-slate-400">
+              <div className="text-5xl mb-4">👥</div>
+              <p>No players yet. Be the first!</p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {leaderboardData.map((player, index) => {
+                const rank = index + 1;
+                const isCurrentUser = user && player.id === user.id;
+                const medalEmoji = rank === 1 ? '🥁‡' : rank === 2 ? '🥁ˆ' : rank === 3 ? '🥁‰' : '';
+                
+                return (
+                  <div
+                    key={player.id}
+                    className={`flex items-center gap-4 p-4 rounded-xl transition-all ${
+                      isCurrentUser 
+                        ? 'bg-purple-500/30 border-2 border-purple-500' 
+                        : rank <= 3 
+                          ? 'bg-amber-500/10 border border-amber-500/30' 
+                          : 'bg-slate-800/50 border border-slate-700/50'
+                    }`}
+                  >
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black text-lg ${
+                      rank === 1 ? 'bg-amber-400 text-amber-900' :
+                      rank === 2 ? 'bg-slate-300 text-slate-700' :
+                      rank === 3 ? 'bg-amber-600 text-amber-100' :
+                      'bg-slate-700 text-slate-300'
+                    }`}>
+                      {medalEmoji || rank}
+                    </div>
+                    
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-white">{player.username}</span>
+                        {isCurrentUser && <span className="text-xs bg-purple-500 px-2 py-0.5 rounded-full text-white">You</span>}
+                      </div>
+                      <div className="text-xs text-slate-400">
+                        Level {player.level} • {player.rank_title}
+                      </div>
+                    </div>
+                    
+                    <div className="text-right">
+                      <div className="font-black text-xl text-white">{player.total_score?.toLocaleString() || 0}</div>
+                      <div className="text-xs text-slate-400">{player.total_beats_created || 0} beats</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+        
+        {userRank && userRank > 10 && (
+          <div className="p-4 border-t border-slate-700 shrink-0">
+            <div className="text-center text-slate-400 text-sm">
+              Your rank: <span className="text-purple-400 font-bold">#{userRank}</span>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  // ==========================================
+  // ACHIEVEMENTS MODAL COMPONENT
+  // ==========================================
+  const AchievementsModal = () => {
+    const unlockedIds = new Set(userAchievements.map(a => a.achievement_id));
+    
+    return (
+      <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-green-500/50 rounded-3xl w-full max-w-3xl shadow-2xl shadow-green-500/20 animate-bounce-in max-h-[80vh] flex flex-col">
+          <div className="p-6 border-b border-slate-700 flex items-center justify-between shrink-0">
+            <div>
+              <h2 className="text-2xl font-black text-white flex items-center gap-3">
+                <span className="text-3xl">🏅</span> Achievements
+              </h2>
+              <p className="text-slate-400 text-sm mt-1">
+                {userAchievements.length} / {ACHIEVEMENTS.length} unlocked
+              </p>
+            </div>
+            <button onClick={() => setShowAchievements(false)} className="p-2 hover:bg-slate-700 rounded-xl transition-all text-slate-400 hover:text-white">
+              <Icons.Close />
+            </button>
+          </div>
+          
+          <div className="flex-1 overflow-y-auto p-4">
+            {achievementsLoading ? (
+              <div className="text-center py-12 text-slate-400">
+                <div className="text-5xl mb-4 animate-bounce">⏳</div>
+                <p>Loading achievements...</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {ACHIEVEMENTS.map((achievement) => {
+                  const isUnlocked = unlockedIds.has(achievement.id);
+                  const progress = achievementService.getAchievementProgress(achievement.id, userStats);
+                  
+                  return (
+                    <div
+                      key={achievement.id}
+                      className={`p-4 rounded-xl border-2 transition-all ${
+                        isUnlocked 
+                          ? 'bg-green-500/20 border-green-500/50' 
+                          : 'bg-slate-800/50 border-slate-700/50 opacity-60'
+                      }`}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${
+                          isUnlocked ? 'bg-green-500/30' : 'bg-slate-700/50 grayscale'
+                        }`}>
+                          {achievement.icon}
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-white">{achievement.name}</span>
+                            {isUnlocked && <span className="text-green-400">✔</span>}
+                          </div>
+                          <p className="text-xs text-slate-400 mt-1">{achievement.description}</p>
+                          {progress && !isUnlocked && (
+                            <div className="mt-2">
+                              <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                                <div 
+                                  className="h-full bg-purple-500 transition-all"
+                                  style={{ width: `${Math.min(100, (progress.current / progress.target) * 100)}%` }}
+                                ></div>
+                              </div>
+                              <div className="text-[10px] text-slate-500 mt-1">
+                                {progress.current} / {progress.target}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-xs text-amber-400 font-bold">
+                          +{achievement.xp} XP
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // ==========================================
+  // LEVEL SYSTEM FUNCTIONS
+  // ==========================================
+  
+  // Check if level requirements are met
+  const checkLevelCompletion = (level) => {
+    if (!level) return { complete: false, score: 0, stars: 0 };
+    
+    const requirements = level.requirements;
+    let score = 0;
+    let totalRequired = 0;
+    let totalPlaced = 0;
+    
+    // Count notes per instrument
+    const noteCounts = {};
+    Object.keys(grid).forEach(inst => {
+      noteCounts[inst] = grid[inst].filter(Boolean).length;
+    });
+    
+    // Check minimum notes for each required instrument
+    let allRequirementsMet = true;
+    Object.entries(requirements.mustInclude || {}).forEach(([inst, minCount]) => {
+      totalRequired += minCount;
+      const placed = noteCounts[inst] || 0;
+      totalPlaced += Math.min(placed, minCount);
+      if (placed < minCount) allRequirementsMet = false;
+    });
+    
+    // Calculate score based on completion
+    score = Math.round((totalPlaced / Math.max(1, totalRequired)) * 100);
+    
+    // Calculate stars (1-3)
+    let stars = 0;
+    if (score >= 100) stars = 3;
+    else if (score >= 75) stars = 2;
+    else if (score >= 50) stars = 1;
+    
+    return { complete: allRequirementsMet && score >= 100, score, stars };
+  };
+  
+  // Submit level completion
+  const submitLevel = async () => {
+    if (!currentLevel) return;
+    
+    const result = checkLevelCompletion(currentLevel);
+    setLevelScore(result.score);
+    
+    if (result.complete) {
+      setLevelComplete(true);
+      
+      // Save progress
+      const isFirstCompletion = !levelProgress[currentLevel.id]?.completed;
+      const wasThreeStar = levelProgress[currentLevel.id]?.stars >= 3;
+      const isNewThreeStar = result.stars >= 3 && !wasThreeStar;
+      
+      const newProgress = {
+        ...levelProgress,
+        [currentLevel.id]: {
+          completed: true,
+          stars: Math.max(result.stars, levelProgress[currentLevel.id]?.stars || 0),
+          bestScore: Math.max(result.score, levelProgress[currentLevel.id]?.bestScore || 0)
+        }
+      };
+      setLevelProgress(newProgress);
+      localStorage.setItem('rhythmRealm_levelProgress', JSON.stringify(newProgress));
+      
+      // Count completed levels and three star levels for achievements
+      const completedCount = Object.values(newProgress).filter(p => p?.completed).length;
+      const threeStarCount = Object.values(newProgress).filter(p => p?.stars >= 3).length;
+      
+      // Award XP and update stats
+      const xp = currentLevel.xpReward;
+      
+      setUserStats(prev => ({
+        ...prev,
+        totalScore: prev.totalScore + xp,
+        tutorialsCompleted: prev.tutorialsCompleted + (isFirstCompletion ? 1 : 0),
+        instrumentsUsed: activeInstrumentIds.length,
+        tempo: tempo,
+        hasPlayed: true,
+        levelsCompleted: completedCount,
+        threeStarLevels: threeStarCount
+      }));
+      
+      // Check for achievements after level completion
+      if (user) {
+        setTimeout(() => checkForAchievements(), 500);
+      }
+    }
+  };
+  
+  // Get unlocked levels
+  const getUnlockedLevels = () => {
+    return GAME_LEVELS.map((level, index) => {
+      if (index === 0) return { ...level, unlocked: true };
+      const prevLevel = GAME_LEVELS[index - 1];
+      const prevCompleted = levelProgress[prevLevel.id]?.completed;
+      return { ...level, unlocked: prevCompleted || level.unlocked };
+    });
+  };
+  
+  // Show next hint
+  const showNextHint = () => {
+    if (!currentLevel) return;
+    const hints = currentLevel.hints || [];
+    if (currentHintIndex < hints.length) {
+      setShowHint(true);
+      setTimeout(() => setShowHint(false), 4000);
+      if (currentHintIndex < hints.length - 1) {
+        setCurrentHintIndex(prev => prev + 1);
+      }
+    }
+  };
+
+  // ==========================================
+  // NEW ACHIEVEMENT NOTIFICATION
+  // ==========================================
+  const AchievementNotification = () => {
+    if (!newAchievementUnlocked) return null;
+    
+    return (
+      <div className="fixed top-4 sm:top-20 left-2 right-2 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 z-[150] animate-bounce-in">
+        <div className="bg-gradient-to-r from-amber-500 via-yellow-500 to-orange-500 px-4 sm:px-8 py-4 sm:py-5 rounded-2xl shadow-2xl shadow-amber-500/50 flex items-center gap-3 sm:gap-4 border-2 border-yellow-300 max-w-md mx-auto">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/30 rounded-xl flex items-center justify-center text-2xl sm:text-4xl animate-bounce shadow-lg shrink-0">
+            {newAchievementUnlocked.icon}
+          </div>
+          <div className="min-w-0">
+            <div className="text-xs sm:text-sm font-bold text-yellow-100 uppercase tracking-wide flex items-center gap-1 sm:gap-2">
+              <span className="text-base sm:text-xl">🎉</span> Achievement! <span className="text-base sm:text-xl">🎉</span>
+            </div>
+            <div className="text-lg sm:text-2xl font-black text-white drop-shadow-lg truncate">{newAchievementUnlocked.name}</div>
+            <div className="text-xs sm:text-sm text-yellow-100 font-bold">+{newAchievementUnlocked.xp} XP</div>
+            <div className="text-[10px] sm:text-xs text-yellow-200 mt-1 line-clamp-2">{newAchievementUnlocked.description}</div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   if (view === 'splash') {
     return (
       <div className={`h-screen w-full text-white flex flex-col items-center justify-center p-4 relative overflow-hidden font-sans ${highContrastMode ? 'high-contrast' : ''} ${largeTextMode ? 'large-text' : ''}`} role="main" aria-label="Rhythm Realm - Music Creation App">
@@ -3353,29 +4680,170 @@ export default function RhythmRealm() {
         <a href="#main-content" className="skip-link" onFocus={() => speak('Skip to main content')}>Skip to main content</a>
         <VoiceControlIndicator />
         <PixelMusicBackground theme={currentTheme} />
+        
+        {/* User Profile Header */}
+        <UserProfileHeader />
+        
+        {/* Achievement Notification */}
+        <AchievementNotification />
+        
+        {/* Auth Modal */}
+        {authModalContent}
+        
+        {/* Leaderboard Modal */}
+        {showLeaderboard && <LeaderboardModal />}
+        
+        {/* Achievements Modal */}
+        {showAchievements && <AchievementsModal />}
+        
+        {/* Profile Modal */}
+        {showProfile && (
+          <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-purple-500/50 rounded-3xl w-full max-w-lg shadow-2xl animate-bounce-in max-h-[90vh] overflow-y-auto">
+              <div className="p-6 border-b border-slate-700 flex items-center justify-between">
+                <h2 className="text-2xl font-black text-white flex items-center gap-3">
+                  <span className="text-3xl">👤</span> My Profile
+                </h2>
+                <button onClick={() => setShowProfile(false)} className="p-2 hover:bg-slate-700 rounded-xl transition-all text-slate-400 hover:text-white">
+                  <Icons.Close />
+                </button>
+              </div>
+              
+              <div className="p-6 space-y-6">
+                {user && userProfile ? (
+                  <>
+                    {/* Profile Header */}
+                    <div className="flex items-center gap-4">
+                      <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-3xl font-black text-white">
+                        {(userProfile.username || 'P')[0].toUpperCase()}
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-black text-white">{userProfile.username}</h3>
+                        <p className="text-purple-400">{userProfile.rank_title || 'Beginner'}</p>
+                        <p className="text-slate-500 text-sm">{userProfile.email}</p>
+                      </div>
+                    </div>
+                    
+                    {/* Stats Grid */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="bg-slate-800 rounded-xl p-4 text-center">
+                        <div className="text-3xl font-black text-purple-400">{userProfile.level || 1}</div>
+                        <div className="text-xs text-slate-500 uppercase">Level</div>
+                      </div>
+                      <div className="bg-slate-800 rounded-xl p-4 text-center">
+                        <div className="text-3xl font-black text-amber-400">{userProfile.total_score?.toLocaleString() || 0}</div>
+                        <div className="text-xs text-slate-500 uppercase">Total XP</div>
+                      </div>
+                      <div className="bg-slate-800 rounded-xl p-4 text-center">
+                        <div className="text-3xl font-black text-green-400">{userProfile.total_beats_created || 0}</div>
+                        <div className="text-xs text-slate-500 uppercase">Beats Created</div>
+                      </div>
+                      <div className="bg-slate-800 rounded-xl p-4 text-center">
+                        <div className="text-3xl font-black text-cyan-400">{Object.values(levelProgress).filter(p => p?.completed).length}</div>
+                        <div className="text-xs text-slate-500 uppercase">Levels Done</div>
+                      </div>
+                    </div>
+                    
+                    {/* XP Progress */}
+                    <div>
+                      <div className="flex justify-between text-sm mb-2">
+                        <span className="text-slate-400">XP to Next Level</span>
+                        <span className="text-white font-bold">{(userProfile.experience_points || 0) % 1000} / 1000</span>
+                      </div>
+                      <div className="h-4 bg-slate-700 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-purple-500 to-pink-500"
+                          style={{ width: `${((userProfile.experience_points || 0) % 1000) / 10}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                    
+                    {/* Streak */}
+                    <div className="bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-xl p-4 border border-orange-500/30">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-2xl">🔥</span>
+                          <span className="text-white font-bold">Current Streak</span>
+                        </div>
+                        <div className="text-2xl font-black text-orange-400">{userProfile.current_streak || 0} days</div>
+                      </div>
+                    </div>
+                    
+                    {/* Logout Button */}
+                    <button 
+                      onClick={() => handleLogout(true)}
+                      className="w-full p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-400 font-bold hover:bg-red-500/30 transition-all"
+                    >
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <div className="text-center py-8">
+                    <div className="text-6xl mb-4">👤</div>
+                    <h3 className="text-xl font-bold text-white mb-2">Not Logged In</h3>
+                    <p className="text-slate-400 mb-6">Login to save your progress and compete on the leaderboard!</p>
+                    <button
+                      onClick={() => { setShowProfile(false); setShowAuthModal(true); }}
+                      className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl font-bold text-white"
+                    >
+                      Login / Sign Up
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         <div id="main-content" className="z-10 text-center animate-bounce-in px-4 w-full max-w-md">
           <h1 className="text-4xl sm:text-5xl md:text-7xl font-black text-white drop-shadow-[0_5px_0_rgba(0,0,0,0.3)] tracking-tight mb-4 sm:mb-6 pixel-font" style={{ textShadow: '4px 4px 0px #a855f7, 8px 8px 0px #06b6d4' }} aria-label={t('appTitle')}>{t('appTitle').split(' ')[0]}<br/>{t('appTitle').split(' ')[1] || ''}</h1>
           <p className="text-cyan-300 text-base sm:text-lg mb-4 sm:mb-6 opacity-80" aria-hidden="true">🎵 {t('createBeat')} 🎵</p>
+          
+          {/* User Stats Card (if logged in) */}
+          {user && userProfile && (
+            <div className="mb-4 p-4 bg-slate-800/60 backdrop-blur-sm rounded-2xl border border-slate-700">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="text-3xl">{userProfile.rank_title?.split(' ')[0] || '🎵'}</div>
+                  <div className="text-left">
+                    <div className="text-white font-bold">{userProfile.username}</div>
+                    <div className="text-slate-400 text-xs">Level {userProfile.level} • {userProfile.total_score?.toLocaleString() || 0} pts</div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-amber-400 font-bold text-lg">{userProfile.total_beats_created || 0}</div>
+                  <div className="text-slate-500 text-xs">Beats</div>
+                </div>
+              </div>
+              {/* XP Progress Bar */}
+              <div className="mt-3">
+                <div className="flex justify-between text-xs text-slate-400 mb-1">
+                  <span>XP Progress</span>
+                  <span>{(userProfile.experience_points || 0) % 1000} / 1000</span>
+                </div>
+                <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all"
+                    style={{ width: `${((userProfile.experience_points || 0) % 1000) / 10}%` }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+          )}
+          
           <div className="space-y-3 sm:space-y-4" role="navigation" aria-label="Main menu">
             <Button 
               onClick={() => { 
                 AudioEngine.init(); 
-                const newGrid = {};
-                Object.keys(SOUND_VARIANTS).forEach(key => newGrid[key] = Array(STEPS).fill(false));
-                setGrid(newGrid);
-                setCurrentScenario(DEFAULT_SCENARIO); 
-                setTutorialActive(false);
-                setActiveGuide(null);
-                setPreviousView('splash');
-                setView('studio'); 
+                setView('levels'); 
               }} 
               size="lg" 
               className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 border-purple-700 hover:from-cyan-400 hover:to-purple-400"
-              onMouseEnter={() => speak(t('letsPlay') + "! Start creating your own beats in the music studio")}
-              onFocus={() => speak(t('letsPlay') + "! Start creating your own beats in the music studio")}
+              onMouseEnter={() => speak(t('letsPlay') + "! Choose a level and learn to make beats")}
+              onFocus={() => speak(t('letsPlay') + "! Choose a level and learn to make beats")}
               onMouseLeave={stopSpeaking}
               onBlur={stopSpeaking}
-              aria-label={t('letsPlay') + " - Start creating beats in the studio"}
+              aria-label={t('letsPlay') + " - Choose a level to play"}
             ><Icons.Play /> {t('letsPlay')}</Button>
             <div className="flex gap-3">
               <button 
@@ -3407,6 +4875,454 @@ export default function RhythmRealm() {
     );
   }
 
+  // ==========================================
+  // LEVELS VIEW - Level Selection Screen
+  // ==========================================
+  if (view === 'levels') {
+    const unlockedLevels = getUnlockedLevels();
+    
+    return (
+      <div className={`h-screen w-full text-white flex flex-col overflow-hidden font-sans relative ${highContrastMode ? 'high-contrast' : ''} ${largeTextMode ? 'large-text' : ''}`}>
+        <style>{cssStyles}</style>
+        <VoiceControlIndicator />
+        <PixelMusicBackground theme={currentTheme} />
+        
+        {/* Achievement Notification - Global */}
+        <AchievementNotification />
+        
+        {/* Header */}
+        <div className="relative z-10 px-4 sm:px-6 py-4 sm:py-6 flex items-center justify-between border-b border-white/10 bg-black/30 backdrop-blur-sm">
+          <button 
+            onClick={() => setView('splash')} 
+            className="p-2 sm:p-3 bg-white/10 hover:bg-white/20 rounded-xl sm:rounded-2xl shadow-lg transition-all active:scale-95"
+          ><Icons.ChevronLeft /></button>
+          <h2 className="text-xl sm:text-3xl font-black bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">🎮 SELECT LEVEL</h2>
+          <button 
+            onClick={() => setShowProfile(true)} 
+            className="p-2 sm:p-3 bg-white/10 hover:bg-white/20 rounded-xl sm:rounded-2xl shadow-lg transition-all active:scale-95"
+          >👤</button>
+        </div>
+        
+        {/* Level Grid */}
+        <div className="relative z-10 flex-1 overflow-y-auto p-4 sm:p-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 max-w-6xl mx-auto">
+            {unlockedLevels.map((level, index) => {
+              const progress = levelProgress[level.id];
+              const isCompleted = progress?.completed;
+              const stars = progress?.stars || 0;
+              
+              return (
+                <button
+                  key={level.id}
+                  onClick={() => {
+                    if (level.unlocked) {
+                      AudioEngine.init();
+                      const newGrid = {};
+                      Object.keys(SOUND_VARIANTS).forEach(key => newGrid[key] = Array(STEPS).fill(false));
+                      setGrid(newGrid);
+                      setCurrentLevel(level);
+                      setCurrentHintIndex(0);
+                      setShowHint(false);
+                      setLevelComplete(false);
+                      setTempo(level.tempo);
+                      setCurrentScenario(DEFAULT_SCENARIO);
+                      setPreviousView('levels');
+                      setView('levelPlay');
+                    }
+                  }}
+                  disabled={!level.unlocked}
+                  className={`relative p-4 sm:p-6 rounded-2xl sm:rounded-3xl text-center transition-all ${
+                    level.unlocked 
+                      ? isCompleted
+                        ? 'bg-gradient-to-br from-green-500/80 to-emerald-600/80 hover:scale-105 border-2 border-green-400/50'
+                        : 'bg-gradient-to-br from-purple-500/80 to-pink-600/80 hover:scale-105 border-2 border-purple-400/50'
+                      : 'bg-slate-800/50 opacity-50 cursor-not-allowed border-2 border-slate-700/50'
+                  } backdrop-blur-sm shadow-xl`}
+                >
+                  {/* Level Number */}
+                  <div className={`absolute -top-2 -left-2 w-8 h-8 rounded-full flex items-center justify-center font-black text-sm ${
+                    level.unlocked ? 'bg-white text-purple-600' : 'bg-slate-600 text-slate-400'
+                  }`}>
+                    {level.id}
+                  </div>
+                  
+                  {/* Lock Icon */}
+                  {!level.unlocked && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-4xl">🔒</span>
+                    </div>
+                  )}
+                  
+                  {/* Level Content */}
+                  <div className={level.unlocked ? '' : 'opacity-30'}>
+                    <div className="text-4xl mb-2">{level.icon}</div>
+                    <div className="font-bold text-sm sm:text-base mb-1">{level.name}</div>
+                    <div className="text-xs text-white/70 mb-2">{level.difficulty}</div>
+                    
+                    {/* Stars */}
+                    <div className="flex justify-center gap-1">
+                      {[1, 2, 3].map(s => (
+                        <span key={s} className={`text-lg ${s <= stars ? 'text-yellow-400' : 'text-slate-600'}`}>
+                          ★
+                        </span>
+                      ))}
+                    </div>
+                    
+                    {/* XP Reward */}
+                    <div className="mt-2 text-xs text-amber-400 font-bold">+{level.xpReward} XP</div>
+                  </div>
+                  
+                  {/* Completed Badge */}
+                  {isCompleted && (
+                    <div className="absolute -top-2 -right-2 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
+                      ✔
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+          
+          {/* Progress Summary */}
+          <div className="mt-6 sm:mt-8 max-w-md mx-auto">
+            <div className="bg-slate-800/60 backdrop-blur-sm rounded-2xl p-4 border border-slate-700">
+              <div className="flex justify-between items-center mb-3">
+                <span className="text-slate-400 font-bold">Progress</span>
+                <span className="text-white font-black">
+                  {Object.values(levelProgress).filter(p => p?.completed).length} / {GAME_LEVELS.length}
+                </span>
+              </div>
+              <div className="h-3 bg-slate-700 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all"
+                  style={{ width: `${(Object.values(levelProgress).filter(p => p?.completed).length / GAME_LEVELS.length) * 100}%` }}
+                ></div>
+              </div>
+              <div className="mt-3 flex justify-between text-xs text-slate-500">
+                <span>⭐ {Object.values(levelProgress).reduce((sum, p) => sum + (p?.stars || 0), 0)} total stars</span>
+                <span>🏆 {Object.values(levelProgress).filter(p => p?.stars === 3).length} perfect</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Profile Modal */}
+        {showProfile && (
+          <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-purple-500/50 rounded-3xl w-full max-w-lg shadow-2xl animate-bounce-in max-h-[90vh] overflow-y-auto">
+              <div className="p-6 border-b border-slate-700 flex items-center justify-between">
+                <h2 className="text-2xl font-black text-white flex items-center gap-3">
+                  <span className="text-3xl">👤</span> My Profile
+                </h2>
+                <button onClick={() => setShowProfile(false)} className="p-2 hover:bg-slate-700 rounded-xl transition-all text-slate-400 hover:text-white">
+                  <Icons.Close />
+                </button>
+              </div>
+              
+              <div className="p-6 space-y-6">
+                {user && userProfile ? (
+                  <>
+                    {/* Profile Header */}
+                    <div className="flex items-center gap-4">
+                      <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-3xl font-black text-white">
+                        {(userProfile.username || 'P')[0].toUpperCase()}
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-black text-white">{userProfile.username}</h3>
+                        <p className="text-purple-400">{userProfile.rank_title || 'Beginner'}</p>
+                        <p className="text-slate-500 text-sm">{userProfile.email}</p>
+                      </div>
+                    </div>
+                    
+                    {/* Stats Grid */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="bg-slate-800 rounded-xl p-4 text-center">
+                        <div className="text-3xl font-black text-purple-400">{userProfile.level || 1}</div>
+                        <div className="text-xs text-slate-500 uppercase">Level</div>
+                      </div>
+                      <div className="bg-slate-800 rounded-xl p-4 text-center">
+                        <div className="text-3xl font-black text-amber-400">{userProfile.total_score?.toLocaleString() || 0}</div>
+                        <div className="text-xs text-slate-500 uppercase">Total XP</div>
+                      </div>
+                      <div className="bg-slate-800 rounded-xl p-4 text-center">
+                        <div className="text-3xl font-black text-green-400">{userProfile.total_beats_created || 0}</div>
+                        <div className="text-xs text-slate-500 uppercase">Beats Created</div>
+                      </div>
+                      <div className="bg-slate-800 rounded-xl p-4 text-center">
+                        <div className="text-3xl font-black text-cyan-400">{Object.values(levelProgress).filter(p => p?.completed).length}</div>
+                        <div className="text-xs text-slate-500 uppercase">Levels Done</div>
+                      </div>
+                    </div>
+                    
+                    {/* XP Progress */}
+                    <div>
+                      <div className="flex justify-between text-sm mb-2">
+                        <span className="text-slate-400">XP to Next Level</span>
+                        <span className="text-white font-bold">{(userProfile.experience_points || 0) % 1000} / 1000</span>
+                      </div>
+                      <div className="h-4 bg-slate-700 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-purple-500 to-pink-500"
+                          style={{ width: `${((userProfile.experience_points || 0) % 1000) / 10}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                    
+                    {/* Streak */}
+                    <div className="bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-xl p-4 border border-orange-500/30">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-2xl">🔥</span>
+                          <span className="text-white font-bold">Current Streak</span>
+                        </div>
+                        <div className="text-2xl font-black text-orange-400">{userProfile.current_streak || 0} days</div>
+                      </div>
+                    </div>
+                    
+                    {/* Logout Button */}
+                    <button
+                      onClick={() => handleLogout(true)}
+                      className="w-full p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-400 font-bold hover:bg-red-500/30 transition-all"
+                    >
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <div className="text-center py-8">
+                    <div className="text-6xl mb-4">👤</div>
+                    <h3 className="text-xl font-bold text-white mb-2">Not Logged In</h3>
+                    <p className="text-slate-400 mb-6">Login to save your progress and compete on the leaderboard!</p>
+                    <button
+                      onClick={() => { setShowProfile(false); setShowAuthModal(true); }}
+                      className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl font-bold text-white"
+                    >
+                      Login / Sign Up
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // ==========================================
+  // LEVEL PLAY VIEW - Actual Gameplay
+  // ==========================================
+  if (view === 'levelPlay' && currentLevel) {
+    const completion = checkLevelCompletion(currentLevel);
+    
+    return (
+      <div className={`h-screen w-full flex flex-col overflow-hidden font-sans ${highContrastMode ? 'high-contrast' : ''} ${largeTextMode ? 'large-text' : ''}`}>
+        <style>{cssStyles}</style>
+        
+        {/* Achievement Notification - Global */}
+        <AchievementNotification />
+        
+        {/* Level Header */}
+        <div className="bg-gradient-to-r from-purple-900 to-pink-900 px-4 py-3 flex items-center justify-between border-b border-white/10">
+          <button 
+            onClick={() => { 
+              setIsPlaying(false); 
+              // Stop all scheduled audio immediately
+              AudioEngine.stopAll();
+              setView('levels'); 
+            }} 
+            className="p-2 bg-white/10 hover:bg-white/20 rounded-xl text-white transition-all"
+          ><Icons.ChevronLeft /></button>
+          
+          <div className="text-center">
+            <div className="flex items-center gap-2 justify-center">
+              <span className="text-xl">{currentLevel.icon}</span>
+              <span className="font-black text-white text-lg">{currentLevel.name}</span>
+            </div>
+            <div className="text-xs text-purple-300">{currentLevel.difficulty}</div>
+          </div>
+          
+          <button 
+            onClick={showNextHint}
+            className="p-2 bg-amber-500/20 hover:bg-amber-500/30 rounded-xl text-amber-400 font-bold transition-all flex items-center gap-1"
+          >
+            💡 Hint
+          </button>
+        </div>
+        
+        {/* Objective Banner */}
+        <div className="bg-slate-800/80 px-4 py-3 text-center border-b border-slate-700">
+          <div className="text-xs text-slate-400 uppercase tracking-wide mb-1">Objective</div>
+          <div className="text-white font-bold">{currentLevel.objective}</div>
+          
+          {/* Requirements */}
+          <div className="flex flex-wrap justify-center gap-2 mt-2">
+            {Object.entries(currentLevel.requirements.mustInclude || {}).map(([inst, count]) => {
+              const current = grid[inst]?.filter(Boolean).length || 0;
+              const met = current >= count;
+              return (
+                <div key={inst} className={`px-2 py-1 rounded-lg text-xs font-bold ${met ? 'bg-green-500/30 text-green-400' : 'bg-slate-700 text-slate-400'}`}>
+                  {inst.toUpperCase()}: {current}/{count} {met && '✔'}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        
+        {/* Hint Popup */}
+        {showHint && currentLevel.hints && (
+          <div className="absolute top-32 left-1/2 -translate-x-1/2 z-50 bg-amber-500 text-black px-6 py-3 rounded-2xl shadow-2xl max-w-sm text-center font-bold animate-bounce-in">
+            {currentLevel.hints[currentHintIndex]}
+          </div>
+        )}
+        
+        {/* Progress Bar */}
+        <div className="bg-slate-900 px-4 py-2">
+          <div className="flex justify-between text-xs text-slate-400 mb-1">
+            <span>Completion</span>
+            <span className={completion.score >= 100 ? 'text-green-400' : ''}>{completion.score}%</span>
+          </div>
+          <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+            <div 
+              className={`h-full transition-all ${completion.score >= 100 ? 'bg-green-500' : 'bg-purple-500'}`}
+              style={{ width: `${Math.min(100, completion.score)}%` }}
+            ></div>
+          </div>
+        </div>
+        
+        {/* Grid Area - Scrollable */}
+        <div className="flex-1 overflow-auto bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-2">
+          <div className="space-y-1">
+            {Object.keys(SOUND_VARIANTS).filter(inst => activeInstrumentIds.includes(inst)).map((instKey) => {
+              const config = instrumentConfig[instKey] || { muted: false, volume: 80, soundVariant: 0 };
+              const isRequired = currentLevel.requirements.instruments?.includes(instKey);
+              
+              return (
+                <div key={instKey} className={`flex items-center gap-1 ${isRequired ? 'ring-2 ring-purple-500/50 rounded-xl' : ''}`}>
+                  <div className={`w-16 sm:w-20 text-xs font-black uppercase text-center py-2 rounded-l-xl ${isRequired ? 'bg-purple-600 text-white' : 'bg-slate-700 text-slate-300'}`}>
+                    {instKey}
+                    {isRequired && <span className="ml-1 text-yellow-300">★</span>}
+                  </div>
+                  <div className="flex-1 flex gap-0.5">
+                    {Array.from({ length: STEPS }).map((_, step) => {
+                      const isActive = grid[instKey]?.[step];
+                      const isBeat = step % 8 === 0;
+                      
+                      return (
+                        <button
+                          key={step}
+                          onClick={() => {
+                            const newGrid = { ...grid };
+                            if (!newGrid[instKey]) newGrid[instKey] = Array(STEPS).fill(false);
+                            newGrid[instKey][step] = !newGrid[instKey][step];
+                            setGrid(newGrid);
+                          }}
+                          className={`flex-1 h-8 sm:h-10 rounded transition-all ${
+                            isActive 
+                              ? 'bg-gradient-to-br from-purple-500 to-pink-500 shadow-lg scale-95' 
+                              : isBeat 
+                                ? 'bg-slate-600 hover:bg-slate-500' 
+                                : 'bg-slate-700 hover:bg-slate-600'
+                          } ${currentStep === step && isPlaying ? 'ring-2 ring-cyan-400' : ''}`}
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        
+        {/* Control Bar */}
+        <div className="bg-slate-900 border-t border-slate-700 px-4 py-3 flex items-center justify-center gap-4">
+          <button 
+            onClick={() => { 
+              AudioEngine.init(); 
+              if (!isPlaying) {
+                trackFirstPlay();
+              }
+              setIsPlaying(!isPlaying); 
+            }} 
+            className={`w-16 h-16 rounded-full flex items-center justify-center transition-all shadow-xl ${isPlaying ? 'bg-red-500 border-b-4 border-red-700' : 'bg-green-500 border-b-4 border-green-700'} text-white`}
+          >
+            {isPlaying ? <Icons.Stop /> : <Icons.Play />}
+          </button>
+          
+          <div className="flex flex-col items-center">
+            <span className="text-xs text-slate-400">Tempo</span>
+            <span className="text-white font-bold">{tempo} BPM</span>
+          </div>
+          
+          <button 
+            onClick={submitLevel}
+            disabled={completion.score < 100}
+            className={`px-6 py-3 rounded-xl font-bold transition-all ${
+              completion.score >= 100 
+                ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg hover:scale-105' 
+                : 'bg-slate-700 text-slate-500 cursor-not-allowed'
+            }`}
+          >
+            {completion.score >= 100 ? '✔ Submit' : 'Complete to Submit'}
+          </button>
+        </div>
+        
+        {/* Level Complete Modal */}
+        {levelComplete && (
+          <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-gradient-to-br from-green-900 to-emerald-900 border-4 border-green-500 rounded-3xl p-8 max-w-md w-full text-center shadow-2xl animate-bounce-in">
+              <div className="text-6xl mb-4">🎉</div>
+              <h2 className="text-3xl font-black text-white mb-2">Level Complete!</h2>
+              <p className="text-green-300 mb-4">{currentLevel.name}</p>
+              
+              {/* Stars */}
+              <div className="flex justify-center gap-2 mb-6">
+                {[1, 2, 3].map(s => (
+                  <span key={s} className={`text-4xl ${s <= checkLevelCompletion(currentLevel).stars ? 'text-yellow-400' : 'text-slate-600'}`}>
+                    ★
+                  </span>
+                ))}
+              </div>
+              
+              {/* Rewards */}
+              <div className="bg-black/30 rounded-xl p-4 mb-6">
+                <div className="text-amber-400 font-bold text-xl">+{currentLevel.xpReward} XP</div>
+              </div>
+              
+              <div className="flex gap-3">
+                <button
+                  onClick={() => { setLevelComplete(false); setView('levels'); }}
+                  className="flex-1 px-4 py-3 bg-slate-700 hover:bg-slate-600 rounded-xl font-bold text-white transition-all"
+                >
+                  Back to Levels
+                </button>
+                <button
+                  onClick={() => {
+                    setLevelComplete(false);
+                    // Go to next level if available
+                    const nextLevel = GAME_LEVELS.find(l => l.id === currentLevel.id + 1);
+                    if (nextLevel) {
+                      const newGrid = {};
+                      Object.keys(SOUND_VARIANTS).forEach(key => newGrid[key] = Array(STEPS).fill(false));
+                      setGrid(newGrid);
+                      setCurrentLevel(nextLevel);
+                      setCurrentHintIndex(0);
+                      setTempo(nextLevel.tempo);
+                    } else {
+                      setView('levels');
+                    }
+                  }}
+                  className="flex-1 px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl font-bold text-white transition-all hover:scale-105"
+                >
+                  Next Level →
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   if (view === 'modes') {
     return (
       <div className={`h-screen w-full text-white flex flex-col overflow-hidden font-sans relative ${highContrastMode ? 'high-contrast' : ''} ${largeTextMode ? 'large-text' : ''}`} role="main" aria-label="Game Modes">
@@ -3414,6 +5330,10 @@ export default function RhythmRealm() {
         <a href="#modes-content" className="skip-link" onFocus={() => speak('Skip to modes menu')}>Skip to modes</a>
         <VoiceControlIndicator />
         <PixelMusicBackground theme={currentTheme} />
+        
+        {/* Achievement Notification - Global */}
+        <AchievementNotification />
+        
         <div className="relative z-10 px-4 sm:px-6 py-4 sm:py-6 flex items-center justify-between border-b border-white/10 bg-black/30 backdrop-blur-sm">
           <button 
             onClick={() => setView('splash')} 
@@ -3482,7 +5402,7 @@ export default function RhythmRealm() {
             aria-label={t('beatLibrary') + " - " + t('beatLibraryDesc')}
           >
             <div className="flex items-center gap-3 sm:gap-4">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/20 rounded-xl sm:rounded-2xl flex items-center justify-center text-2xl sm:text-4xl" aria-hidden="true">📀</div>
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/20 rounded-xl sm:rounded-2xl flex items-center justify-center text-2xl sm:text-4xl" aria-hidden="true">🎵</div>
               <div className="flex-1">
                 <div className="text-lg sm:text-2xl font-black">{t('beatLibrary')}</div>
                 <div className="text-xs sm:text-sm opacity-80 mt-1">{t('beatLibraryDesc')}</div>
@@ -3497,6 +5417,8 @@ export default function RhythmRealm() {
               AudioEngine.init();
               setPreviousView('modes');
               setView('djmode');
+              // Track DJ mode usage for achievement
+              setUserStats(prev => ({ ...prev, usedDJMode: true }));
             }}
             className="w-full p-4 sm:p-6 bg-gradient-to-br from-emerald-500/90 to-teal-600/90 backdrop-blur-sm rounded-2xl sm:rounded-3xl text-left border-b-8 border-teal-700 active:border-b-0 active:translate-y-2 transition-all hover:scale-[1.02] shadow-2xl"
             onMouseEnter={() => speak(t('djMode') + ". " + t('djModeDesc'))}
@@ -3545,7 +5467,7 @@ export default function RhythmRealm() {
                   }}
                   className="w-full p-4 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-2xl text-white font-bold text-lg hover:scale-[1.02] transition-all border-b-4 border-blue-700 active:border-b-0 active:translate-y-1 flex items-center justify-center gap-3"
                 >
-                  <span className="text-2xl">❓</span>
+                  <span className="text-2xl">✔️</span>
                   <div className="text-left">
                     <div className="font-black">Yes, Show Me How!</div>
                     <div className="text-xs opacity-80">Interactive guide in the studio</div>
@@ -3560,7 +5482,7 @@ export default function RhythmRealm() {
                   }}
                   className="w-full p-4 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-2xl text-white font-bold text-lg hover:scale-[1.02] transition-all border-b-4 border-indigo-700 active:border-b-0 active:translate-y-1 flex items-center justify-center gap-3"
                 >
-                  <span className="text-2xl">🎓</span>
+                  <span className="text-2xl">🎶</span>
                   <div className="text-left">
                     <div className="font-black">Learn Music Genres</div>
                     <div className="text-xs opacity-80">Step-by-step genre tutorials</div>
@@ -3608,8 +5530,8 @@ export default function RhythmRealm() {
   if (view === 'tutorials') {
     const THEMED_TUTORIALS = [
       { 
-        name: "🎓 Basics: Happy Beat", 
-        icon: "😊", 
+        name: "🎵 Basics: Happy Beat", 
+        icon: "🎵", 
         desc: "Learn the FUNDAMENTALS - kick, snare, hi-hat, bass. Perfect for beginners!",
         theme: "from-yellow-400 to-orange-500",
         borderColor: "border-orange-600",
@@ -3619,7 +5541,7 @@ export default function RhythmRealm() {
       },
       { 
         name: "🌙 Lo-Fi & Chill", 
-        icon: "😌", 
+        icon: "🌙", 
         desc: "Master the art of SPACE and GROOVE. Less is more!",
         theme: "from-slate-500 to-indigo-600",
         borderColor: "border-indigo-700",
@@ -3629,7 +5551,7 @@ export default function RhythmRealm() {
       },
       { 
         name: "🏠 House Music 101", 
-        icon: "💃", 
+        icon: "💿", 
         desc: "The classic FOUR-ON-THE-FLOOR and offbeat hi-hats!",
         theme: "from-pink-500 to-purple-600",
         borderColor: "border-purple-700",
@@ -3669,7 +5591,7 @@ export default function RhythmRealm() {
       },
       { 
         name: "🔥 Reggaeton Dembow", 
-        icon: "💃", 
+        icon: "💿", 
         desc: "The DEMBOW rhythm that powers Latin hits!",
         theme: "from-yellow-500 to-orange-600",
         borderColor: "border-orange-700",
@@ -3722,7 +5644,7 @@ export default function RhythmRealm() {
         <div className="relative z-10 flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 sm:space-y-4">
           <div className="text-center mb-4 sm:mb-6">
             <p className="text-cyan-300/80 text-sm sm:text-lg font-medium">Learn different music styles step by step!</p>
-            <p className="text-white/50 text-xs sm:text-sm mt-1">Each tutorial teaches you real music concepts 🎓</p>
+            <p className="text-white/50 text-xs sm:text-sm mt-1">Each tutorial teaches you real music concepts 🎶</p>
           </div>
           
           {/* Difficulty Legend */}
@@ -3811,9 +5733,13 @@ export default function RhythmRealm() {
       <div className="h-screen w-full text-white flex flex-col overflow-hidden font-sans relative">
         <style>{cssStyles}</style>
         <PixelMusicBackground theme={currentTheme} />
+        
+        {/* Achievement Notification */}
+        <AchievementNotification />
+        
         <div className="relative z-10 px-4 sm:px-6 py-4 sm:py-6 flex items-center justify-between border-b border-white/10 bg-black/30 backdrop-blur-sm">
           <button onClick={() => setView('modes')} className="p-2 sm:p-3 bg-white/10 hover:bg-white/20 rounded-xl sm:rounded-2xl shadow-lg transition-all active:scale-95"><Icons.ChevronLeft /></button>
-          <h2 className="text-xl sm:text-3xl font-black bg-gradient-to-r from-amber-400 via-orange-400 to-pink-400 bg-clip-text text-transparent">📀 BEAT LIBRARY</h2>
+          <h2 className="text-xl sm:text-3xl font-black bg-gradient-to-r from-amber-400 via-orange-400 to-pink-400 bg-clip-text text-transparent">🎵 BEAT LIBRARY</h2>
           <div className="w-10 sm:w-12"></div>
         </div>
         
@@ -3874,6 +5800,10 @@ export default function RhythmRealm() {
       <div className="h-screen w-full text-white flex flex-col overflow-hidden font-sans relative">
         <style>{cssStyles}</style>
         <PixelMusicBackground theme={currentTheme} />
+        
+        {/* Achievement Notification */}
+        <AchievementNotification />
+        
         <div className="relative z-10 px-4 sm:px-6 py-4 sm:py-6 flex items-center justify-between border-b border-white/10 bg-black/30 backdrop-blur-sm">
           <button onClick={() => setView('splash')} className="p-2 sm:p-3 bg-white/10 hover:bg-white/20 rounded-xl sm:rounded-2xl shadow-lg transition-all active:scale-95" aria-label={t('back')}><Icons.ChevronLeft /></button>
           <h2 className="text-xl sm:text-3xl font-black bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">⚙️ {t('settings').toUpperCase()}</h2>
@@ -3929,10 +5859,10 @@ export default function RhythmRealm() {
                 >
                   <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
                     {theme.id === 'ocean' && '🌊'}
-                    {theme.id === 'sunset' && '🌅'}
+                    {theme.id === 'sunset' && '🌦'}
                     {theme.id === 'golden' && '✨'}
                     {theme.id === 'forest' && '🌲'}
-                    {theme.id === 'neon' && '💜'}
+                    {theme.id === 'neon' && '🎧'}
                     {theme.id === 'midnight' && '🌙'}
                   </div>
                   <span className="text-xs font-bold">{theme.name}</span>
@@ -4142,7 +6072,7 @@ export default function RhythmRealm() {
                 className={`w-full p-4 rounded-2xl font-bold text-lg transition-all ${accessibilityMode ? 'bg-gradient-to-r from-green-400 to-emerald-500 text-black' : 'bg-gradient-to-r from-yellow-400 to-orange-500 text-black hover:from-yellow-300 hover:to-orange-400'}`}
                 aria-label={accessibilityMode ? 'Disable all accessibility features' : 'Enable all accessibility features'}
               >
-                {accessibilityMode ? `✓ ${t('allEnabled')}` : `♿ ${t('enableAll')}`}
+                {accessibilityMode ? `✔ ${t('allEnabled')}` : `☑️ ${t('enableAll')}`}
               </button>
 
               {/* Screen Reader Info */}
@@ -4169,7 +6099,7 @@ export default function RhythmRealm() {
             </h3>
             <div className="space-y-2">
               <button className="w-full p-4 bg-white/10 hover:bg-white/20 rounded-2xl text-left flex items-center gap-4 transition-all border-2 border-cyan-400">
-                <span className="text-2xl">🥁</span>
+                <span className="text-2xl">🥁</span>
                 <div className="flex-1">
                   <div className="font-bold">Classic Kit</div>
                   <div className="text-xs opacity-60">Default drum sounds</div>
@@ -4284,7 +6214,7 @@ export default function RhythmRealm() {
         id: 'stay', 
         name: 'Stay', 
         artist: 'Kid Laroi Style',
-        icon: '💔', 
+        icon: '💖', 
         bpm: 170, 
         genre: 'Pop/EDM',
         color: 'from-red-400 to-rose-600',
@@ -4358,7 +6288,7 @@ export default function RhythmRealm() {
         id: 'montero', 
         name: 'Montero', 
         artist: 'Lil Nas X Style',
-        icon: '🦋', 
+        icon: '🎸', 
         bpm: 178, 
         genre: 'Pop Trap',
         color: 'from-amber-400 to-red-500',
@@ -4448,13 +6378,13 @@ export default function RhythmRealm() {
 
     // Effect Pads
     const EFFECT_PADS = [
-      { id: 'airhorn', name: 'Air Horn', icon: '📯', color: 'from-yellow-400 to-orange-500' },
+      { id: 'airhorn', name: 'Air Horn', icon: '📣', color: 'from-yellow-400 to-orange-500' },
       { id: 'scratch', name: 'Scratch', icon: '💿', color: 'from-cyan-400 to-blue-500' },
       { id: 'siren', name: 'Siren', icon: '🚨', color: 'from-red-400 to-pink-500' },
       { id: 'laser', name: 'Laser', icon: '⚡', color: 'from-purple-400 to-indigo-500' },
       { id: 'bomb', name: 'Bomb Drop', icon: '💣', color: 'from-gray-600 to-gray-800' },
       { id: 'yeah', name: 'Yeah!', icon: '🎤', color: 'from-green-400 to-emerald-500' },
-      { id: 'reverse', name: 'Reverse', icon: '⏪', color: 'from-pink-400 to-rose-500' },
+      { id: 'reverse', name: 'Reverse', icon: '🔁', color: 'from-pink-400 to-rose-500' },
       { id: 'buildup', name: 'Build Up', icon: '🚀', color: 'from-amber-400 to-yellow-500' },
     ];
 
@@ -4664,13 +6594,13 @@ export default function RhythmRealm() {
         action: "load_right"
       },
       {
-        title: "Try the Crossfader! 🎚️",
+        title: "Try the Crossfader! 🎚️",
         text: "The CROSSFADER blends between Deck A and Deck B. Slide it left for Deck A, right for Deck B!",
         target: "crossfader",
         action: "crossfader"
       },
       {
-        title: "FX Pads! 🎛️",
+        title: "FX Pads! 🎛️",
         text: "Tap the FX PADS to trigger sound effects! Try the AIR HORN or SCRATCH - these are classic DJ moves!",
         target: "fx",
         action: "fx"
@@ -4726,11 +6656,11 @@ export default function RhythmRealm() {
             <div className="bg-gradient-to-r from-cyan-600 to-purple-600 rounded-2xl p-4 shadow-2xl border-2 border-white/30">
               <div className="flex items-start gap-3">
                 <div className="text-3xl animate-bounce" aria-hidden="true">
-                  {djTutorialStep === 0 && '👆'}
-                  {djTutorialStep === 1 && '▶️'}
+                  {djTutorialStep === 0 && '👠'}
+                  {djTutorialStep === 1 && '▶️'}
                   {djTutorialStep === 2 && '💿'}
-                  {djTutorialStep === 3 && '🎚️'}
-                  {djTutorialStep === 4 && '🎛️'}
+                  {djTutorialStep === 3 && '🎚️'}
+                  {djTutorialStep === 4 && '🎛️'}
                   {djTutorialStep === 5 && '⚡'}
                   {djTutorialStep === 6 && '🔁'}
                   {djTutorialStep === 7 && '🎉'}
@@ -4744,7 +6674,7 @@ export default function RhythmRealm() {
                       onClick={() => setDjTutorialActive(false)}
                       className="text-white/60 hover:text-white text-xs"
                     >
-                      Skip ✕
+                      Skip ✔️
                     </button>
                   </div>
                   <h3 className="font-black text-lg mb-1">{currentDjTutorial.title}</h3>
@@ -4874,9 +6804,9 @@ export default function RhythmRealm() {
                     onClick={() => unloadDeck('left')}
                     className="px-3 py-1.5 bg-red-600 hover:bg-red-500 rounded-lg text-xs font-bold transition-all"
                     title="Eject track"
-                  >
+                    >
                     ⏏️ EJECT
-                  </button>
+                    </button>
                 )}
                 <button
                   onClick={() => djDecks.left && triggerDjEffect('scratch')}
@@ -5023,7 +6953,7 @@ export default function RhythmRealm() {
 
           {/* Effect Pads */}
           <div className={`bg-slate-800/80 rounded-2xl p-4 border border-white/10 transition-all ${djTutorialActive && djTutorialStep === 4 ? 'ring-4 ring-yellow-400 animate-pulse' : ''}`}>
-            <div className="text-sm font-black text-white/80 mb-3 flex items-center gap-2">
+              <div className="text-sm font-black text-white/80 mb-3 flex items-center gap-2">
               <span className="text-xl">🎛️</span> FX PADS
             </div>
             <div className="grid grid-cols-4 gap-2">
@@ -5043,14 +6973,14 @@ export default function RhythmRealm() {
           {/* Effects Knobs */}
           <div className="bg-slate-800/80 rounded-2xl p-4 border border-white/10">
             <div className="text-sm font-black text-white/80 mb-3 flex items-center gap-2">
-              <span className="text-xl">🎚️</span> EFFECTS
+              <span className="text-xl">🎚️</span> EFFECTS
             </div>
             <div className="grid grid-cols-4 gap-4">
               {[
                 { id: 'filter', name: 'Filter', icon: '🌊', color: 'cyan' },
                 { id: 'echo', name: 'Echo', icon: '🔊', color: 'purple' },
                 { id: 'flanger', name: 'Flanger', icon: '🌀', color: 'pink' },
-                { id: 'reverb', name: 'Reverb', icon: '🏛️', color: 'amber' },
+                { id: 'reverb', name: 'Reverb', icon: '🏺️', color: 'amber' },
               ].map(effect => (
                 <div key={effect.id} className="flex flex-col items-center">
                   <div className="text-xl mb-1">{effect.icon}</div>
@@ -5104,7 +7034,7 @@ export default function RhythmRealm() {
   
   // Raining Music Notes Component
   const RainingNotes = () => {
-    const notes = ['♪', '♫', '♬', '🎵', '🎶', '🎹', '🎸', '🥁', '🎤'];
+    const notes = ['♫', '♩', '♪', '🎵', '🎶', '🎹', '🎸', '🥁', '🎤'];
     const colors = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#95e1d3', '#f38181', '#aa96da', '#fcbad3', '#a8d8ea', '#ff9a9e'];
     
     return (
@@ -5135,6 +7065,9 @@ export default function RhythmRealm() {
       <style>{cssStyles}</style>
       <a href="#beat-grid" className="skip-link" onFocus={() => speak('Skip to beat grid')}>Skip to beat grid</a>
       <VoiceControlIndicator />
+      
+      {/* Achievement Notification */}
+      <AchievementNotification />
       
       {/* Raining Notes when playing */}
       {isPlaying && <RainingNotes />}
@@ -5183,7 +7116,7 @@ export default function RhythmRealm() {
                   onBlur={stopSpeaking}
                   aria-label="Open interactive help tutorial"
                   title="Help Tutorial"
-                >❓</button>
+                >â“</button>
                 <button 
                   onClick={() => setShowVictory(true)} 
                   className={`p-2 sm:p-3 rounded-xl sm:rounded-2xl shadow-lg border-b-4 text-white hover:scale-105 active:scale-95 transition-all ${currentScore >= 50 ? 'bg-green-400 border-green-600' : 'bg-slate-400 border-slate-600 cursor-not-allowed'}`} 
@@ -5202,7 +7135,7 @@ export default function RhythmRealm() {
       {tutorialActive && currentScenario && currentScenario.tutorial && (
         <div className="absolute top-2 sm:top-4 left-1/2 -translate-x-1/2 z-50 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-2 sm:px-4 py-2 sm:py-3 rounded-xl sm:rounded-2xl shadow-xl border-2 border-white animate-bounce-in flex flex-col items-center gap-1 max-w-[90%] sm:max-w-md w-full pointer-events-none">
           <div className="flex items-center gap-2 w-full">
-            <div className="text-lg sm:text-2xl animate-bounce">👆</div>
+            <div className="text-lg sm:text-2xl animate-bounce">👠</div>
             <div className="flex-1 min-w-0">
               <div className="font-bold uppercase tracking-wider text-[8px] sm:text-[10px] text-indigo-200 mb-0.5 flex flex-wrap items-center gap-1">
                  <span className="bg-white/20 px-1.5 py-0.5 rounded-full">Step {tutorialStep + 1}/{currentScenario.tutorial.length}</span>
@@ -5274,13 +7207,23 @@ export default function RhythmRealm() {
          {/* --- COMPOSER GRID --- */}
          <div className="flex-1 overflow-x-auto overflow-y-auto p-2 sm:p-4">
             <div className={`${isMobile ? '' : 'min-w-max'} space-y-1 pb-24`}>
-                 {/* Step indicators - hidden on mobile */}
+                 {/* Step indicators - hidden on mobile, clickable to seek */}
                  {!isMobile && (
                  <div className="flex items-center gap-3 mb-1 p-2">
-                   <div className="w-[180px] shrink-0"></div>
+                   <div className="w-[180px] shrink-0 text-xs text-slate-500 text-right pr-2">Click to seek →</div>
                    <div className="grid gap-0.5 flex-1 p-1" style={{ gridTemplateColumns: 'repeat(32, minmax(24px, 1fr))' }}>
                      {[...Array(STEPS)].map((_, i) => (
-                       <div key={i} className={`h-1.5 rounded-full ${i % 4 === 0 ? 'bg-slate-500' : 'bg-slate-800'} relative`}>
+                       <div 
+                         key={i} 
+                         onClick={() => seekToStep(i)}
+                         className={`h-3 rounded-full cursor-pointer transition-all hover:scale-y-150 ${
+                           currentStep === i 
+                             ? 'bg-cyan-400 shadow-lg shadow-cyan-400/50' 
+                             : i % 4 === 0 
+                               ? 'bg-slate-500 hover:bg-slate-400' 
+                               : 'bg-slate-800 hover:bg-slate-600'
+                         } relative`}
+                       >
                          {(i % 4 === 0) && <span className="text-[10px] font-bold text-slate-500 absolute -top-4 left-1/2 -translate-x-1/2">{Math.floor(i/4)+1}</span>}
                        </div>
                      ))}
@@ -5313,7 +7256,7 @@ export default function RhythmRealm() {
 
                    return (
                      <div key={instKey} className={`relative flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 group rounded-lg p-1.5 sm:p-2 transition-all ${rowOpacity} ${isTutorialTarget ? 'bg-indigo-500/20 ring-2 ring-indigo-400 shadow-lg z-20' : 'hover:bg-slate-800/30'}`}>
-                       {isTutorialTarget && !isMobile && <div className="absolute -left-10 top-1/2 -translate-y-1/2 animate-[bounce_1s_infinite] text-3xl z-50 filter drop-shadow-lg">👆</div>}
+                       {isTutorialTarget && !isMobile && <div className="absolute -left-10 top-1/2 -translate-y-1/2 animate-[bounce_1s_infinite] text-3xl z-50 filter drop-shadow-lg">👠</div>}
                        <div className="flex items-center gap-1 w-full sm:w-[180px] shrink-0 relative">
                            {/* Remove Button */}
                            <button 
@@ -5330,7 +7273,7 @@ export default function RhythmRealm() {
                                <span className="text-[8px] font-black text-slate-500 uppercase leading-tight">{instKey}</span>
                                <span className="text-[9px] font-bold text-slate-300 truncate w-10">{currentVariant.name}</span>
                              </div>
-                             <span className="text-[8px] text-slate-500">▼</span>
+                             <span className="text-[8px] text-slate-500">—¼</span>
                            </button>
                            
                            {/* Sound Variant Picker Popup */}
@@ -5413,7 +7356,7 @@ export default function RhythmRealm() {
                                  <span className="absolute inset-0 flex items-center justify-center text-xs font-black text-yellow-900 pointer-events-none">!</span>
                                )}
                                {isCompletedTarget && (
-                                 <span className="absolute inset-0 flex items-center justify-center text-xs pointer-events-none">✓</span>
+                                 <span className="absolute inset-0 flex items-center justify-center text-xs pointer-events-none">✔</span>
                                )}
                              </button>
                            );
@@ -5459,7 +7402,7 @@ export default function RhythmRealm() {
                                        {variant.icon}
                                      </div>
                                      <span className={`text-xs font-bold ${isAdded ? 'text-green-400' : 'text-slate-300'}`}>{inst.name}</span>
-                                     {isAdded && <span className="text-[8px] text-green-400 font-bold">✓ ADDED</span>}
+                                     {isAdded && <span className="text-[8px] text-green-400 font-bold">✔ ADDED</span>}
                                   </button>
                                 );
                               })}
@@ -5481,11 +7424,66 @@ export default function RhythmRealm() {
          </div>
       </div>
 
+      {/* Seek Bar - Timeline Scrubber */}
+      <div className="bg-slate-900 border-t border-slate-700 px-3 sm:px-6 py-2 shrink-0">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <span className="text-xs font-mono text-slate-400 w-10 sm:w-12 text-right">
+            {Math.floor(currentStep / 4) + 1}:{(currentStep % 4) + 1}
+          </span>
+          <div 
+            ref={seekBarRef}
+            className="flex-1 h-8 sm:h-10 bg-slate-800 rounded-xl cursor-pointer relative overflow-hidden group touch-none"
+            onClick={handleSeekBarInteraction}
+            onMouseDown={(e) => { setIsDraggingSeek(true); handleSeekBarInteraction(e); }}
+            onMouseMove={(e) => isDraggingSeek && handleSeekBarInteraction(e)}
+            onMouseUp={() => setIsDraggingSeek(false)}
+            onMouseLeave={() => setIsDraggingSeek(false)}
+            onTouchStart={(e) => { setIsDraggingSeek(true); handleSeekBarInteraction(e); }}
+            onTouchMove={(e) => isDraggingSeek && handleSeekBarInteraction(e)}
+            onTouchEnd={() => setIsDraggingSeek(false)}
+          >
+            {/* Beat markers */}
+            <div className="absolute inset-0 flex">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className={`flex-1 border-r border-slate-700 ${i % 2 === 0 ? 'bg-slate-800' : 'bg-slate-750'}`}>
+                  <span className="text-[8px] sm:text-[10px] text-slate-500 ml-1">{i + 1}</span>
+                </div>
+              ))}
+            </div>
+            {/* Progress fill */}
+            <div 
+              className="absolute inset-y-0 left-0 bg-gradient-to-r from-cyan-500/40 to-purple-500/40 transition-all duration-75"
+              style={{ width: `${(currentStep / STEPS) * 100}%` }}
+            />
+            {/* Playhead */}
+            <div 
+              className="absolute top-0 bottom-0 w-1 bg-cyan-400 shadow-lg shadow-cyan-500/50 transition-all duration-75"
+              style={{ left: `${(currentStep / STEPS) * 100}%` }}
+            >
+              <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-cyan-400 rounded-full shadow-lg" />
+              <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-cyan-400 rounded-full shadow-lg" />
+            </div>
+            {/* Hover indicator */}
+            <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+          </div>
+          <span className="text-xs font-mono text-slate-400 w-10 sm:w-12">
+            {STEPS / 4}:4
+          </span>
+        </div>
+      </div>
+
       {/* Bottom Control Bar - Mobile Responsive */}
       <div className="h-auto sm:h-24 bg-white border-t-2 border-slate-100 flex flex-wrap sm:flex-nowrap items-center justify-center gap-2 sm:gap-3 shrink-0 z-20 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] px-2 sm:px-4 py-2 sm:py-0 mobile-controls">
             {/* Play/Stop - Always prominent */}
             <div className={`flex items-center ${isMobile ? 'order-first w-full justify-center mb-2' : ''} gap-3 sm:gap-6 bg-slate-50 px-3 sm:px-6 py-2 rounded-[2rem] border border-slate-100`}>
-               <button onClick={() => { AudioEngine.init(); setIsPlaying(!isPlaying); }} className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all duration-200 transform border-b-8 active:border-b-0 active:translate-y-2 ${isPlaying ? 'bg-red-500 border-red-700 text-white' : 'bg-green-500 border-green-700 text-white hover:bg-green-400'}`}>{isPlaying ? <Icons.Stop /> : <Icons.Play />}</button>
+               <button onClick={() => { 
+                 AudioEngine.init(); 
+                 if (!isPlaying) {
+                   // Track first play for achievement
+                   setUserStats(prev => ({ ...prev, hasPlayedBeat: true }));
+                 }
+                 setIsPlaying(!isPlaying); 
+               }} className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all duration-200 transform border-b-8 active:border-b-0 active:translate-y-2 ${isPlaying ? 'bg-red-500 border-red-700 text-white' : 'bg-green-500 border-green-700 text-white hover:bg-green-400'}`}>{isPlaying ? <Icons.Stop /> : <Icons.Play />}</button>
             </div>
             <Button onClick={clearGrid} variant="secondary" className="w-10 h-10 sm:w-12 sm:h-12 !px-0 !py-2 sm:!py-3 !rounded-xl sm:!rounded-2xl text-slate-400 hover:text-slate-600 flex justify-center items-center"><Icons.Trash /></Button>
             <button onClick={() => setShowSaveModal(true)} className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl sm:rounded-2xl flex items-center justify-center text-white shadow-lg hover:scale-105 transition-all border-b-4 border-emerald-600 active:border-b-0 active:translate-y-1" title="Save Beat">
@@ -5545,13 +7543,32 @@ export default function RhythmRealm() {
       {/* Load Beat Modal */}
       {showLoadModal && (
         <div className="absolute inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl animate-bounce-in max-h-[80vh] flex flex-col">
-            <h2 className="text-2xl font-black text-slate-800 mb-4 flex items-center gap-3">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl animate-bounce-in max-h-[80vh] flex flex-col">
+            <h2 className="text-xl sm:text-2xl font-black text-slate-800 mb-4 flex items-center gap-3">
               <span className="w-10 h-10 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-xl flex items-center justify-center text-white">
                 <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 002-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
               </span>
               Load a Beat
             </h2>
+            
+            {/* Favorites Filter Toggle */}
+            {savedBeats.length > 0 && (
+              <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-200">
+                <button
+                  onClick={() => setShowFavoritesOnly(false)}
+                  className={`px-4 py-2 rounded-xl font-bold text-sm transition-all ${!showFavoritesOnly ? 'bg-indigo-500 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                >
+                  All ({savedBeats.length})
+                </button>
+                <button
+                  onClick={() => setShowFavoritesOnly(true)}
+                  className={`px-4 py-2 rounded-xl font-bold text-sm transition-all flex items-center gap-1 ${showFavoritesOnly ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                >
+                  ⭐ Favorites ({savedBeats.filter(b => b.favorite).length})
+                </button>
+              </div>
+            )}
+            
             <div className="flex-1 overflow-y-auto space-y-3 mb-4">
               {savedBeats.length === 0 ? (
                 <div className="text-center py-12 text-slate-400">
@@ -5560,32 +7577,52 @@ export default function RhythmRealm() {
                   <p className="text-sm">Create a beat and save it to see it here.</p>
                 </div>
               ) : (
-                savedBeats.map((beat) => (
-                  <div key={beat.id} className="flex items-center gap-3 p-4 bg-slate-50 rounded-2xl hover:bg-slate-100 transition-all group">
-                    <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-xl">🎶</div>
-                    <div className="flex-1">
-                      <div className="font-bold text-slate-800">{beat.name}</div>
-                      <div className="text-xs text-slate-400">{beat.date} • {beat.tempo} BPM • {beat.activeInstrumentIds.length} tracks</div>
+                (() => {
+                  const beatsToShow = showFavoritesOnly ? savedBeats.filter(b => b.favorite) : savedBeats;
+                  if (beatsToShow.length === 0) {
+                    return (
+                      <div className="text-center py-12 text-slate-400">
+                        <div className="text-5xl mb-4">⭐</div>
+                        <p className="font-bold">No favorites yet!</p>
+                        <p className="text-sm">Tap the star icon on a beat to add it to favorites.</p>
+                      </div>
+                    );
+                  }
+                  return beatsToShow.map((beat) => (
+                    <div key={beat.id} className={`flex items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-2xl transition-all group ${beat.favorite ? 'bg-amber-50 border-2 border-amber-200' : 'bg-slate-50 hover:bg-slate-100'}`}>
+                      {/* Favorite Toggle */}
+                      <button
+                        onClick={() => toggleFavorite(beat.id)}
+                        className={`p-2 rounded-xl transition-all ${beat.favorite ? 'text-amber-500 hover:text-amber-600' : 'text-slate-300 hover:text-amber-400'}`}
+                        title={beat.favorite ? 'Remove from favorites' : 'Add to favorites'}
+                      >
+                        {beat.favorite ? '⭐' : '☆'}
+                      </button>
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-lg sm:text-xl shrink-0">🎶</div>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-bold text-slate-800 truncate">{beat.name}</div>
+                        <div className="text-xs text-slate-400">{beat.date} • {beat.tempo} BPM • {beat.activeInstrumentIds.length} tracks</div>
+                      </div>
+                      <button
+                        onClick={() => loadBeat(beat)}
+                        className="px-3 sm:px-4 py-2 bg-gradient-to-r from-blue-400 to-indigo-500 text-white rounded-xl font-bold hover:scale-105 transition-all shadow-md text-sm"
+                      >
+                        Load
+                      </button>
+                      <button
+                        onClick={() => setDeleteConfirm(beat)}
+                        className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                        title="Delete beat"
+                      >
+                        <Icons.Trash />
+                      </button>
                     </div>
-                    <button
-                      onClick={() => loadBeat(beat)}
-                      className="px-4 py-2 bg-gradient-to-r from-blue-400 to-indigo-500 text-white rounded-xl font-bold hover:scale-105 transition-all shadow-md"
-                    >
-                      Load
-                    </button>
-                    <button
-                      onClick={() => setDeleteConfirm(beat)}
-                      className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
-                      title="Delete beat"
-                    >
-                      <Icons.Trash />
-                    </button>
-                  </div>
-                ))
+                  ));
+                })()
               )}
             </div>
             <button
-              onClick={() => setShowLoadModal(false)}
+              onClick={() => { setShowLoadModal(false); setShowFavoritesOnly(false); }}
               className="w-full p-4 bg-slate-100 hover:bg-slate-200 rounded-2xl font-bold text-slate-600 transition-all"
             >
               Close
@@ -5599,12 +7636,12 @@ export default function RhythmRealm() {
         <div className="absolute inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
           <div className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl animate-bounce-in text-center">
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-3xl">🗑️</span>
+              <span className="text-3xl">��️</span>
             </div>
             <h3 className="text-xl font-black text-slate-800 mb-2">Delete Beat?</h3>
             <p className="text-slate-500 mb-1">Are you sure you want to delete</p>
             <p className="text-lg font-bold text-slate-800 mb-4">"{deleteConfirm.name}"</p>
-            <p className="text-xs text-red-500 mb-6">⚠️ This action cannot be undone!</p>
+            <p className="text-xs text-red-500 mb-6">âš ️ This action cannot be undone!</p>
             <div className="flex gap-3">
               <button
                 onClick={() => setDeleteConfirm(null)}
@@ -5619,7 +7656,7 @@ export default function RhythmRealm() {
                 }}
                 className="flex-1 p-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 rounded-xl font-bold text-white transition-all shadow-lg"
               >
-                🗑️ Delete
+                ��️ Delete
               </button>
             </div>
           </div>
@@ -5666,7 +7703,42 @@ export default function RhythmRealm() {
               {currentScore >= 70 && <Icons.Star />}
               {currentScore >= 90 && <Icons.Star />}
             </div>
-            <Button onClick={() => setView('splash')} size="lg" className="w-full">Back to Menu</Button>
+            {/* Score Details for logged in users */}
+            {user && (
+              <div className="mb-6 p-4 bg-slate-100 rounded-2xl text-left">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-slate-600 font-bold">Score:</span>
+                  <span className="text-2xl font-black text-purple-600">+{Math.round(currentScore * 10)}</span>
+                </div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-slate-600 font-bold">Accuracy:</span>
+                  <span className="text-lg font-bold text-green-600">{Math.round(currentScore)}%</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-600 font-bold">XP Earned:</span>
+                  <span className="text-lg font-bold text-amber-600">+{Math.round(currentScore)} XP</span>
+                </div>
+              </div>
+            )}
+            {!user && (
+              <div className="mb-6 p-4 bg-purple-100 rounded-2xl">
+                <p className="text-purple-700 font-bold text-sm mb-2">🔐 Login to save your scores!</p>
+                <button 
+                  onClick={() => { setShowVictory(false); setShowAuthModal(true); }}
+                  className="px-4 py-2 bg-purple-500 text-white rounded-xl font-bold text-sm hover:bg-purple-400 transition-all"
+                >
+                  Login Now
+                </button>
+              </div>
+            )}
+            <Button onClick={() => { 
+              // Save score if logged in and tutorial
+              if (user && currentScenario && tutorialActive) {
+                saveTutorialScore(currentScenario.id, currentScenario.name, currentScore);
+              }
+              setShowVictory(false);
+              setView('splash');
+            }} size="lg" className="w-full">Back to Menu</Button>
           </div>
         </div>
       )}
@@ -5674,3 +7746,4 @@ export default function RhythmRealm() {
     </div>
   );
 }
+
