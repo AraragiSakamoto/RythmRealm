@@ -156,65 +156,65 @@ const cssStyles = `
 // VISUAL THEMES DATA
 // ==========================================
 const VISUAL_THEMES = [
-  { 
-     id: 'ocean',
-     name: 'Ocean',
-     primary: 'from-sky-400 to-blue-500',
-     bgColors: ['#0f172a', '#172554', '#0f172a'], // slate-900, blue-950, slate-900
-     gridColor: 'rgba(56, 189, 248, 0.3)',
-     noteColors: ['#38bdf8', '#0ea5e9', '#06b6d4', '#22d3ee', '#67e8f9', '#0284c7', '#0369a1'],
-     scanlineColor: '#22d3ee',
-     eqColors: ['#06b6d4', '#3b82f6', '#0ea5e9'], // cyan, blue, sky
+  {
+    id: 'ocean',
+    name: 'Ocean',
+    primary: 'from-sky-400 to-blue-500',
+    bgColors: ['#0f172a', '#172554', '#0f172a'], // slate-900, blue-950, slate-900
+    gridColor: 'rgba(56, 189, 248, 0.3)',
+    noteColors: ['#38bdf8', '#0ea5e9', '#06b6d4', '#22d3ee', '#67e8f9', '#0284c7', '#0369a1'],
+    scanlineColor: '#22d3ee',
+    eqColors: ['#06b6d4', '#3b82f6', '#0ea5e9'], // cyan, blue, sky
   },
-  { 
-     id: 'sunset',
-     name: 'Sunset',
-     primary: 'from-pink-400 to-rose-500',
-     bgColors: ['#0f172a', '#4c0519', '#0f172a'], // slate-900, rose-950, slate-900
-     gridColor: 'rgba(244, 63, 94, 0.3)',
-     noteColors: ['#fb7185', '#f43f5e', '#e11d48', '#ff6b6b', '#fda4af', '#ec4899', '#f472b6'],
-     scanlineColor: '#fb7185',
-     eqColors: ['#ec4899', '#f43f5e', '#ef4444'], // pink, rose, red
+  {
+    id: 'sunset',
+    name: 'Sunset',
+    primary: 'from-pink-400 to-rose-500',
+    bgColors: ['#0f172a', '#4c0519', '#0f172a'], // slate-900, rose-950, slate-900
+    gridColor: 'rgba(244, 63, 94, 0.3)',
+    noteColors: ['#fb7185', '#f43f5e', '#e11d48', '#ff6b6b', '#fda4af', '#ec4899', '#f472b6'],
+    scanlineColor: '#fb7185',
+    eqColors: ['#ec4899', '#f43f5e', '#ef4444'], // pink, rose, red
   },
-  { 
-     id: 'golden',
-     name: 'Golden',
-     primary: 'from-amber-400 to-orange-500',
-     bgColors: ['#0f172a', '#451a03', '#0f172a'], // slate-900, amber-950, slate-900
-     gridColor: 'rgba(251, 191, 36, 0.3)',
-     noteColors: ['#fbbf24', '#f59e0b', '#d97706', '#fcd34d', '#fde68a', '#ea580c', '#fb923c'],
-     scanlineColor: '#fbbf24',
-     eqColors: ['#eab308', '#f59e0b', '#f97316'], // yellow, amber, orange
+  {
+    id: 'golden',
+    name: 'Golden',
+    primary: 'from-amber-400 to-orange-500',
+    bgColors: ['#0f172a', '#451a03', '#0f172a'], // slate-900, amber-950, slate-900
+    gridColor: 'rgba(251, 191, 36, 0.3)',
+    noteColors: ['#fbbf24', '#f59e0b', '#d97706', '#fcd34d', '#fde68a', '#ea580c', '#fb923c'],
+    scanlineColor: '#fbbf24',
+    eqColors: ['#eab308', '#f59e0b', '#f97316'], // yellow, amber, orange
   },
-  { 
-     id: 'forest',
-     name: 'Forest',
-     primary: 'from-emerald-400 to-green-500',
-     bgColors: ['#0f172a', '#022c22', '#0f172a'], // slate-900, emerald-950, slate-900
-     gridColor: 'rgba(52, 211, 153, 0.3)',
-     noteColors: ['#34d399', '#10b981', '#059669', '#6ee7b7', '#a7f3d0', '#14b8a6', '#2dd4bf'],
-     scanlineColor: '#34d399',
-     eqColors: ['#22c55e', '#10b981', '#14b8a6'], // green, emerald, teal
+  {
+    id: 'forest',
+    name: 'Forest',
+    primary: 'from-emerald-400 to-green-500',
+    bgColors: ['#0f172a', '#022c22', '#0f172a'], // slate-900, emerald-950, slate-900
+    gridColor: 'rgba(52, 211, 153, 0.3)',
+    noteColors: ['#34d399', '#10b981', '#059669', '#6ee7b7', '#a7f3d0', '#14b8a6', '#2dd4bf'],
+    scanlineColor: '#34d399',
+    eqColors: ['#22c55e', '#10b981', '#14b8a6'], // green, emerald, teal
   },
-  { 
-     id: 'neon',
-     name: 'Neon',
-     primary: 'from-violet-400 to-purple-500',
-     bgColors: ['#0f172a', '#3b0764', '#0f172a'], // slate-900, purple-950, slate-900
-     gridColor: 'rgba(139, 92, 246, 0.3)',
-     noteColors: ['#ff00ff', '#00ffff', '#ffff00', '#ff6b6b', '#4ecdc4', '#a855f7', '#ec4899'],
-     scanlineColor: '#a855f7',
-     eqColors: ['#06b6d4', '#a855f7', '#ec4899'], // cyan, purple, pink
+  {
+    id: 'neon',
+    name: 'Neon',
+    primary: 'from-violet-400 to-purple-500',
+    bgColors: ['#0f172a', '#3b0764', '#0f172a'], // slate-900, purple-950, slate-900
+    gridColor: 'rgba(139, 92, 246, 0.3)',
+    noteColors: ['#ff00ff', '#00ffff', '#ffff00', '#ff6b6b', '#4ecdc4', '#a855f7', '#ec4899'],
+    scanlineColor: '#a855f7',
+    eqColors: ['#06b6d4', '#a855f7', '#ec4899'], // cyan, purple, pink
   },
-  { 
-     id: 'midnight',
-     name: 'Midnight',
-     primary: 'from-slate-400 to-slate-500',
-     bgColors: ['#020617', '#0f172a', '#020617'], // slate-950, slate-900, slate-950
-     gridColor: 'rgba(100, 116, 139, 0.3)',
-     noteColors: ['#94a3b8', '#64748b', '#475569', '#cbd5e1', '#e2e8f0', '#334155', '#1e293b'],
-     scanlineColor: '#94a3b8',
-     eqColors: ['#64748b', '#475569', '#334155'], // slate colors
+  {
+    id: 'midnight',
+    name: 'Midnight',
+    primary: 'from-slate-400 to-slate-500',
+    bgColors: ['#020617', '#0f172a', '#020617'], // slate-950, slate-900, slate-950
+    gridColor: 'rgba(100, 116, 139, 0.3)',
+    noteColors: ['#94a3b8', '#64748b', '#475569', '#cbd5e1', '#e2e8f0', '#334155', '#1e293b'],
+    scanlineColor: '#94a3b8',
+    eqColors: ['#64748b', '#475569', '#334155'], // slate colors
   },
 ];
 
@@ -223,14 +223,14 @@ const VISUAL_THEMES = [
 // ==========================================
 const PixelMusicBackground = ({ theme = VISUAL_THEMES[4] }) => {
   const pixelNotes = ['♪', '♫', '♬', '🎵', '🎶'];
-  
+
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {/* Dark gradient base */}
       <div className="absolute inset-0" style={{
         background: `linear-gradient(135deg, ${theme.bgColors[0]} 0%, ${theme.bgColors[1]} 50%, ${theme.bgColors[2]} 100%)`
       }}></div>
-      
+
       {/* Pixel Grid Pattern */}
       <div className="absolute inset-0 opacity-20" style={{
         backgroundImage: `
@@ -240,14 +240,14 @@ const PixelMusicBackground = ({ theme = VISUAL_THEMES[4] }) => {
         backgroundSize: '20px 20px',
         animation: 'grid-pulse 4s ease-in-out infinite'
       }}></div>
-      
+
       {/* Scanline effect */}
       <div className="absolute left-0 right-0 h-1"
-           style={{ 
-             background: `linear-gradient(to bottom, transparent, ${theme.scanlineColor}50, transparent)`,
-             animation: 'scanline 3s linear infinite' 
-           }}></div>
-      
+        style={{
+          background: `linear-gradient(to bottom, transparent, ${theme.scanlineColor}50, transparent)`,
+          animation: 'scanline 3s linear infinite'
+        }}></div>
+
       {/* Floating Pixel Music Notes */}
       {[...Array(15)].map((_, i) => (
         <div
@@ -265,7 +265,7 @@ const PixelMusicBackground = ({ theme = VISUAL_THEMES[4] }) => {
           {pixelNotes[i % pixelNotes.length]}
         </div>
       ))}
-      
+
       {/* Pixel Equalizer Bars - Left side */}
       <div className="absolute left-4 top-1/2 -translate-y-1/2 flex gap-1 opacity-60">
         {[...Array(8)].map((_, i) => (
@@ -282,7 +282,7 @@ const PixelMusicBackground = ({ theme = VISUAL_THEMES[4] }) => {
           ></div>
         ))}
       </div>
-      
+
       {/* Pixel Equalizer Bars - Right side */}
       <div className="absolute right-4 top-1/2 -translate-y-1/2 flex gap-1 opacity-60">
         {[...Array(8)].map((_, i) => (
@@ -299,7 +299,7 @@ const PixelMusicBackground = ({ theme = VISUAL_THEMES[4] }) => {
           ></div>
         ))}
       </div>
-      
+
       {/* Pixel Waveform - Bottom */}
       <div className="absolute bottom-0 left-0 right-0 h-20 flex items-end justify-center gap-[2px] opacity-40">
         {[...Array(60)].map((_, i) => (
@@ -316,7 +316,7 @@ const PixelMusicBackground = ({ theme = VISUAL_THEMES[4] }) => {
           ></div>
         ))}
       </div>
-      
+
       {/* Glowing Pixel Orbs */}
       {[...Array(6)].map((_, i) => (
         <div
@@ -335,13 +335,13 @@ const PixelMusicBackground = ({ theme = VISUAL_THEMES[4] }) => {
           }}
         ></div>
       ))}
-      
+
       {/* Pixel Music Symbols - Scattered */}
       <div className="absolute top-10 left-10 text-4xl opacity-30" style={{ color: theme.noteColors[0], imageRendering: 'pixelated' }}>🎹</div>
       <div className="absolute top-20 right-20 text-3xl opacity-20 animate-pulse" style={{ color: theme.noteColors[1], imageRendering: 'pixelated' }}>🎸</div>
       <div className="absolute bottom-32 left-20 text-3xl opacity-25" style={{ color: theme.noteColors[2], imageRendering: 'pixelated', animation: 'float 4s ease-in-out infinite' }}>🥁</div>
       <div className="absolute bottom-40 right-10 text-4xl opacity-20 animate-bounce" style={{ color: theme.noteColors[3], imageRendering: 'pixelated' }}>🎤</div>
-      
+
       {/* Corner Decorations - Pixel Style */}
       <div className="absolute top-0 left-0 w-20 h-20 m-4" style={{ borderLeft: `4px solid ${theme.eqColors[0]}80`, borderTop: `4px solid ${theme.eqColors[0]}80` }}></div>
       <div className="absolute top-0 right-0 w-20 h-20 m-4" style={{ borderRight: `4px solid ${theme.eqColors[2]}80`, borderTop: `4px solid ${theme.eqColors[2]}80` }}></div>
@@ -355,22 +355,22 @@ const PixelMusicBackground = ({ theme = VISUAL_THEMES[4] }) => {
 // 2. ICONS
 // ==========================================
 const Icons = {
-  Play: () => <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg>,
-  Stop: () => <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>,
+  Play: () => <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z" /></svg>,
+  Stop: () => <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="6" y="6" width="12" height="12" rx="2" /></svg>,
   Map: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>,
   Home: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>,
   Lock: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>,
   Close: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>,
   ChevronRight: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>,
   ChevronLeft: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>,
-  Star: () => <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>,
-  Trophy: () => <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20.2 6.5C20.2 6.5 19 3 12 3S3.8 6.5 3.8 6.5C2.6 6.9 2 8 2.2 9.3c.4 2.1 2.2 6.3 5.4 8.2 1 .6 2.3 1.2 4.4 1.2s3.4-.6 4.4-1.2c3.2-1.9 5-6.1 5.4-8.2.2-1.3-.4-2.4-1.6-2.8zm-8.2 9c-1.3 0-2.4-.4-3.3-1.1-1.8-1.4-2.6-3.8-2.5-4.4.1-.7 1.2-3.5 5.8-3.5s5.7 2.8 5.8 3.5c.2.6-.7 3-2.5 4.4-.9.7-2 1.1-3.3 1.1z"/><path d="M12 17c-3 0-5 1.5-5 3v2h10v-2c0-1.5-2-3-5-3z"/></svg>,
+  Star: () => <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>,
+  Trophy: () => <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20.2 6.5C20.2 6.5 19 3 12 3S3.8 6.5 3.8 6.5C2.6 6.9 2 8 2.2 9.3c.4 2.1 2.2 6.3 5.4 8.2 1 .6 2.3 1.2 4.4 1.2s3.4-.6 4.4-1.2c3.2-1.9 5-6.1 5.4-8.2.2-1.3-.4-2.4-1.6-2.8zm-8.2 9c-1.3 0-2.4-.4-3.3-1.1-1.8-1.4-2.6-3.8-2.5-4.4.1-.7 1.2-3.5 5.8-3.5s5.7 2.8 5.8 3.5c.2.6-.7 3-2.5 4.4-.9.7-2 1.1-3.3 1.1z" /><path d="M12 17c-3 0-5 1.5-5 3v2h10v-2c0-1.5-2-3-5-3z" /></svg>,
   Trash: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>,
   Book: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>,
   Music: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>,
   Minus: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>,
   Plus: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>,
-  GradCap: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>,
+  GradCap: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c3 3 9 3 12 0v-5" /></svg>,
   Wand: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M15 4V2"></path><path d="M15 16l-4-4"></path><path d="M11 2l-7 7a2.121 2.121 0 0 0 3 3L17 5a2.121 2.121 0 0 0-3-3z"></path><path d="M19 12v2"></path><path d="M19 19h2"></path><path d="M12 19h2"></path></svg>,
   Sliders: () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>,
   Sword: () => <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"></path><line x1="13" y1="19" x2="19" y2="13"></line><line x1="16" y1="16" x2="20" y2="20"></line><line x1="19" y1="21" x2="21" y2="19"></line></svg>,
@@ -441,120 +441,120 @@ const SoundLab = ({ instKey, config, onChange, onClose }) => {
           {/* Mute Toggle */}
           <div className="p-3 bg-slate-800/50 rounded-xl border border-slate-700/50">
             <div className="flex items-center justify-between">
-            <label className="text-xs font-bold text-slate-400 uppercase">🔇 Mute</label>
-            <button 
-              onClick={() => onChange('muted', !config.muted)} 
-              className={`w-12 h-6 rounded-full transition-all duration-200 ${config.muted ? 'bg-red-500' : 'bg-green-500'}`}
-            >
-              <div className={`w-5 h-5 bg-white rounded-full shadow transition-all ${config.muted ? 'translate-x-6' : 'translate-x-0.5'}`}></div>
-            </button>
-          </div>
-          {config.muted && <p className="text-xs text-red-400 mt-2 font-bold">This instrument is muted</p>}
-        </div>
-
-        {/* Volume */}
-        <div>
-          <div className="flex justify-between mb-2">
-            <label className="text-xs font-bold text-slate-400 uppercase">🔊 Volume</label>
-            <span className="text-xs font-bold text-green-400">{config.volume || 100}%</span>
-          </div>
-          <input type="range" min="0" max="100" value={config.volume || 100} onChange={(e) => onChange('volume', parseInt(e.target.value))} className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-green-500" />
-        </div>
-        
-        {/* Chord Type */}
-        <div>
-          <label className="text-xs font-bold text-slate-400 uppercase mb-2 block">🎵 Chord Type</label>
-          <div className="flex gap-2">
-            {['none', 'maj', 'min'].map(type => (
-              <button 
-                key={type} 
-                onClick={() => onChange('chord', type === 'none' ? null : type)} 
-                className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all 
-                ${(config.chord === type || (type === 'none' && !config.chord)) ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/30' : 'bg-slate-800 text-slate-400 hover:bg-slate-700 border border-slate-700'}`}
+              <label className="text-xs font-bold text-slate-400 uppercase">🔇 Mute</label>
+              <button
+                onClick={() => onChange('muted', !config.muted)}
+                className={`w-12 h-6 rounded-full transition-all duration-200 ${config.muted ? 'bg-red-500' : 'bg-green-500'}`}
               >
-                {type === 'none' ? 'Single' : type}
+                <div className={`w-5 h-5 bg-white rounded-full shadow transition-all ${config.muted ? 'translate-x-6' : 'translate-x-0.5'}`}></div>
               </button>
-            ))}
+            </div>
+            {config.muted && <p className="text-xs text-red-400 mt-2 font-bold">This instrument is muted</p>}
           </div>
-        </div>
 
-        {/* Pitch Shift */}
-        <div>
-          <div className="flex justify-between mb-2">
-            <label className="text-xs font-bold text-slate-400 uppercase">🎹 Pitch Shift</label>
-            <span className="text-xs font-bold text-indigo-400">{(config.pitch || 0) > 0 ? '+' : ''}{config.pitch || 0} st</span>
+          {/* Volume */}
+          <div>
+            <div className="flex justify-between mb-2">
+              <label className="text-xs font-bold text-slate-400 uppercase">🔊 Volume</label>
+              <span className="text-xs font-bold text-green-400">{config.volume || 100}%</span>
+            </div>
+            <input type="range" min="0" max="100" value={config.volume || 100} onChange={(e) => onChange('volume', parseInt(e.target.value))} className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-green-500" />
           </div>
-          <input type="range" min="-12" max="12" value={config.pitch || 0} onChange={(e) => onChange('pitch', parseInt(e.target.value))} className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500" />
-        </div>
 
-        {/* Attack */}
-        <div>
-          <div className="flex justify-between mb-2">
-            <label className="text-xs font-bold text-slate-400 uppercase">⚡ Attack</label>
-            <span className="text-xs font-bold text-orange-400">{config.attack || 0}ms</span>
+          {/* Chord Type */}
+          <div>
+            <label className="text-xs font-bold text-slate-400 uppercase mb-2 block">🎵 Chord Type</label>
+            <div className="flex gap-2">
+              {['none', 'maj', 'min'].map(type => (
+                <button
+                  key={type}
+                  onClick={() => onChange('chord', type === 'none' ? null : type)}
+                  className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all 
+                ${(config.chord === type || (type === 'none' && !config.chord)) ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/30' : 'bg-slate-800 text-slate-400 hover:bg-slate-700 border border-slate-700'}`}
+                >
+                  {type === 'none' ? 'Single' : type}
+                </button>
+              ))}
+            </div>
           </div>
-          <input type="range" min="0" max="500" value={config.attack || 0} onChange={(e) => onChange('attack', parseInt(e.target.value))} className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-orange-500" />
-        </div>
 
-        {/* Decay */}
-        <div>
-          <div className="flex justify-between mb-2">
-            <label className="text-xs font-bold text-slate-400 uppercase">📰 Decay</label>
-            <span className="text-xs font-bold text-amber-400">{config.decay || 100}ms</span>
+          {/* Pitch Shift */}
+          <div>
+            <div className="flex justify-between mb-2">
+              <label className="text-xs font-bold text-slate-400 uppercase">🎹 Pitch Shift</label>
+              <span className="text-xs font-bold text-indigo-400">{(config.pitch || 0) > 0 ? '+' : ''}{config.pitch || 0} st</span>
+            </div>
+            <input type="range" min="-12" max="12" value={config.pitch || 0} onChange={(e) => onChange('pitch', parseInt(e.target.value))} className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500" />
           </div>
-          <input type="range" min="50" max="2000" value={config.decay || 100} onChange={(e) => onChange('decay', parseInt(e.target.value))} className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-amber-500" />
-        </div>
 
-        {/* Filter */}
-        <div>
-          <div className="flex justify-between mb-2">
-            <label className="text-xs font-bold text-slate-400 uppercase">🌊 Filter</label>
-            <span className="text-xs font-bold text-cyan-400">{config.filter || 100}%</span>
+          {/* Attack */}
+          <div>
+            <div className="flex justify-between mb-2">
+              <label className="text-xs font-bold text-slate-400 uppercase">⚡ Attack</label>
+              <span className="text-xs font-bold text-orange-400">{config.attack || 0}ms</span>
+            </div>
+            <input type="range" min="0" max="500" value={config.attack || 0} onChange={(e) => onChange('attack', parseInt(e.target.value))} className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-orange-500" />
           </div>
-          <input type="range" min="0" max="100" value={config.filter || 100} onChange={(e) => onChange('filter', parseInt(e.target.value))} className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-cyan-500" />
-        </div>
 
-        {/* Reverb */}
-        <div>
-          <div className="flex justify-between mb-2">
-            <label className="text-xs font-bold text-slate-400 uppercase">🏺️ Reverb</label>
-            <span className="text-xs font-bold text-purple-400">{config.reverb || 0}%</span>
+          {/* Decay */}
+          <div>
+            <div className="flex justify-between mb-2">
+              <label className="text-xs font-bold text-slate-400 uppercase">📰 Decay</label>
+              <span className="text-xs font-bold text-amber-400">{config.decay || 100}ms</span>
+            </div>
+            <input type="range" min="50" max="2000" value={config.decay || 100} onChange={(e) => onChange('decay', parseInt(e.target.value))} className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-amber-500" />
           </div>
-          <input type="range" min="0" max="100" value={config.reverb || 0} onChange={(e) => onChange('reverb', parseInt(e.target.value))} className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-purple-500" />
-        </div>
 
-        {/* Distortion */}
-        <div>
-          <div className="flex justify-between mb-2">
-            <label className="text-xs font-bold text-slate-400 uppercase">🔥 Distortion</label>
-            <span className="text-xs font-bold text-red-400">{config.distortion || 0}%</span>
+          {/* Filter */}
+          <div>
+            <div className="flex justify-between mb-2">
+              <label className="text-xs font-bold text-slate-400 uppercase">🌊 Filter</label>
+              <span className="text-xs font-bold text-cyan-400">{config.filter || 100}%</span>
+            </div>
+            <input type="range" min="0" max="100" value={config.filter || 100} onChange={(e) => onChange('filter', parseInt(e.target.value))} className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-cyan-500" />
           </div>
-          <input type="range" min="0" max="100" value={config.distortion || 0} onChange={(e) => onChange('distortion', parseInt(e.target.value))} className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-red-500" />
-        </div>
 
-        {/* Pan */}
-        <div>
-          <div className="flex justify-between mb-2">
-            <label className="text-xs font-bold text-slate-400 uppercase">↔️ Pan</label>
-            <span className="text-xs font-bold text-blue-400">{(config.pan || 0) === 0 ? 'Center' : (config.pan || 0) < 0 ? `Left ${Math.abs(config.pan || 0)}` : `Right ${config.pan || 0}`}</span>
+          {/* Reverb */}
+          <div>
+            <div className="flex justify-between mb-2">
+              <label className="text-xs font-bold text-slate-400 uppercase">🏺️ Reverb</label>
+              <span className="text-xs font-bold text-purple-400">{config.reverb || 0}%</span>
+            </div>
+            <input type="range" min="0" max="100" value={config.reverb || 0} onChange={(e) => onChange('reverb', parseInt(e.target.value))} className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-purple-500" />
           </div>
-          <input type="range" min="-50" max="50" value={config.pan || 0} onChange={(e) => onChange('pan', parseInt(e.target.value))} className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500" />
-        </div>
 
-        {/* Bend Effect */}
-        <div>
-          <div className="flex justify-between mb-2">
-            <label className="text-xs font-bold text-slate-400 uppercase">〰️ Bend</label>
-            <span className="text-xs font-bold text-pink-400">{config.bend || 0}%</span>
+          {/* Distortion */}
+          <div>
+            <div className="flex justify-between mb-2">
+              <label className="text-xs font-bold text-slate-400 uppercase">🔥 Distortion</label>
+              <span className="text-xs font-bold text-red-400">{config.distortion || 0}%</span>
+            </div>
+            <input type="range" min="0" max="100" value={config.distortion || 0} onChange={(e) => onChange('distortion', parseInt(e.target.value))} className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-red-500" />
           </div>
-          <input type="range" min="0" max="100" value={config.bend || 0} onChange={(e) => onChange('bend', parseInt(e.target.value))} className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-pink-500" />
-        </div>
+
+          {/* Pan */}
+          <div>
+            <div className="flex justify-between mb-2">
+              <label className="text-xs font-bold text-slate-400 uppercase">↔️ Pan</label>
+              <span className="text-xs font-bold text-blue-400">{(config.pan || 0) === 0 ? 'Center' : (config.pan || 0) < 0 ? `Left ${Math.abs(config.pan || 0)}` : `Right ${config.pan || 0}`}</span>
+            </div>
+            <input type="range" min="-50" max="50" value={config.pan || 0} onChange={(e) => onChange('pan', parseInt(e.target.value))} className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500" />
+          </div>
+
+          {/* Bend Effect */}
+          <div>
+            <div className="flex justify-between mb-2">
+              <label className="text-xs font-bold text-slate-400 uppercase">〰️ Bend</label>
+              <span className="text-xs font-bold text-pink-400">{config.bend || 0}%</span>
+            </div>
+            <input type="range" min="0" max="100" value={config.bend || 0} onChange={(e) => onChange('bend', parseInt(e.target.value))} className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-pink-500" />
+          </div>
         </div>
 
         {/* Action Buttons - Sticky Footer */}
         <div className="shrink-0 p-4 pt-3 border-t border-slate-700 bg-slate-900">
           <div className="flex gap-2">
-            <button 
+            <button
               onClick={() => {
                 onChange('volume', 100);
                 onChange('pitch', 0);
@@ -572,7 +572,7 @@ const SoundLab = ({ instKey, config, onChange, onClose }) => {
             >
               Reset
             </button>
-            <button 
+            <button
               onClick={onClose}
               className="flex-1 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-400 hover:to-purple-400 rounded-lg text-xs font-bold text-white transition-all shadow-lg shadow-indigo-500/20"
             >
@@ -682,7 +682,7 @@ const OnboardingTutorial = ({ step, onNext, onSkip, onFinish }) => {
   if (!currentStep) return null;
 
   const isCenter = currentStep.position === 'center';
-  
+
   return (
     <>
       {/* Overlay */}
@@ -691,14 +691,13 @@ const OnboardingTutorial = ({ step, onNext, onSkip, onFinish }) => {
         <div className="absolute inset-0 bg-black/70 pointer-events-auto" onClick={currentStep.action === 'next' || currentStep.action === 'finish' ? undefined : (e) => e.stopPropagation()}>
           {/* Highlight specific elements */}
           {currentStep.highlight && (
-            <div className={`absolute animate-pulse-ring ${
-              currentStep.highlight === 'grid' ? 'top-24 left-52 right-4 bottom-32' :
+            <div className={`absolute animate-pulse-ring ${currentStep.highlight === 'grid' ? 'top-24 left-52 right-4 bottom-32' :
               currentStep.highlight === 'play-button' ? 'bottom-4 left-1/2 -translate-x-1/2 w-20 h-20' :
-              currentStep.highlight === 'tempo' ? 'bottom-4 right-4 w-32 h-16' :
-              currentStep.highlight === 'add-track' ? 'top-1/2 left-4 w-12 h-12' :
-              currentStep.highlight === 'instrument-icon' ? 'top-32 left-4 w-12 h-12' :
-              currentStep.highlight === 'soundlab-button' ? 'top-32 left-32 w-10 h-10' : ''
-            }`}>
+                currentStep.highlight === 'tempo' ? 'bottom-4 right-4 w-32 h-16' :
+                  currentStep.highlight === 'add-track' ? 'top-1/2 left-4 w-12 h-12' :
+                    currentStep.highlight === 'instrument-icon' ? 'top-32 left-4 w-12 h-12' :
+                      currentStep.highlight === 'soundlab-button' ? 'top-32 left-32 w-10 h-10' : ''
+              }`}>
               <div className="absolute inset-0 border-4 border-cyan-400 rounded-2xl animate-pulse"></div>
             </div>
           )}
@@ -706,43 +705,43 @@ const OnboardingTutorial = ({ step, onNext, onSkip, onFinish }) => {
       </div>
 
       {/* Tutorial Card */}
-      <div className={`fixed z-[101] ${isCenter ? 'inset-0 flex items-center justify-center p-4' : 
+      <div className={`fixed z-[101] ${isCenter ? 'inset-0 flex items-center justify-center p-4' :
         currentStep.position === 'top' ? 'top-20 left-1/2 -translate-x-1/2' :
-        currentStep.position === 'right' ? 'top-1/3 left-64' :
-        currentStep.position === 'bottom' ? 'bottom-24 left-1/2 -translate-x-1/2' : ''
-      }`}>
+          currentStep.position === 'right' ? 'top-1/3 left-64' :
+            currentStep.position === 'bottom' ? 'bottom-24 left-1/2 -translate-x-1/2' : ''
+        }`}>
         <div className={`bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-cyan-500/50 rounded-3xl shadow-2xl shadow-cyan-500/20 ${isCenter ? 'w-full max-w-md' : 'w-80'} animate-bounce-in`}>
           {/* Header */}
           <div className="p-4 border-b border-slate-700 flex items-center justify-between">
             <h3 className="font-black text-lg text-white">{currentStep.title}</h3>
-            <button 
+            <button
               onClick={onSkip}
               className="text-slate-400 hover:text-white text-sm font-bold px-3 py-1 rounded-lg hover:bg-slate-700 transition-all"
             >
               Skip
             </button>
           </div>
-          
+
           {/* Content */}
           <div className="p-5">
             <p className="text-slate-300 text-sm leading-relaxed">{currentStep.content}</p>
           </div>
-          
+
           {/* Footer */}
           <div className="p-4 pt-0 flex items-center justify-between">
             {/* Progress dots */}
             <div className="flex gap-1">
               {ONBOARDING_STEPS.map((_, i) => (
-                <div 
-                  key={i} 
+                <div
+                  key={i}
                   className={`w-2 h-2 rounded-full transition-all ${i === step ? 'bg-cyan-400 w-6' : i < step ? 'bg-cyan-400/50' : 'bg-slate-600'}`}
                 />
               ))}
             </div>
-            
+
             {/* Action button */}
             {currentStep.action === 'next' && (
-              <button 
+              <button
                 onClick={onNext}
                 className="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 rounded-xl text-white font-bold text-sm transition-all shadow-lg shadow-cyan-500/30"
               >
@@ -755,7 +754,7 @@ const OnboardingTutorial = ({ step, onNext, onSkip, onFinish }) => {
               </div>
             )}
             {currentStep.action === 'finish' && (
-              <button 
+              <button
                 onClick={onFinish}
                 className="px-5 py-2.5 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 rounded-xl text-white font-bold text-sm transition-all shadow-lg shadow-green-500/30"
               >
@@ -772,7 +771,7 @@ const OnboardingTutorial = ({ step, onNext, onSkip, onFinish }) => {
 // ==========================================
 // 4. DATA CONSTANTS
 // ==========================================
-const STEPS = 32; 
+const STEPS = 32;
 
 const INSTRUMENTS_DATA = [
   { id: 'kick', name: 'Kick', color: 'bg-red-400', shadow: 'shadow-red-400/50' },
@@ -865,65 +864,65 @@ const SOUND_VARIANTS = {
 };
 
 const BEAT_GUIDES = [
-  { 
-    name: "Rock n Roll 🎸", 
-    desc: "Classic rock beat - Kick on 1 & 3, Snare on 2 & 4", 
-    pattern: { kick: [0, 8, 16, 24], snare: [4, 12, 20, 28], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], bass: [0, 8, 16, 24] } 
+  {
+    name: "Rock n Roll 🎸",
+    desc: "Classic rock beat - Kick on 1 & 3, Snare on 2 & 4",
+    pattern: { kick: [0, 8, 16, 24], snare: [4, 12, 20, 28], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], bass: [0, 8, 16, 24] }
   },
-  { 
-    name: "Hip Hop 🧢", 
-    desc: "Boom bap with swing and groove", 
-    pattern: { kick: [0, 7, 10, 16, 23, 26], snare: [4, 12, 20, 28], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], bass: [0, 7, 16, 23] } 
+  {
+    name: "Hip Hop 🧢",
+    desc: "Boom bap with swing and groove",
+    pattern: { kick: [0, 7, 10, 16, 23, 26], snare: [4, 12, 20, 28], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], bass: [0, 7, 16, 23] }
   },
-  { 
-    name: "House 💿", 
-    desc: "Four on the floor - classic club beat", 
-    pattern: { kick: [0, 4, 8, 12, 16, 20, 24, 28], snare: [4, 12, 20, 28], hihat: [2, 6, 10, 14, 18, 22, 26, 30], bass: [0, 6, 8, 14, 16, 22, 24, 30] } 
+  {
+    name: "House 💿",
+    desc: "Four on the floor - classic club beat",
+    pattern: { kick: [0, 4, 8, 12, 16, 20, 24, 28], snare: [4, 12, 20, 28], hihat: [2, 6, 10, 14, 18, 22, 26, 30], bass: [0, 6, 8, 14, 16, 22, 24, 30] }
   },
-  { 
-    name: "Trap 🔥", 
-    desc: "Hard-hitting 808s with rapid hi-hats", 
-    pattern: { kick: [0, 6, 14, 16, 22, 30], snare: [4, 12, 20, 28], hihat: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31], bass: [0, 6, 14, 16, 22, 30] } 
+  {
+    name: "Trap 🔥",
+    desc: "Hard-hitting 808s with rapid hi-hats",
+    pattern: { kick: [0, 6, 14, 16, 22, 30], snare: [4, 12, 20, 28], hihat: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31], bass: [0, 6, 14, 16, 22, 30] }
   },
-  { 
-    name: "Reggaeton 🌴", 
-    desc: "Dembow rhythm - infectious Latin groove", 
-    pattern: { kick: [0, 6, 8, 14, 16, 22, 24, 30], snare: [3, 7, 11, 15, 19, 23, 27, 31], hihat: [0, 4, 8, 12, 16, 20, 24, 28], perc: [2, 6, 10, 14, 18, 22, 26, 30] } 
+  {
+    name: "Reggaeton 🌴",
+    desc: "Dembow rhythm - infectious Latin groove",
+    pattern: { kick: [0, 6, 8, 14, 16, 22, 24, 30], snare: [3, 7, 11, 15, 19, 23, 27, 31], hihat: [0, 4, 8, 12, 16, 20, 24, 28], perc: [2, 6, 10, 14, 18, 22, 26, 30] }
   },
-  { 
-    name: "Drum & Bass 🚀", 
-    desc: "Fast breakbeat with rolling bass", 
-    pattern: { kick: [0, 10, 16, 26], snare: [4, 12, 14, 20, 28, 30], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], bass: [0, 3, 6, 10, 16, 19, 22, 26] } 
+  {
+    name: "Drum & Bass 🚀",
+    desc: "Fast breakbeat with rolling bass",
+    pattern: { kick: [0, 10, 16, 26], snare: [4, 12, 14, 20, 28, 30], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], bass: [0, 3, 6, 10, 16, 19, 22, 26] }
   },
-  { 
-    name: "Disco Funk 🚺", 
-    desc: "Groovy funk beat with offbeat bass", 
-    pattern: { kick: [0, 4, 8, 12, 16, 20, 24, 28], snare: [4, 12, 20, 28], hihat: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31], bass: [2, 6, 10, 14, 18, 22, 26, 30] } 
+  {
+    name: "Disco Funk 🚺",
+    desc: "Groovy funk beat with offbeat bass",
+    pattern: { kick: [0, 4, 8, 12, 16, 20, 24, 28], snare: [4, 12, 20, 28], hihat: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31], bass: [2, 6, 10, 14, 18, 22, 26, 30] }
   },
-  { 
-    name: "Lo-Fi Chill 🌙", 
-    desc: "Relaxed beat for studying", 
-    pattern: { kick: [0, 10, 16, 26], snare: [4, 20], hihat: [0, 4, 8, 12, 16, 20, 24, 28], keys: [0, 8, 16, 24] } 
+  {
+    name: "Lo-Fi Chill 🌙",
+    desc: "Relaxed beat for studying",
+    pattern: { kick: [0, 10, 16, 26], snare: [4, 20], hihat: [0, 4, 8, 12, 16, 20, 24, 28], keys: [0, 8, 16, 24] }
   },
-  { 
-    name: "Afrobeat 🌍", 
-    desc: "West African polyrhythmic groove", 
-    pattern: { kick: [0, 6, 10, 16, 22, 26], snare: [4, 12, 20, 28], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], perc: [0, 3, 6, 9, 12, 16, 19, 22, 25, 28] } 
+  {
+    name: "Afrobeat 🌍",
+    desc: "West African polyrhythmic groove",
+    pattern: { kick: [0, 6, 10, 16, 22, 26], snare: [4, 12, 20, 28], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], perc: [0, 3, 6, 9, 12, 16, 19, 22, 25, 28] }
   },
-  { 
-    name: "Techno 🤖", 
-    desc: "Hypnotic industrial rhythm", 
-    pattern: { kick: [0, 4, 8, 12, 16, 20, 24, 28], snare: [8, 24], hihat: [2, 6, 10, 14, 18, 22, 26, 30], synth: [0, 8, 16, 24] } 
+  {
+    name: "Techno 🤖",
+    desc: "Hypnotic industrial rhythm",
+    pattern: { kick: [0, 4, 8, 12, 16, 20, 24, 28], snare: [8, 24], hihat: [2, 6, 10, 14, 18, 22, 26, 30], synth: [0, 8, 16, 24] }
   },
-  { 
-    name: "Bossa Nova 🏓️", 
-    desc: "Brazilian jazz rhythm", 
-    pattern: { kick: [0, 10, 16, 26], snare: [6, 14, 22, 30], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], bass: [0, 6, 10, 16, 22, 26] } 
+  {
+    name: "Bossa Nova 🏓️",
+    desc: "Brazilian jazz rhythm",
+    pattern: { kick: [0, 10, 16, 26], snare: [6, 14, 22, 30], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], bass: [0, 6, 10, 16, 22, 26] }
   },
-  { 
-    name: "Dubstep 🔊", 
-    desc: "Heavy drops with wobble bass", 
-    pattern: { kick: [0, 14, 16, 30], snare: [8, 24], hihat: [0, 4, 8, 12, 16, 20, 24, 28], bass: [0, 2, 4, 6, 14, 16, 18, 20, 22, 30] } 
+  {
+    name: "Dubstep 🔊",
+    desc: "Heavy drops with wobble bass",
+    pattern: { kick: [0, 14, 16, 30], snare: [8, 24], hihat: [0, 4, 8, 12, 16, 20, 24, 28], bass: [0, 2, 4, 6, 14, 16, 18, 20, 22, 30] }
   }
 ];
 
@@ -935,7 +934,7 @@ const DEFAULT_SCENARIO = {
       <div className="absolute top-10 left-10 w-32 h-32 bg-gradient-to-br from-pink-500/40 to-purple-500/40 rounded-full blur-2xl animate-pulse"></div>
       <div className="absolute bottom-10 right-10 w-40 h-40 bg-gradient-to-br from-blue-500/30 to-cyan-500/30 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '0.5s' }}></div>
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-gradient-to-br from-yellow-400/50 to-orange-500/50 rounded-full blur-xl" style={{ transform: `translate(-50%, -50%) scale(${1 + pulse * 0.3})` }}></div>
-      
+
       {/* Grid pattern */}
       <div className="absolute inset-0 opacity-10">
         {[...Array(8)].map((_, i) => (
@@ -945,26 +944,26 @@ const DEFAULT_SCENARIO = {
           <div key={i} className="absolute h-full w-px bg-white" style={{ left: `${(i + 1) * 12.5}%` }}></div>
         ))}
       </div>
-      
+
       {/* Floating music notes */}
       <div className="absolute top-1/4 left-1/4 text-4xl opacity-60" style={{ transform: `translateY(${Math.sin(Date.now() / 500) * 10}px)` }}>🎵</div>
       <div className="absolute top-1/3 right-1/4 text-3xl opacity-50" style={{ transform: `translateY(${Math.sin(Date.now() / 600 + 1) * 8}px)` }}>🎶</div>
       <div className="absolute bottom-1/4 left-1/3 text-3xl opacity-40" style={{ transform: `translateY(${Math.sin(Date.now() / 700 + 2) * 12}px)` }}>🎵</div>
-      
+
       {/* Center beat visualizer */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-end gap-1">
         {[...Array(7)].map((_, i) => (
-          <div 
-            key={i} 
+          <div
+            key={i}
             className="w-3 bg-gradient-to-t from-pink-500 to-cyan-400 rounded-full transition-all duration-75"
-            style={{ 
+            style={{
               height: `${20 + pulse * 40 + Math.sin(Date.now() / 200 + i) * 15}px`,
               opacity: 0.7 + pulse * 0.3
             }}
           ></div>
         ))}
       </div>
-      
+
       {/* FREE PLAY text */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/30 font-black text-lg tracking-widest">FREE PLAY</div>
     </div>
@@ -994,7 +993,7 @@ const SCENARIOS = [
       </div>
     )
   },
-  { 
+  {
     id: 1, name: "Chill Night 🌙", bpm: 75, desc: "Relaxed, lo-fi, late night mood", locked: false, theme: "from-slate-600 to-indigo-800", bgClass: "bg-slate-900", ambience: "rain",
     tutorial: [
       { text: "🌙 Lo-Fi Tutorial! SLOWER tempo (75 BPM) with a SWUNG feel. Kicks on 1 and the 'and' of 2!", targetInstrument: 'kick', targetSteps: [0, 5, 16, 21], soundVariant: 2 },
@@ -1020,7 +1019,7 @@ const SCENARIOS = [
       </div>
     )
   },
-  { 
+  {
     id: 2, name: "Neon City 🌠", bpm: 126, desc: "Electronic, urban, energetic beats", locked: false, theme: "from-pink-500 to-purple-600", bgClass: "bg-purple-950", ambience: "city",
     tutorial: [
       { text: "🏠 HOUSE MUSIC! Four-on-the-floor with a tasteful ghost kick for groove!", targetInstrument: 'kick', targetSteps: [0, 4, 8, 11, 12, 16, 20, 24, 27, 28], soundVariant: 1 },
@@ -1049,7 +1048,7 @@ const SCENARIOS = [
       </div>
     )
   },
-  { 
+  {
     id: 3, name: "Desert Sunset 🏜️", bpm: 98, desc: "Warm, groovy, world music vibes", locked: false, theme: "from-orange-500 to-red-500", bgClass: "bg-orange-900", ambience: "desert",
     tutorial: [
       { text: "🌍 AFROBEAT groove! The '3-2 clave' kick pattern - syncopated magic that makes you MOVE!", targetInstrument: 'kick', targetSteps: [0, 6, 12, 16, 20, 26], soundVariant: 3 },
@@ -1071,7 +1070,7 @@ const SCENARIOS = [
       </div>
     )
   },
-  { 
+  {
     id: 4, name: "Deep Space 🚀", bpm: 174, desc: "Cosmic, epic, cinematic sounds", locked: false, theme: "from-indigo-600 to-violet-900", bgClass: "bg-slate-950", ambience: "space",
     tutorial: [
       { text: "🚀 DRUM & BASS! 174 BPM with the classic 'Amen break' style kick pattern!", targetInstrument: 'kick', targetSteps: [0, 10, 14, 16, 26, 30], soundVariant: 1 },
@@ -1086,10 +1085,10 @@ const SCENARIOS = [
     renderScene: (pulse, accuracy) => (
       <div className="w-full h-full relative overflow-hidden bg-gradient-to-b from-slate-900 via-indigo-950 to-violet-950 rounded-b-3xl">
         {[...Array(50)].map((_, i) => (
-          <div key={i} className="absolute rounded-full bg-white" style={{ 
-            width: `${Math.random() * 3 + 1}px`, 
-            height: `${Math.random() * 3 + 1}px`, 
-            left: `${Math.random() * 100}%`, 
+          <div key={i} className="absolute rounded-full bg-white" style={{
+            width: `${Math.random() * 3 + 1}px`,
+            height: `${Math.random() * 3 + 1}px`,
+            left: `${Math.random() * 100}%`,
             top: `${Math.random() * 100}%`,
             opacity: Math.random() * 0.8 + 0.2,
             animation: `pulse ${Math.random() * 2 + 1}s infinite`
@@ -1101,7 +1100,7 @@ const SCENARIOS = [
       </div>
     )
   },
-  { 
+  {
     id: 5, name: "Trap Kingdom 👑", bpm: 145, desc: "Hard-hitting trap with 808s and hi-hat rolls", locked: false, theme: "from-red-600 to-black", bgClass: "bg-black", ambience: "trap",
     tutorial: [
       { text: "👑 TRAP MUSIC! The 808 kick is sparse but MASSIVE! Feel that low end shake the room!", targetInstrument: 'kick', targetSteps: [0, 7, 14, 16, 23, 30], soundVariant: 0 },
@@ -1118,9 +1117,9 @@ const SCENARIOS = [
       <div className="w-full h-full relative overflow-hidden bg-gradient-to-b from-red-950 to-black rounded-b-3xl">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(220,38,38,0.3),transparent_70%)]"></div>
         {[...Array(20)].map((_, i) => (
-          <div key={i} className="absolute w-1 bg-red-500/30" style={{ 
-            height: `${20 + Math.random() * 40}%`, 
-            left: `${i * 5 + 2}%`, 
+          <div key={i} className="absolute w-1 bg-red-500/30" style={{
+            height: `${20 + Math.random() * 40}%`,
+            left: `${i * 5 + 2}%`,
             bottom: 0,
             transform: `scaleY(${0.5 + pulse * 0.5})`
           }}></div>
@@ -1129,7 +1128,7 @@ const SCENARIOS = [
       </div>
     )
   },
-  { 
+  {
     id: 6, name: "Reggaeton 🔥", bpm: 98, desc: "Latin urban rhythm with the dembow beat", locked: false, theme: "from-yellow-500 to-red-600", bgClass: "bg-red-900", ambience: "reggaeton",
     tutorial: [
       { text: "🔥 REGGAETON! The 'DEMBOW' beat! Kick on 1, 'and' of 2, and repeat - feel that BOUNCE!", targetInstrument: 'kick', targetSteps: [0, 5, 8, 13, 16, 21, 24, 29], soundVariant: 1 },
@@ -1145,8 +1144,8 @@ const SCENARIOS = [
     renderScene: (pulse, accuracy) => (
       <div className="w-full h-full relative overflow-hidden bg-gradient-to-b from-yellow-500 via-orange-500 to-red-600 rounded-b-3xl">
         {[...Array(15)].map((_, i) => (
-          <div key={i} className="absolute text-3xl" style={{ 
-            left: `${Math.random() * 90}%`, 
+          <div key={i} className="absolute text-3xl" style={{
+            left: `${Math.random() * 90}%`,
             top: `${Math.random() * 70}%`,
             transform: `rotate(${Math.random() * 360}deg) scale(${0.5 + pulse * 0.3})`,
             opacity: 0.6
@@ -1156,7 +1155,7 @@ const SCENARIOS = [
       </div>
     )
   },
-  { 
+  {
     id: 7, name: "Hip Hop Classic 🎤", bpm: 92, desc: "Old school boom bap hip hop beat", locked: false, theme: "from-amber-600 to-stone-800", bgClass: "bg-stone-900", ambience: "hiphop",
     tutorial: [
       { text: "🎤 BOOM BAP! Classic 90s hip hop. Kick is lazy, slightly behind the beat!", targetInstrument: 'kick', targetSteps: [0, 5, 10, 16, 21, 26], soundVariant: 1 },
@@ -1179,7 +1178,7 @@ const SCENARIOS = [
       </div>
     )
   },
-  { 
+  {
     id: 8, name: "Rock Solid 🎸", bpm: 118, desc: "Classic rock drum pattern", locked: false, theme: "from-gray-700 to-red-900", bgClass: "bg-gray-900", ambience: "rock",
     tutorial: [
       { text: "🎸 ROCK DRUMS! Driving kick with an extra hit before beat 3 for power!", targetInstrument: 'kick', targetSteps: [0, 6, 8, 14, 16, 22, 24, 30], soundVariant: 3 },
@@ -1207,7 +1206,7 @@ const SCENARIOS = [
       </div>
     )
   },
-  { 
+  {
     id: 9, name: "Techno Machine 🤖", bpm: 132, desc: "Hypnotic, repetitive techno groove", locked: false, theme: "from-cyan-600 to-gray-900", bgClass: "bg-gray-950", ambience: "techno",
     tutorial: [
       { text: "🤖 TECHNO! Relentless four-on-the-floor with ghost kicks for groove!", targetInstrument: 'kick', targetSteps: [0, 4, 8, 10, 12, 16, 20, 24, 26, 28], soundVariant: 1 },
@@ -1253,11 +1252,15 @@ const GAME_LEVELS = [
     xpReward: 50,
     icon: "🥁",
     description: "Learn the basics! Place kicks and snares to create your first beat.",
-    objective: "Create a simple beat with KICK and SNARE",
+    objective: "Continue the rock beat pattern",
+    premadePattern: {
+      kick: [0, 8],
+      snare: [4, 12]
+    },
     requirements: {
       instruments: ['kick', 'snare'],
-      minNotes: 4,
-      mustInclude: { kick: 2, snare: 2 }
+      minNotes: 8,
+      mustInclude: { kick: 4, snare: 4 }
     },
     hints: [
       "💡 Start with the KICK drum - it's the heartbeat of your music!",
@@ -1265,8 +1268,14 @@ const GAME_LEVELS = [
       "💡 Add SNARE on beats 2 and 4 (steps 4, 12, 20, 28) for the backbeat",
       "💡 Hit PLAY to hear your creation!"
     ],
+    patternVariations: [
+      { name: "Rock Backbeat", pattern: { kick: [0, 16], snare: [8, 24] }, difficulty: "Easy" },
+      { name: "Hip-Hop Swing", pattern: { kick: [0, 11, 16, 27], snare: [8, 24] }, difficulty: "Medium" },
+      { name: "Reggae One-Drop", pattern: { kick: [16], snare: [8, 24] }, difficulty: "Hard" }
+    ],
     tempo: 100,
-    unlocked: true
+    unlocked: true,
+    themeId: 'neon'
   },
   {
     id: 2,
@@ -1276,12 +1285,16 @@ const GAME_LEVELS = [
     maxStars: 3,
     xpReward: 75,
     icon: "🎩",
-    description: "Hi-hats add rhythm and energy. Learn to layer!",
-    objective: "Add HI-HATS to your kick and snare pattern",
+    description: "Time to add some rhythm! The drums are ready - you add the Hi-Hats.",
+    objective: "Add HI-HATS to the existing beat",
+    premadePattern: {
+      kick: [0, 8, 16, 24],
+      snare: [4, 12, 20, 28]
+    },
     requirements: {
-      instruments: ['kick', 'snare', 'hihat'],
-      minNotes: 8,
-      mustInclude: { kick: 2, snare: 2, hihat: 4 }
+      instruments: ['hihat'],
+      minNotes: 4,
+      mustInclude: { hihat: 4 }
     },
     hints: [
       "💡 Hi-hats create the 'tick-tick-tick' rhythm!",
@@ -1289,8 +1302,14 @@ const GAME_LEVELS = [
       "💡 The hi-hat fills the space between kick and snare",
       "💡 Experiment with different patterns!"
     ],
+    patternVariations: [
+      { name: "Disco Groove", pattern: { kick: [0, 8, 16, 24], snare: [8, 24], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30] }, difficulty: "Easy" },
+      { name: "Trap Roll", pattern: { kick: [0, 16], snare: [8, 24], hihat: [0, 1, 2, 3, 8, 9, 10, 11, 16, 17, 18, 19, 24, 25, 26, 27] }, difficulty: "Medium" },
+      { name: "Breakbeat Shuffle", pattern: { kick: [0, 10, 16], snare: [5, 13, 21, 29], hihat: [0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30] }, difficulty: "Hard" }
+    ],
     tempo: 100,
-    unlocked: true
+    unlocked: true,
+    themeId: 'neon'
   },
   {
     id: 3,
@@ -1300,12 +1319,17 @@ const GAME_LEVELS = [
     maxStars: 3,
     xpReward: 100,
     icon: "🎸",
-    description: "Bass gives your beat weight and power!",
-    objective: "Create a beat with KICK, SNARE, and BASS",
+    description: "The drums are tight. Now lay down a heavy Bass line to shake the floor!",
+    objective: "Add a BASS line to the drum beat",
+    premadePattern: {
+      kick: [0, 10, 16, 26],
+      snare: [8, 24],
+      hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30]
+    },
     requirements: {
-      instruments: ['kick', 'snare', 'bass'],
-      minNotes: 6,
-      mustInclude: { kick: 2, snare: 2, bass: 2 }
+      instruments: ['bass'],
+      minNotes: 4,
+      mustInclude: { bass: 4 }
     },
     hints: [
       "💡 Bass usually follows the kick drum",
@@ -1313,8 +1337,14 @@ const GAME_LEVELS = [
       "💡 Add some bass notes in between for groove",
       "💡 Lower sounds = more power!"
     ],
+    patternVariations: [
+      { name: "Dubstep Wobble", pattern: { kick: [0, 16], snare: [8, 24], bass: [0, 2, 4, 6, 16, 18, 20, 22] }, difficulty: "Easy" },
+      { name: "Funk Slap", pattern: { kick: [0, 16], snare: [8, 24], bass: [0, 3, 7, 10, 16, 19, 23, 26] }, difficulty: "Medium" },
+      { name: "Trance Roll", pattern: { kick: [0, 4, 8, 12, 16, 20, 24, 28], snare: [8, 24], bass: [0, 1, 4, 5, 8, 9, 12, 13, 16, 17, 20, 21, 24, 25, 28, 29] }, difficulty: "Hard" }
+    ],
     tempo: 95,
-    unlocked: false
+    unlocked: false,
+    themeId: 'ocean'
   },
   {
     id: 4,
@@ -1337,8 +1367,14 @@ const GAME_LEVELS = [
       "💡 Claps/snares go on 2 and 4 (steps 8, 24)",
       "💡 Hi-hats go on the OFF-beats for that house bounce!"
     ],
+    patternVariations: [
+      { name: "Chicago House", pattern: { kick: [0, 8, 16, 24], snare: [8, 24], hihat: [4, 12, 20, 28] }, difficulty: "Easy" },
+      { name: "UK Garage 2-Step", pattern: { kick: [0, 12, 16, 28], snare: [6, 22], hihat: [0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30] }, difficulty: "Medium" },
+      { name: "Baile Funk", pattern: { kick: [0, 3, 6, 8, 11, 14, 16, 19, 22, 24, 27, 30], snare: [8, 24], hihat: [2, 10, 18, 26] }, difficulty: "Hard" }
+    ],
     tempo: 124,
-    unlocked: false
+    unlocked: false,
+    themeId: 'golden'
   },
   {
     id: 5,
@@ -1361,8 +1397,14 @@ const GAME_LEVELS = [
       "💡 Synth chords work well with bass lines",
       "💡 Less is more - don't overcrowd!"
     ],
+    patternVariations: [
+      { name: "Ambient Pad", pattern: { kick: [0, 16], snare: [8, 24], hihat: [0, 8, 16, 24], synth: [0] }, difficulty: "Easy" },
+      { name: "Arpeggio Sequence", pattern: { kick: [0, 16], snare: [8, 24], hihat: [4, 12, 20, 28], synth: [0, 2, 4, 6, 8, 10, 12, 14] }, difficulty: "Medium" },
+      { name: "Acid Bassline", pattern: { kick: [0, 6, 12, 18, 24, 30], snare: [8, 24], hihat: [0, 4, 8, 12, 16, 20, 24, 28], synth: [0, 3, 7, 10, 13, 16, 19, 23, 26, 29] }, difficulty: "Hard" }
+    ],
     tempo: 110,
-    unlocked: false
+    unlocked: false,
+    themeId: 'forest'
   },
   {
     id: 6,
@@ -1385,8 +1427,14 @@ const GAME_LEVELS = [
       "💡 Try polyrhythms - patterns that contrast!",
       "💡 World music uses lots of percussion layers"
     ],
+    patternVariations: [
+      { name: "Samba Brazilian", pattern: { kick: [0, 6, 12, 18, 24, 30], snare: [4, 20], hihat: [0, 4, 8, 12, 16, 20, 24, 28], perc: [0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30], bass: [0, 12, 24] }, difficulty: "Easy" },
+      { name: "Middle Eastern Darbuka", pattern: { kick: [0, 8, 16, 24], snare: [6, 14, 22, 30], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], perc: [1, 5, 9, 13, 17, 21, 25, 29], bass: [0, 16] }, difficulty: "Medium" },
+      { name: "West African Djembe", pattern: { kick: [0, 10, 20], snare: [8, 18, 28], hihat: [0, 4, 8, 12, 16, 20, 24, 28], perc: [0, 2, 5, 7, 10, 12, 15, 17, 20, 22, 25, 27, 30], bass: [0, 10, 20] }, difficulty: "Hard" }
+    ],
     tempo: 98,
-    unlocked: false
+    unlocked: false,
+    themeId: 'sunset'
   },
   {
     id: 7,
@@ -1409,8 +1457,14 @@ const GAME_LEVELS = [
       "💡 Leave SPACE in your beat - silence is powerful",
       "💡 Ghost notes (quiet hits) add human feel"
     ],
+    patternVariations: [
+      { name: "Vinyl Crackle Minimal", pattern: { kick: [0, 20], snare: [10, 26], hihat: [0, 6, 12, 18, 24, 30], keys: [0], bass: [0, 20] }, difficulty: "Easy" },
+      { name: "Boom Bap Jazzy", pattern: { kick: [0, 11, 16, 27], snare: [8, 24], hihat: [0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30], keys: [0, 8, 16, 24], bass: [0, 11, 16, 27] }, difficulty: "Medium" },
+      { name: "Anime Opening", pattern: { kick: [0, 6, 16, 22], snare: [8, 24], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], keys: [0, 4, 8, 12, 16, 20, 24, 28], bass: [0, 6, 12, 16, 22, 28] }, difficulty: "Hard" }
+    ],
     tempo: 75,
-    unlocked: false
+    unlocked: false,
+    themeId: 'midnight'
   },
   {
     id: 8,
@@ -1433,8 +1487,14 @@ const GAME_LEVELS = [
       "💡 The best beats have contrast - loud and quiet parts",
       "💡 You're ready to be a producer!"
     ],
+    patternVariations: [
+      { name: "Synthwave Retro", pattern: { kick: [0, 8, 16, 24], snare: [8, 24], hihat: [4, 12, 20, 28], bass: [0, 8, 16, 24], synth: [0, 16], keys: [4, 12, 20, 28] }, difficulty: "Easy" },
+      { name: "Future Bass", pattern: { kick: [0, 16], snare: [8, 24], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], bass: [0, 6, 10, 16, 22, 26], synth: [0, 4, 8, 12, 16, 20, 24, 28], keys: [2, 10, 18, 26] }, difficulty: "Medium" },
+      { name: "Industrial Dark", pattern: { kick: [0, 6, 12, 18, 24, 30], snare: [4, 10, 16, 22, 28], hihat: [0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30], bass: [0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30], synth: [0, 12, 24], keys: [6, 18, 30] }, difficulty: "Hard" }
+    ],
     tempo: 105,
-    unlocked: false
+    unlocked: false,
+    themeId: 'midnight'
   },
   {
     id: 9,
@@ -1457,8 +1517,14 @@ const GAME_LEVELS = [
       "💡 Keep the rhythm tight and punchy",
       "💡 Less notes per bar at high speeds"
     ],
+    patternVariations: [
+      { name: "Amen Break Classic", pattern: { kick: [0, 10, 16], snare: [4, 12, 20, 28], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], bass: [0, 10, 16], synth: [0, 16] }, difficulty: "Easy" },
+      { name: "Halftime Dubstep", pattern: { kick: [0, 16], snare: [8], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], bass: [0, 1, 2, 3, 8, 9, 10, 11, 16, 17, 18, 19, 24, 25, 26, 27], synth: [8, 24] }, difficulty: "Medium" },
+      { name: "Footwork/Juke", pattern: { kick: [0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30], snare: [4, 8, 12, 16, 20, 24, 28], hihat: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31], bass: [0, 6, 12, 18, 24, 30], synth: [0, 8, 16, 24] }, difficulty: "Hard" }
+    ],
     tempo: 145,
-    unlocked: false
+    unlocked: false,
+    themeId: 'neon'
   },
   {
     id: 10,
@@ -1481,8 +1547,14 @@ const GAME_LEVELS = [
       "💡 Use dynamics - vary the intensity",
       "💡 You've mastered Rhythm Realm! 👑"
     ],
+    patternVariations: [
+      { name: "Cinematic Epic", pattern: { kick: [0, 8, 16, 24], snare: [12, 28], hihat: [0, 4, 8, 12, 16, 20, 24, 28], bass: [0, 8, 16, 24], synth: [0, 16], keys: [0, 8, 16, 24], perc: [4, 12, 20, 28] }, difficulty: "Easy" },
+      { name: "Glitch Hop Experimental", pattern: { kick: [0, 7, 14, 16, 23, 30], snare: [6, 10, 22, 26], hihat: [0, 1, 3, 4, 6, 7, 9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 25, 27, 28, 30, 31], bass: [0, 2, 7, 9, 14, 16, 18, 23, 25, 30], synth: [0, 7, 14, 16, 23, 30], keys: [3, 10, 19, 26], perc: [1, 5, 9, 13, 17, 21, 25, 29] }, difficulty: "Medium" },
+      { name: "Tribal Fusion", pattern: { kick: [0, 5, 10, 15, 20, 25, 30], snare: [8, 18, 28], hihat: [0, 2, 5, 7, 10, 12, 15, 17, 20, 22, 25, 27, 30], bass: [0, 5, 10, 15, 20, 25, 30], synth: [0, 10, 20, 30], keys: [5, 15, 25], perc: [0, 2, 3, 5, 7, 8, 10, 12, 13, 15, 17, 18, 20, 22, 23, 25, 27, 28, 30] }, difficulty: "Hard" }
+    ],
     tempo: 115,
-    unlocked: false
+    unlocked: false,
+    themeId: 'golden'
   }
 ];
 
@@ -1495,7 +1567,7 @@ const AudioEngine = {
   compressor: null,
   analyser: null,
   ambienceNodes: [],
-  
+
   init: () => {
     if (typeof window === 'undefined') return;
     if (!AudioEngine.ctx) {
@@ -1522,7 +1594,7 @@ const AudioEngine = {
       AudioEngine.ctx.resume();
     }
   },
-  
+
   createNoise: (duration) => {
     const bufferSize = AudioEngine.ctx.sampleRate * duration;
     const buffer = AudioEngine.ctx.createBuffer(1, bufferSize, AudioEngine.ctx.sampleRate);
@@ -1530,7 +1602,7 @@ const AudioEngine = {
     for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
     return buffer;
   },
-  
+
   createFilteredNoise: (freq, q, duration, t) => {
     const noise = AudioEngine.ctx.createBufferSource();
     noise.buffer = AudioEngine.createNoise(duration);
@@ -1541,16 +1613,16 @@ const AudioEngine = {
     noise.connect(filter);
     return { source: noise, output: filter };
   },
-  
+
   startAmbience: (type) => { /* simplified */ },
   stopAmbience: () => {
     AudioEngine.ambienceNodes.forEach(node => {
-      try { node.stop(); } catch(e) {}
-      try { node.disconnect(); } catch(e) {}
+      try { node.stop(); } catch (e) { }
+      try { node.disconnect(); } catch (e) { }
     });
     AudioEngine.ambienceNodes = [];
   },
-  
+
   // Stop all playing sounds by suspending and resuming context
   stopAll: () => {
     if (AudioEngine.ctx) {
@@ -1562,48 +1634,48 @@ const AudioEngine = {
             AudioEngine.ctx.resume();
           }
         }, 50);
-      }).catch(() => {});
+      }).catch(() => { });
     }
   },
-  
+
   trigger: (variant, time = 0, config = { pitch: 0, chord: null, bend: 0, volume: 100, muted: false, attack: 0, decay: 100, filter: 100, reverb: 0, distortion: 0, pan: 0 }) => {
     // Skip if muted
     if (config.muted) return;
-    
+
     if (!AudioEngine.ctx || !AudioEngine.masterGain) return;
     const t = time || AudioEngine.ctx.currentTime;
     const pitchMult = Math.pow(2, config.pitch / 12);
     const baseFreq = variant.freq * pitchMult;
     const soundType = variant.type || 'default';
-    
+
     // Volume multiplier (0-1)
     const volumeMult = (config.volume !== undefined ? config.volume : 100) / 100;
-    
+
     // Create a volume gain node for this sound
     const volumeGain = AudioEngine.ctx.createGain();
     volumeGain.gain.value = volumeMult;
-    
+
     // Create panner node
     const panner = AudioEngine.ctx.createStereoPanner();
     panner.pan.value = (config.pan || 0) / 50; // Convert -50 to 50 to -1 to 1
-    
+
     // Connect: sound -> volumeGain -> panner -> masterGain
     volumeGain.connect(panner);
     panner.connect(AudioEngine.masterGain);
-    
+
     // === KICK DRUMS ===
     if (soundType.startsWith('kick')) {
       const osc = AudioEngine.ctx.createOscillator();
       const gain = AudioEngine.ctx.createGain();
       osc.type = 'sine';
-      
+
       // Variables for different kick characters
       let clickFreq = 4000;
       let clickVol = 0.5;
       let clickDecay = 0.02;
       let noiseVol = 0.3;
       let noiseFilterFreq = 200;
-      
+
       if (soundType === 'kick808') {
         // Classic 808 - DEEP sub bass, long sustain, iconic boom
         osc.frequency.setValueAtTime(120, t);
@@ -1657,7 +1729,7 @@ const AudioEngine = {
         noiseVol = 0.6;
         noiseFilterFreq = 400;
       }
-      
+
       // Click/attack transient - varies per kick type
       const click = AudioEngine.ctx.createOscillator();
       const clickGain = AudioEngine.ctx.createGain();
@@ -1670,7 +1742,7 @@ const AudioEngine = {
       clickGain.connect(volumeGain);
       click.start(t);
       click.stop(t + 0.05);
-      
+
       // Noise for body/thump - varies per kick type
       const noiseBuffer = AudioEngine.ctx.createBuffer(1, AudioEngine.ctx.sampleRate * 0.1, AudioEngine.ctx.sampleRate);
       const noiseData = noiseBuffer.getChannelData(0);
@@ -1690,56 +1762,106 @@ const AudioEngine = {
       noiseGainNode.connect(volumeGain);
       noiseSource.start(t);
       noiseSource.stop(t + 0.1);
-      
+
       osc.connect(gain);
       gain.connect(volumeGain);
       osc.start(t);
       osc.stop(t + 1.5);
     }
     // === SNARE / CLAP ===
+    // === SNARE / CLAP ===
     else if (soundType.startsWith('snare') || soundType === 'clap' || soundType === 'rim') {
       const osc = AudioEngine.ctx.createOscillator();
       const oscGain = AudioEngine.ctx.createGain();
       osc.type = 'triangle';
-      
+
+      // Noise component for snare/clap match
+      const noise = AudioEngine.ctx.createBufferSource();
+      noise.buffer = AudioEngine.createNoise(0.4);
+      const noiseFilter = AudioEngine.ctx.createBiquadFilter();
+      const noiseGain = AudioEngine.ctx.createGain();
+
       if (soundType === 'clap') {
-        for (let i = 0; i < 3; i++) {
-          const delay = i * 0.01;
-          const { source, output } = AudioEngine.createFilteredNoise(2000, 1.5, 0.2, t + delay);
-          const noiseGain = AudioEngine.ctx.createGain();
-          noiseGain.gain.setValueAtTime(0.5, t + delay);
-          noiseGain.gain.exponentialRampToValueAtTime(0.01, t + delay + 0.15);
-          output.connect(noiseGain);
-          noiseGain.connect(volumeGain);
-          source.start(t + delay);
-          source.stop(t + delay + 0.2);
-        }
+        // Multi-trigger noise for clap effect
+        noiseFilter.type = 'bandpass';
+        noiseFilter.frequency.value = 1500;
+        noiseFilter.Q.value = 1;
+
+        // Clap tone
+        osc.type = 'triangle';
         osc.frequency.value = 150;
-        oscGain.gain.setValueAtTime(0.2, t);
+        oscGain.gain.setValueAtTime(0.1, t);
         oscGain.gain.exponentialRampToValueAtTime(0.01, t + 0.05);
-      } else if (soundType === 'rim') {
-        osc.frequency.value = baseFreq;
-        osc.type = 'square';
-        oscGain.gain.setValueAtTime(0.4, t);
-        oscGain.gain.exponentialRampToValueAtTime(0.01, t + 0.03);
-      } else {
-        osc.frequency.setValueAtTime(baseFreq, t);
-        osc.frequency.exponentialRampToValueAtTime(100, t + 0.1);
-        oscGain.gain.setValueAtTime(0.5, t);
-        oscGain.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
-        const { source, output } = AudioEngine.createFilteredNoise(4000, 1, 0.25, t);
-        const noiseGain = AudioEngine.ctx.createGain();
-        noiseGain.gain.setValueAtTime(soundType === 'snareTrap' ? 0.7 : 0.5, t);
-        noiseGain.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
-        output.connect(noiseGain);
-        noiseGain.connect(volumeGain);
-        source.start(t);
-        source.stop(t + 0.3);
+
+        // We trigger noise manually 3 times for clap
+        // Disconnect main noise graph for custom clap logic
+        for (let i = 0; i < 3; i++) {
+          const delay = i * 0.012;
+          const clapSource = AudioEngine.ctx.createBufferSource();
+          clapSource.buffer = noise.buffer;
+          const clapFilter = AudioEngine.ctx.createBiquadFilter();
+          clapFilter.type = 'bandpass';
+          clapFilter.frequency.value = 1500;
+          const clapGain = AudioEngine.ctx.createGain();
+
+          clapGain.gain.setValueAtTime(0.6, t + delay);
+          clapGain.gain.exponentialRampToValueAtTime(0.01, t + delay + 0.1);
+
+          clapSource.connect(clapFilter);
+          clapFilter.connect(clapGain);
+          clapGain.connect(volumeGain);
+          clapSource.start(t + delay);
+          clapSource.stop(t + delay + 0.15);
+        }
       }
-      osc.connect(oscGain);
-      oscGain.connect(volumeGain);
-      osc.start(t);
-      osc.stop(t + 0.3);
+      else if (soundType === 'rim') {
+        osc.frequency.value = baseFreq || 800;
+        osc.type = 'square';
+        oscGain.gain.setValueAtTime(0.3, t);
+        oscGain.gain.exponentialRampToValueAtTime(0.01, t + 0.04);
+        // Minimal click noise for rim
+        noiseFilter.type = 'highpass';
+        noiseFilter.frequency.value = 5000;
+        noiseGain.gain.setValueAtTime(0.1, t);
+        noiseGain.gain.exponentialRampToValueAtTime(0.01, t + 0.02);
+
+        noise.connect(noiseFilter);
+        noiseFilter.connect(noiseGain);
+        noiseGain.connect(volumeGain);
+        noise.start(t);
+      }
+      else {
+        // Standard Snare (Crack, Trap, etc)
+        // 1. Tonal Body (Oscillator)
+        osc.frequency.setValueAtTime(baseFreq || 200, t);
+        osc.frequency.exponentialRampToValueAtTime(100, t + 0.15);
+
+        // 2. Snap (Noise) - Using Highpass for crisp sound
+        noiseFilter.type = 'highpass';
+        noiseFilter.frequency.value = 2000; // Let the highs through
+
+        // Envelope
+        oscGain.gain.setValueAtTime(0.5, t);
+        oscGain.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
+
+        const noiseVol = soundType === 'snareTrap' ? 0.8 : 0.6;
+        noiseGain.gain.setValueAtTime(noiseVol, t);
+        noiseGain.gain.exponentialRampToValueAtTime(0.01, t + 0.25);
+
+        // Connect Noise Graph
+        noise.connect(noiseFilter);
+        noiseFilter.connect(noiseGain);
+        noiseGain.connect(volumeGain);
+        noise.start(t);
+      }
+
+      // Connect Tone Graph (except for clap which handles it differently/minimally)
+      if (soundType !== 'clap') {
+        osc.connect(oscGain);
+        oscGain.connect(volumeGain);
+        osc.start(t);
+        osc.stop(t + 0.4);
+      }
     }
     // === HI-HATS / SHAKER ===
     else if (soundType.startsWith('hihat') || soundType === 'shaker') {
@@ -1818,30 +1940,30 @@ const AudioEngine = {
       const notes = [baseFreq];
       if (config.chord === 'maj') { notes.push(baseFreq * 1.2599, baseFreq * 1.4983); }
       else if (config.chord === 'min') { notes.push(baseFreq * 1.1892, baseFreq * 1.4983); }
-      
+
       // Special handling for Sub Bass - needs to be loud and clean
       if (soundType === 'bassSub') {
         notes.forEach((freq) => {
           const osc = AudioEngine.ctx.createOscillator();
           const osc2 = AudioEngine.ctx.createOscillator();
           const gain = AudioEngine.ctx.createGain();
-          
+
           // Pure sine waves for deep sub bass
           osc.type = 'sine';
           osc2.type = 'sine';
-          osc.frequency.value = freq;
-          osc2.frequency.value = freq * 2; // Add octave for presence
-          
+          osc.frequency.value = freq || 55;
+          osc2.frequency.value = (freq || 55) * 2; // Add octave for presence
+
           // Much louder volume for sub bass
           const vol = 0.7 / notes.length;
           gain.gain.setValueAtTime(vol, t);
           gain.gain.exponentialRampToValueAtTime(0.01, t + (variant.decay || 0.5));
-          
+
           // Connect directly without filter for clean sub
           osc.connect(gain);
           osc2.connect(gain);
           gain.connect(volumeGain);
-          
+
           osc.start(t);
           osc2.start(t);
           osc.stop(t + 0.7);
@@ -1869,9 +1991,9 @@ const AudioEngine = {
           }
           osc.type = 'sawtooth';
           osc2.type = 'sine';
-          osc.frequency.value = freq;
-          osc2.frequency.value = freq;
-          const vol = 0.4 / notes.length;
+          osc.frequency.value = freq || 110;
+          osc2.frequency.value = freq || 110;
+          const vol = 0.6 / notes.length;
           gain.gain.setValueAtTime(vol, t);
           gain.gain.exponentialRampToValueAtTime(0.01, t + (variant.decay || 0.3));
           osc.connect(filter);
@@ -1901,20 +2023,20 @@ const AudioEngine = {
           filter.frequency.linearRampToValueAtTime(2000, t + 0.3);
           filter.frequency.linearRampToValueAtTime(800, t + 1.0);
           gain.gain.setValueAtTime(0, t);
-          gain.gain.linearRampToValueAtTime(0.2 / notes.length, t + 0.1);
+          gain.gain.linearRampToValueAtTime(0.4 / notes.length, t + 0.1);
           gain.gain.linearRampToValueAtTime(0.01, t + 1.0);
         } else if (soundType === 'synthPluck') {
           osc.type = 'sawtooth';
           filter.type = 'lowpass';
           filter.frequency.setValueAtTime(5000, t);
           filter.frequency.exponentialRampToValueAtTime(500, t + 0.15);
-          gain.gain.setValueAtTime(0.3 / notes.length, t);
+          gain.gain.setValueAtTime(0.5 / notes.length, t);
           gain.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
         } else if (soundType === 'synthStab') {
           osc.type = 'square';
           filter.type = 'lowpass';
           filter.frequency.value = 2000;
-          gain.gain.setValueAtTime(0.25 / notes.length, t);
+          gain.gain.setValueAtTime(0.45 / notes.length, t);
           gain.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
         } else {
           osc.type = 'square';
@@ -2193,7 +2315,7 @@ export default function RhythmRealm() {
   const [hype, setHype] = useState(0);
   const [showVictory, setShowVictory] = useState(false);
   const [beatPulse, setBeatPulse] = useState(0);
-  
+
   // ==========================================
   // AUTHENTICATION & USER STATE
   // ==========================================
@@ -2207,7 +2329,7 @@ export default function RhythmRealm() {
   const [authUsername, setAuthUsername] = useState('');
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
-  
+
   // ==========================================
   // LEADERBOARD & RANKING STATE
   // ==========================================
@@ -2215,7 +2337,7 @@ export default function RhythmRealm() {
   const [leaderboardData, setLeaderboardData] = useState([]);
   const [leaderboardLoading, setLeaderboardLoading] = useState(false);
   const [userRank, setUserRank] = useState(null);
-  
+
   // ==========================================
   // ACHIEVEMENTS STATE
   // ==========================================
@@ -2225,7 +2347,7 @@ export default function RhythmRealm() {
   const [newAchievementUnlocked, setNewAchievementUnlocked] = useState(null);
   const [hasPlayedBeat, setHasPlayedBeat] = useState(false);
   const [usedDJMode, setUsedDJMode] = useState(false);
-  
+
   // ==========================================
   // LEVEL SYSTEM STATE
   // ==========================================
@@ -2242,7 +2364,7 @@ export default function RhythmRealm() {
   const [levelComplete, setLevelComplete] = useState(false);
   const [levelScore, setLevelScore] = useState(0);
   const [showProfile, setShowProfile] = useState(false);
-  
+
   // ==========================================
   // USER STATS FOR ACHIEVEMENTS
   // ==========================================
@@ -2273,13 +2395,13 @@ export default function RhythmRealm() {
       threeStarLevels
     };
   });
-  
+
   // Background Music State
   const [bgMusicEnabled, setBgMusicEnabled] = useState(true);
   const bgMusicRef = useRef(null);
   const bgGainRef = useRef(null);
   const bgAudioCtxRef = useRef(null);
-  
+
   // Studio States
   const [tutorialActive, setTutorialActive] = useState(false);
   const [tutorialStep, setTutorialStep] = useState(0);
@@ -2287,23 +2409,23 @@ export default function RhythmRealm() {
   const [bassShake, setBassShake] = useState(false);
   const [showGuideMenu, setShowGuideMenu] = useState(false);
   const [isMouseDown, setIsMouseDown] = useState(false);
-  
+
   // Customizable Rack State
   const [activeInstrumentIds, setActiveInstrumentIds] = useState(['kick', 'snare', 'hihat', 'bass', 'synth']);
   const [showAddTrackMenu, setShowAddTrackMenu] = useState(false);
   const [lockedInstruments, setLockedInstruments] = useState({});
   const [showSoundPicker, setShowSoundPicker] = useState(null); // Which instrument's sound picker is open
-  
+
   // New Player Modal State
   const [showNewPlayerModal, setShowNewPlayerModal] = useState(false);
-  
+
   // Interactive Onboarding Tutorial State
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingStep, setOnboardingStep] = useState(0);
-  
+
   // Visual Theme State
   const [currentTheme, setCurrentTheme] = useState(VISUAL_THEMES[4]); // Default to Neon
-  
+
   // DJ Mode State
   const [djCrossfader, setDjCrossfader] = useState(50); // 0 = left deck, 100 = right deck
   const [djEffects, setDjEffects] = useState({ filter: 50, echo: 0, flanger: 0, reverb: 0 });
@@ -2314,7 +2436,15 @@ export default function RhythmRealm() {
   const [showTrackPicker, setShowTrackPicker] = useState(null); // 'left' or 'right'
   const [djTutorialActive, setDjTutorialActive] = useState(false);
   const [djTutorialStep, setDjTutorialStep] = useState(0);
-  
+
+  // Level 1 Tutorial State - initialized from localStorage to persist "seen" status
+  const [showLevelTutorial, setShowLevelTutorial] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return !localStorage.getItem('rhythmRealm_lvl1_tutorial_seen');
+    }
+    return true;
+  });
+
   // Accessibility State
   const [accessibilityMode, setAccessibilityMode] = useState(false);
   const [textToSpeechEnabled, setTextToSpeechEnabled] = useState(false);
@@ -2331,7 +2461,7 @@ export default function RhythmRealm() {
   // ==========================================
   // AUTHENTICATION EFFECTS & FUNCTIONS
   // ==========================================
-  
+
   // Check auth state on mount
   useEffect(() => {
     const checkAuth = async () => {
@@ -2411,34 +2541,34 @@ export default function RhythmRealm() {
     e.preventDefault();
     setAuthError('');
     setAuthLoading(true);
-    
+
     try {
       console.log('Attempting sign in with:', authEmail);
       const data = await authService.signIn(authEmail, authPassword);
       console.log('Sign in response:', data);
-      
+
       const signedInUser = data?.user;
-      
+
       // Check if email confirmation is required
       if (data?.user && !data?.session) {
         setAuthError('Please verify your email before logging in. Check your inbox for the confirmation link.');
         setAuthLoading(false);
         return;
       }
-      
+
       if (!signedInUser) {
         setAuthError('Login failed. Please check your credentials.');
         setAuthLoading(false);
         return;
       }
-      
+
       // Immediately close modal and set user for instant feedback
       setShowAuthModal(false);
       setUser(signedInUser);
       setAuthEmail('');
       setAuthPassword('');
       setAuthLoading(false);
-      
+
       // Fetch profile in background (don't block UI)
       authService.getUserProfile(signedInUser.id).then(profile => {
         console.log('Profile fetched:', profile);
@@ -2485,7 +2615,7 @@ export default function RhythmRealm() {
           experience_points: 0
         });
       });
-      
+
     } catch (error) {
       console.error('Sign in error:', error);
       setAuthError(error.message || 'Login failed. Please try again.');
@@ -2525,7 +2655,7 @@ export default function RhythmRealm() {
       // Stop any playing audio
       setIsPlaying(false);
       AudioEngine.stopAll();
-      
+
       await authService.signOut();
       setUser(null);
       setUserProfile(null);
@@ -2543,7 +2673,7 @@ export default function RhythmRealm() {
     try {
       const data = await scoreService.getGlobalLeaderboard(100);
       setLeaderboardData(data);
-      
+
       // Find user's rank
       if (user && data) {
         const rank = data.findIndex(p => p.id === user.id) + 1;
@@ -2582,28 +2712,28 @@ export default function RhythmRealm() {
     try {
       const ctx = AudioEngine.ctx;
       const now = ctx.currentTime;
-      
+
       // Create a cheerful achievement sound
       const osc1 = ctx.createOscillator();
       const osc2 = ctx.createOscillator();
       const gain = ctx.createGain();
-      
+
       osc1.type = 'sine';
       osc2.type = 'sine';
       osc1.frequency.setValueAtTime(523.25, now); // C5
       osc1.frequency.setValueAtTime(659.25, now + 0.15); // E5
       osc1.frequency.setValueAtTime(783.99, now + 0.3); // G5
-      osc2.frequency.setValueAtTime(783.99, now); 
+      osc2.frequency.setValueAtTime(783.99, now);
       osc2.frequency.setValueAtTime(987.77, now + 0.15); // B5
       osc2.frequency.setValueAtTime(1046.5, now + 0.3); // C6
-      
+
       gain.gain.setValueAtTime(0.3, now);
       gain.gain.linearRampToValueAtTime(0.01, now + 0.6);
-      
+
       osc1.connect(gain);
       osc2.connect(gain);
       gain.connect(ctx.destination);
-      
+
       osc1.start(now);
       osc2.start(now);
       osc1.stop(now + 0.6);
@@ -2669,7 +2799,7 @@ export default function RhythmRealm() {
         activeInstrumentIds
       );
       await scoreService.incrementTutorialsCompleted(user.id);
-      
+
       // Update local stats
       setUserStats(prev => ({
         ...prev,
@@ -2677,10 +2807,10 @@ export default function RhythmRealm() {
         totalScore: prev.totalScore + score,
         accuracy: accuracy
       }));
-      
+
       // Check for achievements
       await checkForAchievements();
-      
+
       // Refresh profile
       const profile = await authService.getUserProfile(user.id);
       setUserProfile(profile);
@@ -3205,12 +3335,12 @@ export default function RhythmRealm() {
 
   // Get translation helper
   const t = (key) => TRANSLATIONS[currentLanguage]?.[key] || TRANSLATIONS.en[key] || key;
-  
+
   // Mobile Detection & State
   const [isMobile, setIsMobile] = useState(false);
   const [mobileStepsVisible, setMobileStepsVisible] = useState(16); // Show 16 steps on mobile by default
   const [mobileStepOffset, setMobileStepOffset] = useState(0); // Which step to start from on mobile
-  
+
   // Detect mobile on mount
   useEffect(() => {
     const checkMobile = () => {
@@ -3235,7 +3365,7 @@ export default function RhythmRealm() {
   const [saveBeatName, setSaveBeatName] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState(null); // Beat to confirm deletion
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false); // Filter favorites
-  
+
   // Seek bar state
   const [isDraggingSeek, setIsDraggingSeek] = useState(false);
   const seekBarRef = useRef(null);
@@ -3246,20 +3376,20 @@ export default function RhythmRealm() {
 
   useEffect(() => {
     const initialSettings = {};
-    Object.keys(SOUND_VARIANTS).forEach(key => { 
-      initialSettings[key] = { 
-        pitch: 0, 
-        chord: null, 
-        bend: 0, 
-        volume: 100, 
-        muted: false, 
-        attack: 0, 
-        decay: 100, 
-        filter: 100, 
-        reverb: 0, 
-        distortion: 0, 
-        pan: 0 
-      }; 
+    Object.keys(SOUND_VARIANTS).forEach(key => {
+      initialSettings[key] = {
+        pitch: 0,
+        chord: null,
+        bend: 0,
+        volume: 100,
+        muted: false,
+        attack: 0,
+        decay: 100,
+        filter: 100,
+        reverb: 0,
+        distortion: 0,
+        pan: 0
+      };
     });
     setSoundSettings(initialSettings);
   }, []);
@@ -3307,7 +3437,7 @@ export default function RhythmRealm() {
 
     const startRecognition = () => {
       if (!isActive || !voiceControlEnabled) return;
-      
+
       // Check for browser support
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRecognition) {
@@ -3387,7 +3517,7 @@ export default function RhythmRealm() {
       if (recognitionRef.current) {
         try {
           recognitionRef.current.stop();
-        } catch (e) {}
+        } catch (e) { }
         recognitionRef.current = null;
       }
       setIsListening(false);
@@ -3402,7 +3532,7 @@ export default function RhythmRealm() {
       if (recognitionRef.current) {
         try {
           recognitionRef.current.stop();
-        } catch (e) {}
+        } catch (e) { }
         recognitionRef.current = null;
       }
     };
@@ -3515,23 +3645,23 @@ export default function RhythmRealm() {
   // Text-to-Speech function
   const speak = (text) => {
     if (!textToSpeechEnabled || !text) return;
-    
+
     // Cancel any ongoing speech
     if (window.speechSynthesis) {
       window.speechSynthesis.cancel();
-      
+
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.rate = 0.9;
       utterance.pitch = 1;
       utterance.volume = 1;
-      
+
       // Try to get a natural sounding voice
       const voices = window.speechSynthesis.getVoices();
-      const preferredVoice = voices.find(v => v.lang.includes('en') && v.name.includes('Natural')) 
+      const preferredVoice = voices.find(v => v.lang.includes('en') && v.name.includes('Natural'))
         || voices.find(v => v.lang.includes('en-US'))
         || voices[0];
       if (preferredVoice) utterance.voice = preferredVoice;
-      
+
       window.speechSynthesis.speak(utterance);
     }
   };
@@ -3583,7 +3713,7 @@ export default function RhythmRealm() {
       activeInstrumentIds: activeInstrumentIds,
       instrumentConfig: instrumentConfig,
     };
-    
+
     // If user is logged in, save to database
     if (user) {
       try {
@@ -3595,7 +3725,7 @@ export default function RhythmRealm() {
           instrumentConfig: beat.instrumentConfig,
           isPublic: false
         });
-        
+
         // Add the database beat to local state with DB id
         const dbBeat = {
           ...beat,
@@ -3605,7 +3735,7 @@ export default function RhythmRealm() {
         const newSavedBeats = [...savedBeats, dbBeat];
         setSavedBeats(newSavedBeats);
         localStorage.setItem('rhythmRealm_savedBeats', JSON.stringify(newSavedBeats));
-        
+
         console.log('Beat saved to cloud!');
       } catch (error) {
         console.error('Failed to save to cloud, saving locally:', error);
@@ -3620,10 +3750,10 @@ export default function RhythmRealm() {
       setSavedBeats(newSavedBeats);
       localStorage.setItem('rhythmRealm_savedBeats', JSON.stringify(newSavedBeats));
     }
-    
+
     setShowSaveModal(false);
     setSaveBeatName('');
-    
+
     // Track beat creation for achievements
     incrementBeatsCreated();
   };
@@ -3640,7 +3770,7 @@ export default function RhythmRealm() {
   // Delete beat function - deletes from database if logged in
   const deleteBeat = async (beatId) => {
     const beatToDelete = savedBeats.find(b => b.id === beatId);
-    
+
     // If beat was saved to cloud and user is logged in, delete from database
     if (user && beatToDelete?.cloudSaved) {
       try {
@@ -3650,7 +3780,7 @@ export default function RhythmRealm() {
         console.error('Failed to delete from cloud:', error);
       }
     }
-    
+
     const newSavedBeats = savedBeats.filter(b => b.id !== beatId);
     setSavedBeats(newSavedBeats);
     localStorage.setItem('rhythmRealm_savedBeats', JSON.stringify(newSavedBeats));
@@ -3659,7 +3789,7 @@ export default function RhythmRealm() {
   // Load beats from database when user logs in
   const loadBeatsFromCloud = async () => {
     if (!user) return;
-    
+
     try {
       const cloudBeats = await beatStorageService.getUserBeats(user.id);
       if (cloudBeats && cloudBeats.length > 0) {
@@ -3675,12 +3805,12 @@ export default function RhythmRealm() {
           cloudSaved: true,
           favorite: b.favorite || false
         }));
-        
+
         // Merge with local beats (avoid duplicates by id)
-        const localOnlyBeats = savedBeats.filter(local => 
+        const localOnlyBeats = savedBeats.filter(local =>
           !formattedBeats.some(cloud => cloud.id === local.id)
         );
-        
+
         const mergedBeats = [...formattedBeats, ...localOnlyBeats];
         setSavedBeats(mergedBeats);
         localStorage.setItem('rhythmRealm_savedBeats', JSON.stringify(mergedBeats));
@@ -3699,7 +3829,7 @@ export default function RhythmRealm() {
 
   // Toggle beat favorite
   const toggleFavorite = (beatId) => {
-    const newSavedBeats = savedBeats.map(b => 
+    const newSavedBeats = savedBeats.map(b =>
       b.id === beatId ? { ...b, favorite: !b.favorite } : b
     );
     setSavedBeats(newSavedBeats);
@@ -3729,113 +3859,113 @@ export default function RhythmRealm() {
   // Background Music System
   useEffect(() => {
     // Determine if we should play background music
-    const shouldPlay = bgMusicEnabled && 
-                       (view === 'splash' || view === 'modes' || view === 'settings' || view === 'library') &&
-                       !tutorialActive;
-    
+    const shouldPlay = bgMusicEnabled &&
+      (view === 'splash' || view === 'modes' || view === 'settings' || view === 'library') &&
+      !tutorialActive;
+
     const startBgMusic = () => {
       if (bgMusicRef.current) return; // Already playing
-      
+
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         bgAudioCtxRef.current = ctx;
-        
+
         // Master gain for background music
         const masterGain = ctx.createGain();
         masterGain.gain.value = 0.15; // Keep it subtle
         masterGain.connect(ctx.destination);
         bgGainRef.current = masterGain;
-        
+
         // Create a chill ambient loop
         const playAmbientLoop = () => {
           if (!bgAudioCtxRef.current || bgAudioCtxRef.current.state === 'closed') return;
-          
+
           const now = ctx.currentTime;
           const loopDuration = 8; // 8 second loop
-          
+
           // Ambient pad chord (Cmaj7 - C E G B)
           const padNotes = [130.81, 164.81, 196.00, 246.94]; // C3, E3, G3, B3
           padNotes.forEach((freq, i) => {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
             const filter = ctx.createBiquadFilter();
-            
+
             osc.type = 'sine';
             osc.frequency.value = freq;
-            
+
             filter.type = 'lowpass';
             filter.frequency.value = 800;
             filter.Q.value = 1;
-            
+
             gain.gain.setValueAtTime(0, now);
             gain.gain.linearRampToValueAtTime(0.08, now + 2);
             gain.gain.setValueAtTime(0.08, now + loopDuration - 2);
             gain.gain.linearRampToValueAtTime(0, now + loopDuration);
-            
+
             osc.connect(filter);
             filter.connect(gain);
             gain.connect(masterGain);
-            
+
             osc.start(now);
             osc.stop(now + loopDuration);
           });
-          
+
           // Soft arpeggio melody
           const arpeggioNotes = [261.63, 329.63, 392.00, 493.88, 392.00, 329.63]; // C4, E4, G4, B4, G4, E4
           arpeggioNotes.forEach((freq, i) => {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
             const filter = ctx.createBiquadFilter();
-            
+
             osc.type = 'triangle';
             osc.frequency.value = freq;
-            
+
             filter.type = 'lowpass';
             filter.frequency.value = 1200;
-            
+
             const noteStart = now + i * 1.2;
             gain.gain.setValueAtTime(0, noteStart);
             gain.gain.linearRampToValueAtTime(0.06, noteStart + 0.1);
             gain.gain.exponentialRampToValueAtTime(0.001, noteStart + 1.0);
-            
+
             osc.connect(filter);
             filter.connect(gain);
             gain.connect(masterGain);
-            
+
             osc.start(noteStart);
             osc.stop(noteStart + 1.0);
           });
-          
+
           // Soft bass pulse
           [0, 4].forEach(beat => {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
-            
+
             osc.type = 'sine';
             osc.frequency.value = 65.41; // C2
-            
+
             const bassStart = now + beat;
             gain.gain.setValueAtTime(0, bassStart);
             gain.gain.linearRampToValueAtTime(0.1, bassStart + 0.1);
             gain.gain.exponentialRampToValueAtTime(0.001, bassStart + 1.5);
-            
+
             osc.connect(gain);
             gain.connect(masterGain);
-            
+
             osc.start(bassStart);
             osc.stop(bassStart + 1.5);
           });
-          
+
           // Schedule next loop
           bgMusicRef.current = setTimeout(() => playAmbientLoop(), loopDuration * 1000 - 100);
         };
-        
+
         playAmbientLoop();
       } catch (e) {
         console.log('Background music error:', e);
       }
     };
-    
+
     const stopBgMusic = () => {
       if (bgMusicRef.current) {
         clearTimeout(bgMusicRef.current);
@@ -3853,13 +3983,13 @@ export default function RhythmRealm() {
         }, 600);
       }
     };
-    
+
     if (shouldPlay) {
       startBgMusic();
     } else {
       stopBgMusic();
     }
-    
+
     return () => stopBgMusic();
   }, [view, bgMusicEnabled, tutorialActive]);
 
@@ -3875,14 +4005,14 @@ export default function RhythmRealm() {
   const nextNoteTimeRef = useRef(0);
   const currentStepRef = useRef(0);
   const isPlayingRef = useRef(false);
-  
+
   // Refs to access current state in scheduler without re-renders
   const gridRef = useRef(grid);
   const tempoRef = useRef(tempo);
   const activeInstrumentIdsRef = useRef(activeInstrumentIds);
   const instrumentConfigRef = useRef(instrumentConfig);
   const soundSettingsRef = useRef(soundSettings);
-  
+
   // Keep refs in sync with state
   useEffect(() => { gridRef.current = grid; }, [grid]);
   useEffect(() => { tempoRef.current = tempo; }, [tempo]);
@@ -3905,67 +4035,67 @@ export default function RhythmRealm() {
     return totalTargetNotes === 0 ? 0 : (matchingNotes / totalTargetNotes) * 100;
   };
   const guideProgress = calculateGuideProgress();
-  const currentScore = guideProgress; 
+  const currentScore = guideProgress;
 
   // Select a Guide Logic
   const handleSelectGuide = (guide) => {
     setActiveGuide(guide);
     setShowGuideMenu(false);
     if (guide) {
-        // Ensure instruments required by the guide are visible
-        const requiredInsts = Object.keys(guide.pattern).filter(k => guide.pattern[k].length > 0);
-        setActiveInstrumentIds(prev => {
-            const newSet = new Set([...prev, ...requiredInsts]);
-            return Array.from(newSet);
-        });
+      // Ensure instruments required by the guide are visible
+      const requiredInsts = Object.keys(guide.pattern).filter(k => guide.pattern[k].length > 0);
+      setActiveInstrumentIds(prev => {
+        const newSet = new Set([...prev, ...requiredInsts]);
+        return Array.from(newSet);
+      });
     }
   };
 
   // Add/Remove Tracks
   const addTrack = (instId) => {
-      if (activeInstrumentIds.length >= 12) return;
-      if (!activeInstrumentIds.includes(instId)) {
-          setActiveInstrumentIds([...activeInstrumentIds, instId]);
-      }
-      setShowAddTrackMenu(false);
+    if (activeInstrumentIds.length >= 12) return;
+    if (!activeInstrumentIds.includes(instId)) {
+      setActiveInstrumentIds([...activeInstrumentIds, instId]);
+    }
+    setShowAddTrackMenu(false);
   };
 
   const removeTrack = (instId) => {
-      setActiveInstrumentIds(activeInstrumentIds.filter(id => id !== instId));
+    setActiveInstrumentIds(activeInstrumentIds.filter(id => id !== instId));
   };
 
   // WEB AUDIO SCHEDULER - Uses look-ahead for precise timing
   const scheduleNote = (stepIndex, time) => {
     let notesPlayed = 0;
-    
+
     activeInstrumentIdsRef.current.forEach(key => {
       if (gridRef.current[key][stepIndex]) {
         const variantIndex = instrumentConfigRef.current[key];
         const sound = SOUND_VARIANTS[key][variantIndex];
         const settings = soundSettingsRef.current[key] || { pitch: 0, chord: null, bend: 0, volume: 100, muted: false, attack: 0, decay: 100, filter: 100, reverb: 0, distortion: 0, pan: 0 };
-        
+
         if (!settings.muted) {
           AudioEngine.trigger(sound, time, settings);
           notesPlayed++;
         }
       }
     });
-    
+
     return notesPlayed;
   };
-  
+
   const scheduler = () => {
     const lookahead = 0.1; // How far ahead to schedule (seconds)
     const scheduleAheadTime = 0.1; // How far ahead to look (seconds)
-    
+
     while (nextNoteTimeRef.current < AudioEngine.ctx.currentTime + scheduleAheadTime) {
       // Schedule the note
       const notesPlayed = scheduleNote(currentStepRef.current, nextNoteTimeRef.current);
-      
+
       // Update UI on main beat (but not in the audio thread)
       const stepToUpdate = currentStepRef.current;
       const timeUntilNote = (nextNoteTimeRef.current - AudioEngine.ctx.currentTime) * 1000;
-      
+
       setTimeout(() => {
         setCurrentStep(stepToUpdate);
         if (notesPlayed > 0) {
@@ -3974,7 +4104,7 @@ export default function RhythmRealm() {
           setTimeout(() => setBeatPulse(0), 100);
         }
       }, Math.max(0, timeUntilNote));
-      
+
       // Move to next step
       const secondsPerBeat = 60.0 / tempoRef.current;
       const secondsPerStep = secondsPerBeat / 4; // 16th notes (4 steps per beat)
@@ -3990,7 +4120,7 @@ export default function RhythmRealm() {
       isPlayingRef.current = true;
       nextNoteTimeRef.current = AudioEngine.ctx.currentTime + 0.05; // Small delay to start
       currentStepRef.current = currentStep;
-      
+
       // Use a faster interval for the scheduler (25ms for smooth scheduling)
       schedulerRef.current = setInterval(scheduler, 25);
     } else {
@@ -4041,30 +4171,30 @@ export default function RhythmRealm() {
   const toggleCell = (instKey, stepIndex) => {
     // --- 1. Tutorial Locking ---
     if (tutorialActive && currentScenario && currentScenario.tutorial) {
-        const scenarioTutorial = currentScenario.tutorial;
-        if (tutorialStep < scenarioTutorial.length) {
-            const currentTask = scenarioTutorial[tutorialStep];
-            if (currentTask.targetInstrument && currentTask.targetSteps && currentTask.targetSteps.length > 0) {
-                if (instKey !== currentTask.targetInstrument || !currentTask.targetSteps.includes(stepIndex)) {
-                    return; // Block click
-                }
-            }
+      const scenarioTutorial = currentScenario.tutorial;
+      if (tutorialStep < scenarioTutorial.length) {
+        const currentTask = scenarioTutorial[tutorialStep];
+        if (currentTask.targetInstrument && currentTask.targetSteps && currentTask.targetSteps.length > 0) {
+          if (instKey !== currentTask.targetInstrument || !currentTask.targetSteps.includes(stepIndex)) {
+            return; // Block click
+          }
         }
+      }
     }
-    
+
     // --- 2. Guide Locking (Strict Mode) ---
     if (activeGuide) {
-        const validSteps = activeGuide.pattern[instKey] || [];
-        // Only allow toggling if it's a valid step in the guide
-        if (!validSteps.includes(stepIndex)) {
-            return; // Block click
-        }
+      const validSteps = activeGuide.pattern[instKey] || [];
+      // Only allow toggling if it's a valid step in the guide
+      if (!validSteps.includes(stepIndex)) {
+        return; // Block click
+      }
     }
 
     AudioEngine.init();
     // Close any open sound picker when clicking on grid
     if (showSoundPicker) setShowSoundPicker(null);
-    
+
     setGrid(prev => {
       const newRow = [...prev[instKey]];
       newRow[stepIndex] = !newRow[stepIndex];
@@ -4076,23 +4206,23 @@ export default function RhythmRealm() {
         AudioEngine.trigger(sound, 0, previewSettings);
       }
       const nextGrid = { ...prev, [instKey]: newRow };
-      
+
       // Advance onboarding tutorial if on click-grid step
       if (showOnboarding && ONBOARDING_STEPS[onboardingStep]?.action === 'click-grid') {
         setTimeout(() => setOnboardingStep(prev => prev + 1), 300);
       }
-      
+
       if (tutorialActive) {
-         const scenarioTutorial = currentScenario.tutorial;
-         if (tutorialStep < scenarioTutorial.length) {
-           const currentTask = scenarioTutorial[tutorialStep];
-           if (currentTask.targetInstrument === instKey) {
-             const allFilled = currentTask.targetSteps.every(idx => nextGrid[instKey][idx] === true);
-             if (allFilled) {
-                setTimeout(() => setTutorialStep(prev => Math.min(prev + 1, scenarioTutorial.length - 1)), 300);
-             }
-           }
-         }
+        const scenarioTutorial = currentScenario.tutorial;
+        if (tutorialStep < scenarioTutorial.length) {
+          const currentTask = scenarioTutorial[tutorialStep];
+          if (currentTask.targetInstrument === instKey) {
+            const allFilled = currentTask.targetSteps.every(idx => nextGrid[instKey][idx] === true);
+            if (allFilled) {
+              setTimeout(() => setTutorialStep(prev => Math.min(prev + 1, scenarioTutorial.length - 1)), 300);
+            }
+          }
+        }
       }
       return nextGrid;
     });
@@ -4105,9 +4235,9 @@ export default function RhythmRealm() {
   const smartFill = (instKey) => {
     if (activeGuide) return; // Disable smart fill in guide mode to enforce learning
     setGrid(prev => {
-        const newRow = Array(STEPS).fill(false);
-        for(let i=0; i<6; i++) newRow[Math.floor(Math.random() * STEPS)] = true;
-        return { ...prev, [instKey]: newRow };
+      const newRow = Array(STEPS).fill(false);
+      for (let i = 0; i < 6; i++) newRow[Math.floor(Math.random() * STEPS)] = true;
+      return { ...prev, [instKey]: newRow };
     });
   };
 
@@ -4122,29 +4252,29 @@ export default function RhythmRealm() {
     setCurrentScenario(scenario);
     setTempo(scenario.bpm);
     setIsPlaying(false);
-    
+
     // For tutorials: start with empty grid so user learns step by step
     if (scenario.tutorial) {
       // Clear the grid
       const newGrid = {};
       Object.keys(SOUND_VARIANTS).forEach(key => newGrid[key] = Array(STEPS).fill(false));
       setGrid(newGrid);
-      
+
       // Get all instruments used in the tutorial
       const tutorialInstruments = scenario.tutorial
         .filter(step => step.targetInstrument)
         .map(step => step.targetInstrument);
       const uniqueInstruments = [...new Set(tutorialInstruments)];
-      
+
       // Set active instruments to only the ones needed for tutorial
       setActiveInstrumentIds(uniqueInstruments);
-      
+
       // Enable tutorial mode
       setTutorialActive(true);
       setTutorialStep(0);
       setActiveGuide(null);
       setLockedInstruments({});
-    } 
+    }
     // For non-tutorial scenarios (map vibes): load the beat
     else if (scenario.beat) {
       const newGrid = {};
@@ -4157,7 +4287,7 @@ export default function RhythmRealm() {
         }
       });
       setGrid(newGrid);
-      
+
       // Enable the instruments used in this beat
       const usedInstruments = Object.keys(scenario.beat);
       setActiveInstrumentIds(usedInstruments);
@@ -4165,14 +4295,14 @@ export default function RhythmRealm() {
       setActiveGuide(null);
       setLockedInstruments({});
     }
-    
+
     setView('studio');
   };
 
   const handleSoundSettingChange = (instKey, setting, value) => {
     setSoundSettings(prev => ({
-        ...prev,
-        [instKey]: { ...prev[instKey], [setting]: value }
+      ...prev,
+      [instKey]: { ...prev[instKey], [setting]: value }
     }));
   };
 
@@ -4208,7 +4338,7 @@ export default function RhythmRealm() {
   };
 
   // --- RENDER ---
-  
+
   // ==========================================
   // AUTHENTICATION MODAL - Rendered inline to prevent remount on state change
   // ==========================================
@@ -4216,7 +4346,7 @@ export default function RhythmRealm() {
     <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={(e) => e.stopPropagation()}>
       <div className="bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-purple-500/50 rounded-3xl w-full max-w-md shadow-2xl shadow-purple-500/20 animate-bounce-in" onClick={(e) => e.stopPropagation()}>
         <div className="p-6 border-b border-slate-700 flex items-center justify-between">
-            <h2 className="text-2xl font-black text-white flex items-center gap-3">
+          <h2 className="text-2xl font-black text-white flex items-center gap-3">
             <span className="text-3xl">{authMode === 'login' ? '🔐' : '✨'}</span>
             {authMode === 'login' ? 'Welcome Back!' : 'Join Rhythm Realm'}
           </h2>
@@ -4224,14 +4354,14 @@ export default function RhythmRealm() {
             <Icons.Close />
           </button>
         </div>
-        
+
         <form onSubmit={authMode === 'login' ? handleLogin : handleRegister} className="p-6 space-y-4" autoComplete="off">
           {authError && (
             <div className="p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-300 text-sm">
               ⚠️ {authError}
             </div>
           )}
-          
+
           {authMode === 'register' && (
             <div>
               <label className="block text-sm font-bold text-slate-400 mb-2">Username</label>
@@ -4248,7 +4378,7 @@ export default function RhythmRealm() {
               />
             </div>
           )}
-          
+
           <div>
             <label className="block text-sm font-bold text-slate-400 mb-2">Email</label>
             <input
@@ -4262,7 +4392,7 @@ export default function RhythmRealm() {
               autoComplete="off"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-bold text-slate-400 mb-2">Password</label>
             <input
@@ -4277,7 +4407,7 @@ export default function RhythmRealm() {
               autoComplete="new-password"
             />
           </div>
-          
+
           <button
             type="submit"
             disabled={authLoading}
@@ -4285,7 +4415,7 @@ export default function RhythmRealm() {
           >
             {authLoading ? '⏳ Please wait...' : (authMode === 'login' ? '🚀 Login' : '🎉 Create Account')}
           </button>
-          
+
           <div className="text-center text-slate-400 text-sm">
             {authMode === 'login' ? (
               <>Don't have an account? <button type="button" onClick={() => { setAuthMode('register'); setAuthError(''); }} className="text-purple-400 hover:text-purple-300 font-bold">Sign up</button></>
@@ -4315,7 +4445,7 @@ export default function RhythmRealm() {
             >
               <span className="text-xl">🏆</span>
             </button>
-            
+
             {/* Achievements Button */}
             <button
               onClick={() => { loadUserAchievements(); setShowAchievements(true); }}
@@ -4324,7 +4454,7 @@ export default function RhythmRealm() {
             >
               <span className="text-xl">🏅</span>
             </button>
-            
+
             {/* User Profile - Clickable to open profile */}
             <button
               onClick={() => setShowProfile(true)}
@@ -4339,7 +4469,7 @@ export default function RhythmRealm() {
                 {(userProfile?.username || 'P')[0].toUpperCase()}
               </div>
             </button>
-            
+
             {/* Logout Button */}
             <button
               onClick={() => handleLogout(false)}
@@ -4347,7 +4477,7 @@ export default function RhythmRealm() {
               title="Logout"
             >
               <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
+                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />
               </svg>
             </button>
           </>
@@ -4377,7 +4507,7 @@ export default function RhythmRealm() {
             <Icons.Close />
           </button>
         </div>
-        
+
         <div className="flex-1 overflow-y-auto p-4">
           {leaderboardLoading ? (
             <div className="text-center py-12 text-slate-400">
@@ -4395,27 +4525,25 @@ export default function RhythmRealm() {
                 const rank = index + 1;
                 const isCurrentUser = user && player.id === user.id;
                 const medalEmoji = rank === 1 ? '🥁‡' : rank === 2 ? '🥁ˆ' : rank === 3 ? '🥁‰' : '';
-                
+
                 return (
                   <div
                     key={player.id}
-                    className={`flex items-center gap-4 p-4 rounded-xl transition-all ${
-                      isCurrentUser 
-                        ? 'bg-purple-500/30 border-2 border-purple-500' 
-                        : rank <= 3 
-                          ? 'bg-amber-500/10 border border-amber-500/30' 
-                          : 'bg-slate-800/50 border border-slate-700/50'
-                    }`}
+                    className={`flex items-center gap-4 p-4 rounded-xl transition-all ${isCurrentUser
+                      ? 'bg-purple-500/30 border-2 border-purple-500'
+                      : rank <= 3
+                        ? 'bg-amber-500/10 border border-amber-500/30'
+                        : 'bg-slate-800/50 border border-slate-700/50'
+                      }`}
                   >
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black text-lg ${
-                      rank === 1 ? 'bg-amber-400 text-amber-900' :
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black text-lg ${rank === 1 ? 'bg-amber-400 text-amber-900' :
                       rank === 2 ? 'bg-slate-300 text-slate-700' :
-                      rank === 3 ? 'bg-amber-600 text-amber-100' :
-                      'bg-slate-700 text-slate-300'
-                    }`}>
+                        rank === 3 ? 'bg-amber-600 text-amber-100' :
+                          'bg-slate-700 text-slate-300'
+                      }`}>
                       {medalEmoji || rank}
                     </div>
-                    
+
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-white">{player.username}</span>
@@ -4425,7 +4553,7 @@ export default function RhythmRealm() {
                         Level {player.level} • {player.rank_title}
                       </div>
                     </div>
-                    
+
                     <div className="text-right">
                       <div className="font-black text-xl text-white">{player.total_score?.toLocaleString() || 0}</div>
                       <div className="text-xs text-slate-400">{player.total_beats_created || 0} beats</div>
@@ -4436,7 +4564,7 @@ export default function RhythmRealm() {
             </div>
           )}
         </div>
-        
+
         {userRank && userRank > 10 && (
           <div className="p-4 border-t border-slate-700 shrink-0">
             <div className="text-center text-slate-400 text-sm">
@@ -4453,7 +4581,7 @@ export default function RhythmRealm() {
   // ==========================================
   const AchievementsModal = () => {
     const unlockedIds = new Set(userAchievements.map(a => a.achievement_id));
-    
+
     return (
       <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
         <div className="bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-green-500/50 rounded-3xl w-full max-w-3xl shadow-2xl shadow-green-500/20 animate-bounce-in max-h-[80vh] flex flex-col">
@@ -4470,7 +4598,7 @@ export default function RhythmRealm() {
               <Icons.Close />
             </button>
           </div>
-          
+
           <div className="flex-1 overflow-y-auto p-4">
             {achievementsLoading ? (
               <div className="text-center py-12 text-slate-400">
@@ -4482,20 +4610,18 @@ export default function RhythmRealm() {
                 {ACHIEVEMENTS.map((achievement) => {
                   const isUnlocked = unlockedIds.has(achievement.id);
                   const progress = achievementService.getAchievementProgress(achievement.id, userStats);
-                  
+
                   return (
                     <div
                       key={achievement.id}
-                      className={`p-4 rounded-xl border-2 transition-all ${
-                        isUnlocked 
-                          ? 'bg-green-500/20 border-green-500/50' 
-                          : 'bg-slate-800/50 border-slate-700/50 opacity-60'
-                      }`}
+                      className={`p-4 rounded-xl border-2 transition-all ${isUnlocked
+                        ? 'bg-green-500/20 border-green-500/50'
+                        : 'bg-slate-800/50 border-slate-700/50 opacity-60'
+                        }`}
                     >
                       <div className="flex items-start gap-3">
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${
-                          isUnlocked ? 'bg-green-500/30' : 'bg-slate-700/50 grayscale'
-                        }`}>
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${isUnlocked ? 'bg-green-500/30' : 'bg-slate-700/50 grayscale'
+                          }`}>
                           {achievement.icon}
                         </div>
                         <div className="flex-1">
@@ -4507,7 +4633,7 @@ export default function RhythmRealm() {
                           {progress && !isUnlocked && (
                             <div className="mt-2">
                               <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
-                                <div 
+                                <div
                                   className="h-full bg-purple-500 transition-all"
                                   style={{ width: `${Math.min(100, (progress.current / progress.target) * 100)}%` }}
                                 ></div>
@@ -4536,22 +4662,26 @@ export default function RhythmRealm() {
   // ==========================================
   // LEVEL SYSTEM FUNCTIONS
   // ==========================================
-  
+
   // Check if level requirements are met
   const checkLevelCompletion = (level) => {
     if (!level) return { complete: false, score: 0, stars: 0 };
-    
+
     const requirements = level.requirements;
     let score = 0;
     let totalRequired = 0;
     let totalPlaced = 0;
-    
+
     // Count notes per instrument
+    // Count notes per instrument (excluding locked/premade notes)
     const noteCounts = {};
     Object.keys(grid).forEach(inst => {
-      noteCounts[inst] = grid[inst].filter(Boolean).length;
+      const totalNotes = grid[inst].filter(Boolean).length;
+      const lockedNotes = level.premadePattern?.[inst]?.length || 0;
+      // Ensure we don't go below zero (though shouldn't happen)
+      noteCounts[inst] = Math.max(0, totalNotes - lockedNotes);
     });
-    
+
     // Check minimum notes for each required instrument
     let allRequirementsMet = true;
     Object.entries(requirements.mustInclude || {}).forEach(([inst, minCount]) => {
@@ -4560,34 +4690,34 @@ export default function RhythmRealm() {
       totalPlaced += Math.min(placed, minCount);
       if (placed < minCount) allRequirementsMet = false;
     });
-    
+
     // Calculate score based on completion
     score = Math.round((totalPlaced / Math.max(1, totalRequired)) * 100);
-    
+
     // Calculate stars (1-3)
     let stars = 0;
     if (score >= 100) stars = 3;
     else if (score >= 75) stars = 2;
     else if (score >= 50) stars = 1;
-    
+
     return { complete: allRequirementsMet && score >= 100, score, stars };
   };
-  
+
   // Submit level completion
   const submitLevel = async () => {
     if (!currentLevel) return;
-    
+
     const result = checkLevelCompletion(currentLevel);
     setLevelScore(result.score);
-    
+
     if (result.complete) {
       setLevelComplete(true);
-      
+
       // Save progress
       const isFirstCompletion = !levelProgress[currentLevel.id]?.completed;
       const wasThreeStar = levelProgress[currentLevel.id]?.stars >= 3;
       const isNewThreeStar = result.stars >= 3 && !wasThreeStar;
-      
+
       const newProgress = {
         ...levelProgress,
         [currentLevel.id]: {
@@ -4598,14 +4728,15 @@ export default function RhythmRealm() {
       };
       setLevelProgress(newProgress);
       localStorage.setItem('rhythmRealm_levelProgress', JSON.stringify(newProgress));
-      
+
       // Count completed levels and three star levels for achievements
       const completedCount = Object.values(newProgress).filter(p => p?.completed).length;
       const threeStarCount = Object.values(newProgress).filter(p => p?.stars >= 3).length;
-      
+
       // Award XP and update stats
       const xp = currentLevel.xpReward;
-      
+
+      // Update local stats
       setUserStats(prev => ({
         ...prev,
         totalScore: prev.totalScore + xp,
@@ -4616,14 +4747,29 @@ export default function RhythmRealm() {
         levelsCompleted: completedCount,
         threeStarLevels: threeStarCount
       }));
-      
-      // Check for achievements after level completion
+
+      // Update visible profile immediately
+      if (userProfile) {
+        setUserProfile(prev => ({
+          ...prev,
+          total_score: (prev.total_score || 0) + xp,
+          experience_points: (prev.experience_points || 0) + xp,
+          level: Math.floor(((prev.experience_points || 0) + xp) / 1000) + 1
+        }));
+      }
+
+      // Sync with backend if logged in
       if (user) {
+        try {
+          // We can optimistically update, actual sync happens via service elsewhere or we can force it here
+          // For now, local state update ensures UI is responsive
+        } catch (e) { console.error("XP sync failed", e); }
+
         setTimeout(() => checkForAchievements(), 500);
       }
     }
   };
-  
+
   // Get unlocked levels
   const getUnlockedLevels = () => {
     return GAME_LEVELS.map((level, index) => {
@@ -4633,7 +4779,7 @@ export default function RhythmRealm() {
       return { ...level, unlocked: prevCompleted || level.unlocked };
     });
   };
-  
+
   // Show next hint
   const showNextHint = () => {
     if (!currentLevel) return;
@@ -4652,7 +4798,7 @@ export default function RhythmRealm() {
   // ==========================================
   const AchievementNotification = () => {
     if (!newAchievementUnlocked) return null;
-    
+
     return (
       <div className="fixed top-4 sm:top-20 left-2 right-2 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 z-[150] animate-bounce-in">
         <div className="bg-gradient-to-r from-amber-500 via-yellow-500 to-orange-500 px-4 sm:px-8 py-4 sm:py-5 rounded-2xl shadow-2xl shadow-amber-500/50 flex items-center gap-3 sm:gap-4 border-2 border-yellow-300 max-w-md mx-auto">
@@ -4680,22 +4826,22 @@ export default function RhythmRealm() {
         <a href="#main-content" className="skip-link" onFocus={() => speak('Skip to main content')}>Skip to main content</a>
         <VoiceControlIndicator />
         <PixelMusicBackground theme={currentTheme} />
-        
+
         {/* User Profile Header */}
         <UserProfileHeader />
-        
+
         {/* Achievement Notification */}
         <AchievementNotification />
-        
+
         {/* Auth Modal */}
         {authModalContent}
-        
+
         {/* Leaderboard Modal */}
         {showLeaderboard && <LeaderboardModal />}
-        
+
         {/* Achievements Modal */}
         {showAchievements && <AchievementsModal />}
-        
+
         {/* Profile Modal */}
         {showProfile && (
           <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
@@ -4708,7 +4854,7 @@ export default function RhythmRealm() {
                   <Icons.Close />
                 </button>
               </div>
-              
+
               <div className="p-6 space-y-6">
                 {user && userProfile ? (
                   <>
@@ -4723,7 +4869,7 @@ export default function RhythmRealm() {
                         <p className="text-slate-500 text-sm">{userProfile.email}</p>
                       </div>
                     </div>
-                    
+
                     {/* Stats Grid */}
                     <div className="grid grid-cols-2 gap-3">
                       <div className="bg-slate-800 rounded-xl p-4 text-center">
@@ -4743,7 +4889,7 @@ export default function RhythmRealm() {
                         <div className="text-xs text-slate-500 uppercase">Levels Done</div>
                       </div>
                     </div>
-                    
+
                     {/* XP Progress */}
                     <div>
                       <div className="flex justify-between text-sm mb-2">
@@ -4751,13 +4897,13 @@ export default function RhythmRealm() {
                         <span className="text-white font-bold">{(userProfile.experience_points || 0) % 1000} / 1000</span>
                       </div>
                       <div className="h-4 bg-slate-700 rounded-full overflow-hidden">
-                        <div 
+                        <div
                           className="h-full bg-gradient-to-r from-purple-500 to-pink-500"
                           style={{ width: `${((userProfile.experience_points || 0) % 1000) / 10}%` }}
                         ></div>
                       </div>
                     </div>
-                    
+
                     {/* Streak */}
                     <div className="bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-xl p-4 border border-orange-500/30">
                       <div className="flex items-center justify-between">
@@ -4768,9 +4914,9 @@ export default function RhythmRealm() {
                         <div className="text-2xl font-black text-orange-400">{userProfile.current_streak || 0} days</div>
                       </div>
                     </div>
-                    
+
                     {/* Logout Button */}
-                    <button 
+                    <button
                       onClick={() => handleLogout(true)}
                       className="w-full p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-400 font-bold hover:bg-red-500/30 transition-all"
                     >
@@ -4796,9 +4942,9 @@ export default function RhythmRealm() {
         )}
 
         <div id="main-content" className="z-10 text-center animate-bounce-in px-4 w-full max-w-md">
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-black text-white drop-shadow-[0_5px_0_rgba(0,0,0,0.3)] tracking-tight mb-4 sm:mb-6 pixel-font" style={{ textShadow: '4px 4px 0px #a855f7, 8px 8px 0px #06b6d4' }} aria-label={t('appTitle')}>{t('appTitle').split(' ')[0]}<br/>{t('appTitle').split(' ')[1] || ''}</h1>
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-black text-white drop-shadow-[0_5px_0_rgba(0,0,0,0.3)] tracking-tight mb-4 sm:mb-6 pixel-font" style={{ textShadow: '4px 4px 0px #a855f7, 8px 8px 0px #06b6d4' }} aria-label={t('appTitle')}>{t('appTitle').split(' ')[0]}<br />{t('appTitle').split(' ')[1] || ''}</h1>
           <p className="text-cyan-300 text-base sm:text-lg mb-4 sm:mb-6 opacity-80" aria-hidden="true">🎵 {t('createBeat')} 🎵</p>
-          
+
           {/* User Stats Card (if logged in) */}
           {user && userProfile && (
             <div className="mb-4 p-4 bg-slate-800/60 backdrop-blur-sm rounded-2xl border border-slate-700">
@@ -4822,7 +4968,7 @@ export default function RhythmRealm() {
                   <span>{(userProfile.experience_points || 0) % 1000} / 1000</span>
                 </div>
                 <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
-                  <div 
+                  <div
                     className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all"
                     style={{ width: `${((userProfile.experience_points || 0) % 1000) / 10}%` }}
                   ></div>
@@ -4830,14 +4976,14 @@ export default function RhythmRealm() {
               </div>
             </div>
           )}
-          
+
           <div className="space-y-3 sm:space-y-4" role="navigation" aria-label="Main menu">
-            <Button 
-              onClick={() => { 
-                AudioEngine.init(); 
-                setView('levels'); 
-              }} 
-              size="lg" 
+            <Button
+              onClick={() => {
+                AudioEngine.init();
+                setView('levels');
+              }}
+              size="lg"
               className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 border-purple-700 hover:from-cyan-400 hover:to-purple-400"
               onMouseEnter={() => speak(t('letsPlay') + "! Choose a level and learn to make beats")}
               onFocus={() => speak(t('letsPlay') + "! Choose a level and learn to make beats")}
@@ -4846,8 +4992,8 @@ export default function RhythmRealm() {
               aria-label={t('letsPlay') + " - Choose a level to play"}
             ><Icons.Play /> {t('letsPlay')}</Button>
             <div className="flex gap-3">
-              <button 
-                onClick={() => setView('modes')} 
+              <button
+                onClick={() => setView('modes')}
                 className="flex-1 px-6 py-4 rounded-3xl text-lg font-black uppercase tracking-wide transition-all shadow-xl flex items-center justify-center gap-2 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 hover:from-pink-400 hover:via-purple-400 hover:to-indigo-400 text-white border-b-8 border-purple-700 active:border-b-0 active:translate-y-2"
                 onMouseEnter={() => speak(t('modes') + ". Choose from Free Play, Tutorial, Beat Library, or DJ Mode")}
                 onFocus={() => speak(t('modes') + ". Choose from Free Play, Tutorial, Beat Library, or DJ Mode")}
@@ -4857,8 +5003,8 @@ export default function RhythmRealm() {
               >
                 <span className="text-2xl" aria-hidden="true">🎮</span> {t('modes')}
               </button>
-              <button 
-                onClick={() => setView('settings')} 
+              <button
+                onClick={() => setView('settings')}
                 className="flex-1 px-6 py-4 rounded-3xl text-lg font-black uppercase tracking-wide transition-all shadow-xl flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-500 via-teal-500 to-emerald-500 hover:from-cyan-400 hover:via-teal-400 hover:to-emerald-400 text-white border-b-8 border-teal-700 active:border-b-0 active:translate-y-2"
                 onMouseEnter={() => speak(t('settings') + ". Adjust volume, themes, and accessibility options")}
                 onFocus={() => speak(t('settings') + ". Adjust volume, themes, and accessibility options")}
@@ -4880,29 +5026,29 @@ export default function RhythmRealm() {
   // ==========================================
   if (view === 'levels') {
     const unlockedLevels = getUnlockedLevels();
-    
+
     return (
       <div className={`h-screen w-full text-white flex flex-col overflow-hidden font-sans relative ${highContrastMode ? 'high-contrast' : ''} ${largeTextMode ? 'large-text' : ''}`}>
         <style>{cssStyles}</style>
         <VoiceControlIndicator />
         <PixelMusicBackground theme={currentTheme} />
-        
+
         {/* Achievement Notification - Global */}
         <AchievementNotification />
-        
+
         {/* Header */}
         <div className="relative z-10 px-4 sm:px-6 py-4 sm:py-6 flex items-center justify-between border-b border-white/10 bg-black/30 backdrop-blur-sm">
-          <button 
-            onClick={() => setView('splash')} 
+          <button
+            onClick={() => setView('splash')}
             className="p-2 sm:p-3 bg-white/10 hover:bg-white/20 rounded-xl sm:rounded-2xl shadow-lg transition-all active:scale-95"
           ><Icons.ChevronLeft /></button>
           <h2 className="text-xl sm:text-3xl font-black bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">🎮 SELECT LEVEL</h2>
-          <button 
-            onClick={() => setShowProfile(true)} 
+          <button
+            onClick={() => setShowProfile(true)}
             className="p-2 sm:p-3 bg-white/10 hover:bg-white/20 rounded-xl sm:rounded-2xl shadow-lg transition-all active:scale-95"
           >👤</button>
         </div>
-        
+
         {/* Level Grid */}
         <div className="relative z-10 flex-1 overflow-y-auto p-4 sm:p-6">
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 max-w-6xl mx-auto">
@@ -4910,7 +5056,7 @@ export default function RhythmRealm() {
               const progress = levelProgress[level.id];
               const isCompleted = progress?.completed;
               const stars = progress?.stars || 0;
-              
+
               return (
                 <button
                   key={level.id}
@@ -4919,6 +5065,16 @@ export default function RhythmRealm() {
                       AudioEngine.init();
                       const newGrid = {};
                       Object.keys(SOUND_VARIANTS).forEach(key => newGrid[key] = Array(STEPS).fill(false));
+                      // Load premade pattern if exists
+                      if (level.premadePattern) {
+                        Object.entries(level.premadePattern).forEach(([inst, steps]) => {
+                          if (newGrid[inst]) {
+                            steps.forEach(s => {
+                              if (s < STEPS) newGrid[inst][s] = true;
+                            });
+                          }
+                        });
+                      }
                       setGrid(newGrid);
                       setCurrentLevel(level);
                       setCurrentHintIndex(0);
@@ -4931,34 +5087,32 @@ export default function RhythmRealm() {
                     }
                   }}
                   disabled={!level.unlocked}
-                  className={`relative p-4 sm:p-6 rounded-2xl sm:rounded-3xl text-center transition-all ${
-                    level.unlocked 
-                      ? isCompleted
-                        ? 'bg-gradient-to-br from-green-500/80 to-emerald-600/80 hover:scale-105 border-2 border-green-400/50'
-                        : 'bg-gradient-to-br from-purple-500/80 to-pink-600/80 hover:scale-105 border-2 border-purple-400/50'
-                      : 'bg-slate-800/50 opacity-50 cursor-not-allowed border-2 border-slate-700/50'
-                  } backdrop-blur-sm shadow-xl`}
+                  className={`relative p-4 sm:p-6 rounded-2xl sm:rounded-3xl text-center transition-all ${level.unlocked
+                    ? isCompleted
+                      ? 'bg-gradient-to-br from-green-500/80 to-emerald-600/80 hover:scale-105 border-2 border-green-400/50'
+                      : 'bg-gradient-to-br from-purple-500/80 to-pink-600/80 hover:scale-105 border-2 border-purple-400/50'
+                    : 'bg-slate-800/50 opacity-50 cursor-not-allowed border-2 border-slate-700/50'
+                    } backdrop-blur-sm shadow-xl`}
                 >
                   {/* Level Number */}
-                  <div className={`absolute -top-2 -left-2 w-8 h-8 rounded-full flex items-center justify-center font-black text-sm ${
-                    level.unlocked ? 'bg-white text-purple-600' : 'bg-slate-600 text-slate-400'
-                  }`}>
+                  <div className={`absolute -top-2 -left-2 w-8 h-8 rounded-full flex items-center justify-center font-black text-sm ${level.unlocked ? 'bg-white text-purple-600' : 'bg-slate-600 text-slate-400'
+                    }`}>
                     {level.id}
                   </div>
-                  
+
                   {/* Lock Icon */}
                   {!level.unlocked && (
                     <div className="absolute inset-0 flex items-center justify-center">
                       <span className="text-4xl">🔒</span>
                     </div>
                   )}
-                  
+
                   {/* Level Content */}
                   <div className={level.unlocked ? '' : 'opacity-30'}>
                     <div className="text-4xl mb-2">{level.icon}</div>
                     <div className="font-bold text-sm sm:text-base mb-1">{level.name}</div>
                     <div className="text-xs text-white/70 mb-2">{level.difficulty}</div>
-                    
+
                     {/* Stars */}
                     <div className="flex justify-center gap-1">
                       {[1, 2, 3].map(s => (
@@ -4967,11 +5121,11 @@ export default function RhythmRealm() {
                         </span>
                       ))}
                     </div>
-                    
+
                     {/* XP Reward */}
                     <div className="mt-2 text-xs text-amber-400 font-bold">+{level.xpReward} XP</div>
                   </div>
-                  
+
                   {/* Completed Badge */}
                   {isCompleted && (
                     <div className="absolute -top-2 -right-2 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
@@ -4982,7 +5136,7 @@ export default function RhythmRealm() {
               );
             })}
           </div>
-          
+
           {/* Progress Summary */}
           <div className="mt-6 sm:mt-8 max-w-md mx-auto">
             <div className="bg-slate-800/60 backdrop-blur-sm rounded-2xl p-4 border border-slate-700">
@@ -4993,7 +5147,7 @@ export default function RhythmRealm() {
                 </span>
               </div>
               <div className="h-3 bg-slate-700 rounded-full overflow-hidden">
-                <div 
+                <div
                   className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all"
                   style={{ width: `${(Object.values(levelProgress).filter(p => p?.completed).length / GAME_LEVELS.length) * 100}%` }}
                 ></div>
@@ -5005,7 +5159,7 @@ export default function RhythmRealm() {
             </div>
           </div>
         </div>
-        
+
         {/* Profile Modal */}
         {showProfile && (
           <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
@@ -5018,7 +5172,7 @@ export default function RhythmRealm() {
                   <Icons.Close />
                 </button>
               </div>
-              
+
               <div className="p-6 space-y-6">
                 {user && userProfile ? (
                   <>
@@ -5033,7 +5187,7 @@ export default function RhythmRealm() {
                         <p className="text-slate-500 text-sm">{userProfile.email}</p>
                       </div>
                     </div>
-                    
+
                     {/* Stats Grid */}
                     <div className="grid grid-cols-2 gap-3">
                       <div className="bg-slate-800 rounded-xl p-4 text-center">
@@ -5053,7 +5207,7 @@ export default function RhythmRealm() {
                         <div className="text-xs text-slate-500 uppercase">Levels Done</div>
                       </div>
                     </div>
-                    
+
                     {/* XP Progress */}
                     <div>
                       <div className="flex justify-between text-sm mb-2">
@@ -5061,13 +5215,13 @@ export default function RhythmRealm() {
                         <span className="text-white font-bold">{(userProfile.experience_points || 0) % 1000} / 1000</span>
                       </div>
                       <div className="h-4 bg-slate-700 rounded-full overflow-hidden">
-                        <div 
+                        <div
                           className="h-full bg-gradient-to-r from-purple-500 to-pink-500"
                           style={{ width: `${((userProfile.experience_points || 0) % 1000) / 10}%` }}
                         ></div>
                       </div>
                     </div>
-                    
+
                     {/* Streak */}
                     <div className="bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded-xl p-4 border border-orange-500/30">
                       <div className="flex items-center justify-between">
@@ -5078,7 +5232,7 @@ export default function RhythmRealm() {
                         <div className="text-2xl font-black text-orange-400">{userProfile.current_streak || 0} days</div>
                       </div>
                     </div>
-                    
+
                     {/* Logout Button */}
                     <button
                       onClick={() => handleLogout(true)}
@@ -5113,26 +5267,26 @@ export default function RhythmRealm() {
   // ==========================================
   if (view === 'levelPlay' && currentLevel) {
     const completion = checkLevelCompletion(currentLevel);
-    
+
     return (
       <div className={`h-screen w-full flex flex-col overflow-hidden font-sans ${highContrastMode ? 'high-contrast' : ''} ${largeTextMode ? 'large-text' : ''}`}>
         <style>{cssStyles}</style>
-        
+
         {/* Achievement Notification - Global */}
         <AchievementNotification />
-        
+
         {/* Level Header */}
-        <div className="bg-gradient-to-r from-purple-900 to-pink-900 px-4 py-3 flex items-center justify-between border-b border-white/10">
-          <button 
-            onClick={() => { 
-              setIsPlaying(false); 
+        <div className="bg-gradient-to-r from-purple-900 to-pink-900 px-4 py-3 landscape:py-1 flex items-center justify-between border-b border-white/10 shrink-0">
+          <button
+            onClick={() => {
+              setIsPlaying(false);
               // Stop all scheduled audio immediately
               AudioEngine.stopAll();
-              setView('levels'); 
-            }} 
+              setView('levels');
+            }}
             className="p-2 bg-white/10 hover:bg-white/20 rounded-xl text-white transition-all"
           ><Icons.ChevronLeft /></button>
-          
+
           <div className="text-center">
             <div className="flex items-center gap-2 justify-center">
               <span className="text-xl">{currentLevel.icon}</span>
@@ -5140,22 +5294,75 @@ export default function RhythmRealm() {
             </div>
             <div className="text-xs text-purple-300">{currentLevel.difficulty}</div>
           </div>
-          
-          <button 
+
+          <button
             onClick={showNextHint}
-            className="p-2 bg-amber-500/20 hover:bg-amber-500/30 rounded-xl text-amber-400 font-bold transition-all flex items-center gap-1"
+            className={`
+              relative group overflow-hidden px-4 py-2 rounded-full font-bold transition-all duration-300
+              ${currentLevel.hints
+                ? 'bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-[0_0_15px_rgba(251,191,36,0.4)] hover:shadow-[0_0_25px_rgba(251,191,36,0.6)] hover:scale-105'
+                : 'bg-slate-700 text-slate-500 cursor-not-allowed'}
+            `}
           >
-            💡 Hint
+            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 rounded-full"></div>
+            <div className="flex items-center gap-2 relative z-10">
+              <span className="text-lg filter drop-shadow">💡</span>
+              <span className="tracking-wide text-sm">HINT</span>
+            </div>
           </button>
         </div>
-        
+
+        {/* Level 1 Tutorial Overlay */}
+        {/* Level 1 Tutorial Overlay */}
+        {currentLevel.id === 1 && !tutorialActive && !levelComplete && showLevelTutorial && (
+          <div className="absolute inset-0 z-50 pointer-events-none flex items-center justify-center p-4">
+            <div className="bg-slate-900/95 border-2 border-cyan-500 rounded-3xl p-8 max-w-lg w-full shadow-2xl pointer-events-auto animate-bounce-in text-center relative overflow-hidden">
+              {/* Background Glow */}
+              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-cyan-400 to-purple-500"></div>
+
+              <div className="w-20 h-20 bg-cyan-900/50 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-cyan-400/30">
+                <span className="text-4xl">👋</span>
+              </div>
+
+              <h2 className="text-3xl font-black text-white mb-3">Welcome to the Studio!</h2>
+              <p className="text-slate-300 text-lg mb-8 leading-relaxed">
+                You've got a <span className="text-cyan-400 font-bold">Rock Beat</span> started for you.
+                <br /><br />
+                Your goal is to <span className="text-white font-bold border-b-2 border-purple-500">finish the pattern</span>.
+                <br />
+                Look for the <span className="bg-slate-700 px-2 py-1 rounded text-sm text-slate-300">🔒 Gray Notes</span> - those are locked foundation blocks. Build around them!
+              </p>
+
+              <button
+                onClick={() => {
+                  setShowLevelTutorial(false);
+                  localStorage.setItem('rhythmRealm_lvl1_tutorial_seen', 'true');
+                }}
+                className="w-full py-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 rounded-2xl font-black text-xl text-white shadow-lg transition-all hover:scale-[1.02] active:scale-95"
+              >
+                GOT IT, LET'S ROCK! 🤘
+              </button>
+
+              <button
+                onClick={() => {
+                  setShowLevelTutorial(false);
+                  localStorage.setItem('rhythmRealm_lvl1_tutorial_seen', 'true');
+                }}
+                className="mt-4 text-slate-500 hover:text-slate-300 font-bold text-sm transition-colors"
+              >
+                Skip Tutorial
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Objective Banner */}
-        <div className="bg-slate-800/80 px-4 py-3 text-center border-b border-slate-700">
-          <div className="text-xs text-slate-400 uppercase tracking-wide mb-1">Objective</div>
-          <div className="text-white font-bold">{currentLevel.objective}</div>
-          
+        <div className="bg-slate-800/80 px-4 py-3 landscape:py-1 text-center border-b border-slate-700 shrink-0">
+          <div className="text-xs text-slate-400 uppercase tracking-wide mb-1 landscape:hidden">Objective</div>
+          <div className="text-white font-bold landscape:text-sm">{currentLevel.objective}</div>
+
           {/* Requirements */}
-          <div className="flex flex-wrap justify-center gap-2 mt-2">
+          <div className="flex flex-wrap justify-center gap-2 mt-2 landscape:mt-0 landscape:gap-1">
             {Object.entries(currentLevel.requirements.mustInclude || {}).map(([inst, count]) => {
               const current = grid[inst]?.filter(Boolean).length || 0;
               const met = current >= count;
@@ -5167,35 +5374,72 @@ export default function RhythmRealm() {
             })}
           </div>
         </div>
-        
+
         {/* Hint Popup */}
         {showHint && currentLevel.hints && (
           <div className="absolute top-32 left-1/2 -translate-x-1/2 z-50 bg-amber-500 text-black px-6 py-3 rounded-2xl shadow-2xl max-w-sm text-center font-bold animate-bounce-in">
             {currentLevel.hints[currentHintIndex]}
           </div>
         )}
-        
+
         {/* Progress Bar */}
-        <div className="bg-slate-900 px-4 py-2">
+        <div className="bg-slate-900 px-4 py-2 landscape:py-1 shrink-0">
           <div className="flex justify-between text-xs text-slate-400 mb-1">
             <span>Completion</span>
             <span className={completion.score >= 100 ? 'text-green-400' : ''}>{completion.score}%</span>
           </div>
           <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
-            <div 
+            <div
               className={`h-full transition-all ${completion.score >= 100 ? 'bg-green-500' : 'bg-purple-500'}`}
               style={{ width: `${Math.min(100, completion.score)}%` }}
             ></div>
           </div>
         </div>
-        
+
         {/* Grid Area - Scrollable */}
-        <div className="flex-1 overflow-auto bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-2">
-          <div className="space-y-1">
+        <div className={`flex-1 overflow-auto p-4 landscape:p-1 custom-scrollbar transition-colors duration-700
+          ${currentLevel.themeId === 'neon' ? 'bg-[#1a1c2e]' :
+            currentLevel.themeId === 'sunset' ? 'bg-[#2c1a2e]' :
+              currentLevel.themeId === 'ocean' ? 'bg-[#1a2c3a]' :
+                currentLevel.themeId === 'golden' ? 'bg-[#2e261a]' :
+                  currentLevel.themeId === 'forest' ? 'bg-[#1a2e22]' :
+                    currentLevel.themeId === 'midnight' ? 'bg-[#0f1016]' : 'bg-[#1a1c2e]'}
+        `}>
+          {/* Top Ruler */}
+          <div className="flex items-center gap-1 mb-2 sticky top-0 z-30 pt-2 pb-2 bg-[#131524] shadow-lg border-b border-white/5">
+            <div className="w-16 sm:w-20 shrink-0 text-[10px] text-slate-500 font-bold text-center uppercase tracking-wider self-end pb-1">Instrument</div>
+            <div className="flex-1 flex gap-0.5 relative">
+              {/* Background for ruler */}
+              <div className="absolute inset-x-0 bottom-0 h-6 bg-slate-800/50 rounded-sm"></div>
+
+              {Array.from({ length: STEPS }).map((_, i) => {
+                const isBarStart = i % 8 === 0;
+                return (
+                  <div key={i} className="flex-1 text-center relative h-8 flex flex-col justify-end">
+                    {isBarStart && (
+                      <div className="absolute -top-1 left-0 w-full text-center">
+                        <span className="text-[10px] sm:text-xs font-black text-cyan-400 bg-[#131524] px-1.5 py-0.5 rounded-full border border-cyan-900 shadow-sm z-10 block mx-auto w-max transform -translate-y-1">
+                          {Math.floor(i / 8) + 1}
+                        </span>
+                      </div>
+                    )}
+                    <div className={`mx-auto w-px transition-all duration-300 ${isBarStart
+                      ? 'bg-cyan-600/50 h-full mt-1'
+                      : i % 2 === 0
+                        ? 'bg-slate-600 h-2 mb-1.5'
+                        : 'bg-slate-700/30 h-1 mb-2'
+                      }`}></div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="space-y-4">
             {Object.keys(SOUND_VARIANTS).filter(inst => activeInstrumentIds.includes(inst)).map((instKey) => {
               const config = instrumentConfig[instKey] || { muted: false, volume: 80, soundVariant: 0 };
               const isRequired = currentLevel.requirements.instruments?.includes(instKey);
-              
+
               return (
                 <div key={instKey} className={`flex items-center gap-1 ${isRequired ? 'ring-2 ring-purple-500/50 rounded-xl' : ''}`}>
                   <div className={`w-16 sm:w-20 text-xs font-black uppercase text-center py-2 rounded-l-xl ${isRequired ? 'bg-purple-600 text-white' : 'bg-slate-700 text-slate-300'}`}>
@@ -5206,24 +5450,48 @@ export default function RhythmRealm() {
                     {Array.from({ length: STEPS }).map((_, step) => {
                       const isActive = grid[instKey]?.[step];
                       const isBeat = step % 8 === 0;
-                      
+                      // Check if this cell is part of the locked premade pattern
+                      const isLocked = currentLevel.premadePattern?.[instKey]?.includes(step);
+
                       return (
                         <button
                           key={step}
                           onClick={() => {
+                            // Prevent modifying locked cells
+                            if (isLocked) return;
+
                             const newGrid = { ...grid };
                             if (!newGrid[instKey]) newGrid[instKey] = Array(STEPS).fill(false);
                             newGrid[instKey][step] = !newGrid[instKey][step];
                             setGrid(newGrid);
+
+                            // Produce sound immediately for feedback
+                            if (newGrid[instKey][step]) {
+                              AudioEngine.init();
+                              const config = instrumentConfig[instKey] || {};
+                              const variantIndex = config.soundVariant || 0;
+                              const sound = SOUND_VARIANTS[instKey]?.[variantIndex] || SOUND_VARIANTS[instKey]?.[0];
+                              if (sound) AudioEngine.trigger(sound, 0, { volume: config.volume || 80 });
+                            }
                           }}
-                          className={`flex-1 h-8 sm:h-10 rounded transition-all ${
-                            isActive 
-                              ? 'bg-gradient-to-br from-purple-500 to-pink-500 shadow-lg scale-95' 
-                              : isBeat 
-                                ? 'bg-slate-600 hover:bg-slate-500' 
-                                : 'bg-slate-700 hover:bg-slate-600'
-                          } ${currentStep === step && isPlaying ? 'ring-2 ring-cyan-400' : ''}`}
-                        />
+                          disabled={isLocked}
+                          className={`
+                            flex-1 h-8 sm:h-12 landscape:h-8 rounded-sm transition-all relative transform duration-100 ease-out
+                            ${isActive
+                              ? isLocked
+                                ? 'bg-slate-600 border-b-4 border-slate-800 translate-y-1 shadow-inner cursor-not-allowed opacity-80' // Locked Pressed
+                                : `${(INSTRUMENTS_DATA.find(i => i.id === instKey)?.color || 'bg-purple-500').replace('400', '500')} border-b-0 translate-y-1 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]` // Active Pressed - uses Instrument Color
+                              : `${(INSTRUMENTS_DATA.find(i => i.id === instKey)?.color || 'bg-slate-700').replace('400', '900/30')} hover:bg-white/10 border-b-4 border-slate-900 shadow-md hover:-translate-y-0.5` // Inactive Unpressed
+                            } 
+                            ${currentStep === step && isPlaying ? 'ring-2 ring-cyan-400 z-10 brightness-125' : ''}
+                            ${isBeat && !isActive ? 'bg-white/5 border-slate-800' : ''} 
+                            ${isActive && !isLocked ? `shadow-[0_0_15px_rgba(255,255,255,0.3)]` : ''}
+                          `}
+                        >
+                          {/* 3D Highlight Effect */}
+                          {!isActive && <div className="absolute top-0 left-0 right-0 h-1 bg-white/5 rounded-t-sm"></div>}
+                          {isLocked && isActive && <span className="absolute inset-0 flex items-center justify-center text-[10px] opacity-50">🔒</span>}
+                        </button>
                       );
                     })}
                   </div>
@@ -5232,40 +5500,93 @@ export default function RhythmRealm() {
             })}
           </div>
         </div>
-        
+
+        {/* Playback Slider with Time Ruler */}
+        <div className="bg-slate-900 px-4 pt-2 pb-1">
+          <div className="flex items-center justify-between mb-1 text-xs font-bold text-slate-500">
+            <span>PLAYBACK</span>
+            <span className="font-mono text-cyan-400">
+              BAR {Math.floor(currentStep / 8) + 1} <span className="text-slate-600">|</span> BEAT {Math.floor((currentStep % 8) / 2) + 1}
+            </span>
+          </div>
+          <div
+            className="relative h-8 bg-slate-800 rounded-lg cursor-pointer group mt-4 mb-2"
+            onClick={(e) => {
+              const rect = e.currentTarget.getBoundingClientRect();
+              const x = e.clientX - rect.left;
+              const percentage = Math.max(0, Math.min(1, x / rect.width));
+              const newStep = Math.floor(percentage * STEPS);
+              setCurrentStep(newStep);
+              currentStepRef.current = newStep;
+            }}
+          >
+            {/* Ruler Numbers & Ticks */}
+            {[...Array(STEPS)].map((_, i) => {
+              const isBar = i % 8 === 0;
+              const isBeat = i % 2 === 0;
+              return (
+                <React.Fragment key={i}>
+                  {/* Bar Number Label */}
+                  {isBar && (
+                    <div className="absolute -top-5 text-[10px] font-black text-slate-500" style={{ left: `${(i / STEPS) * 100}%` }}>
+                      {Math.floor(i / 8) + 1}
+                    </div>
+                  )}
+
+                  {/* Ticks */}
+                  <div
+                    className={`absolute top-0 w-px ${isBar ? 'h-full bg-white/40' :
+                      isBeat ? 'h-1/2 top-1/4 bg-white/10' :
+                        'hidden'
+                      }`}
+                    style={{ left: `${(i / STEPS) * 100}%` }}
+                  ></div>
+                </React.Fragment>
+              );
+            })}
+
+            {/* Progress Fill */}
+            <div className="absolute top-0 left-0 bottom-0 bg-cyan-900/40 pointer-events-none" style={{ width: `${(currentStep / STEPS) * 100}%` }}></div>
+
+            {/* Playhead */}
+            <div className="absolute top-0 bottom-0 w-0.5 bg-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.8)] transition-all duration-75 pointer-events-none z-10" style={{ left: `${(currentStep / STEPS) * 100}%` }}>
+              <div className="absolute -top-1.5 -left-[5px] w-3 h-3 rotate-45 border-2 border-cyan-400 bg-slate-900"></div>
+            </div>
+          </div>
+        </div>
+
         {/* Control Bar */}
         <div className="bg-slate-900 border-t border-slate-700 px-4 py-3 flex items-center justify-center gap-4">
-          <button 
-            onClick={() => { 
-              AudioEngine.init(); 
+          <button
+            onClick={() => {
+              AudioEngine.init();
               if (!isPlaying) {
                 trackFirstPlay();
               }
-              setIsPlaying(!isPlaying); 
-            }} 
+              setIsPlaying(!isPlaying);
+            }}
             className={`w-16 h-16 rounded-full flex items-center justify-center transition-all shadow-xl ${isPlaying ? 'bg-red-500 border-b-4 border-red-700' : 'bg-green-500 border-b-4 border-green-700'} text-white`}
           >
             {isPlaying ? <Icons.Stop /> : <Icons.Play />}
           </button>
-          
+
           <div className="flex flex-col items-center">
             <span className="text-xs text-slate-400">Tempo</span>
             <span className="text-white font-bold">{tempo} BPM</span>
           </div>
-          
-          <button 
+
+          <button
             onClick={submitLevel}
             disabled={completion.score < 100}
-            className={`px-6 py-3 rounded-xl font-bold transition-all ${
-              completion.score >= 100 
-                ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg hover:scale-105' 
-                : 'bg-slate-700 text-slate-500 cursor-not-allowed'
-            }`}
+            className={`px-6 py-3 rounded-xl font-bold transition-all ${completion.score >= 100
+              ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg hover:scale-105'
+              : 'bg-slate-700 text-slate-500 cursor-not-allowed'
+              }`}
           >
             {completion.score >= 100 ? '✔ Submit' : 'Complete to Submit'}
           </button>
         </div>
-        
+
         {/* Level Complete Modal */}
         {levelComplete && (
           <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
@@ -5273,7 +5594,7 @@ export default function RhythmRealm() {
               <div className="text-6xl mb-4">🎉</div>
               <h2 className="text-3xl font-black text-white mb-2">Level Complete!</h2>
               <p className="text-green-300 mb-4">{currentLevel.name}</p>
-              
+
               {/* Stars */}
               <div className="flex justify-center gap-2 mb-6">
                 {[1, 2, 3].map(s => (
@@ -5282,12 +5603,12 @@ export default function RhythmRealm() {
                   </span>
                 ))}
               </div>
-              
+
               {/* Rewards */}
               <div className="bg-black/30 rounded-xl p-4 mb-6">
                 <div className="text-amber-400 font-bold text-xl">+{currentLevel.xpReward} XP</div>
               </div>
-              
+
               <div className="flex gap-3">
                 <button
                   onClick={() => { setLevelComplete(false); setView('levels'); }}
@@ -5330,13 +5651,13 @@ export default function RhythmRealm() {
         <a href="#modes-content" className="skip-link" onFocus={() => speak('Skip to modes menu')}>Skip to modes</a>
         <VoiceControlIndicator />
         <PixelMusicBackground theme={currentTheme} />
-        
+
         {/* Achievement Notification - Global */}
         <AchievementNotification />
-        
+
         <div className="relative z-10 px-4 sm:px-6 py-4 sm:py-6 flex items-center justify-between border-b border-white/10 bg-black/30 backdrop-blur-sm">
-          <button 
-            onClick={() => setView('splash')} 
+          <button
+            onClick={() => setView('splash')}
             className="p-2 sm:p-3 bg-white/10 hover:bg-white/20 rounded-xl sm:rounded-2xl shadow-lg transition-all active:scale-95"
             onMouseEnter={() => speak(t('back') + " - " + t('home'))}
             onFocus={() => speak(t('back') + " - " + t('home'))}
@@ -5347,11 +5668,11 @@ export default function RhythmRealm() {
           <h2 className="text-xl sm:text-3xl font-black bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent" aria-label={t('modes')}>🎮 {t('modes').toUpperCase()}</h2>
           <div className="w-10 sm:w-12"></div>
         </div>
-        
+
         <div id="modes-content" className="relative z-10 flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 sm:space-y-4" role="navigation" aria-label="Mode selection">
           {/* Free Play Mode */}
-          <button 
-            onClick={() => { 
+          <button
+            onClick={() => {
               setShowNewPlayerModal(true);
             }}
             className="w-full p-4 sm:p-6 bg-gradient-to-br from-violet-500/90 to-fuchsia-600/90 backdrop-blur-sm rounded-2xl sm:rounded-3xl text-left border-b-8 border-fuchsia-700 active:border-b-0 active:translate-y-2 transition-all hover:scale-[1.02] shadow-2xl"
@@ -5372,7 +5693,7 @@ export default function RhythmRealm() {
           </button>
 
           {/* Tutorial Mode */}
-          <button 
+          <button
             onClick={() => setView('tutorials')}
             className="w-full p-4 sm:p-6 bg-gradient-to-br from-blue-500/90 to-indigo-600/90 backdrop-blur-sm rounded-2xl sm:rounded-3xl text-left border-b-8 border-indigo-700 active:border-b-0 active:translate-y-2 transition-all hover:scale-[1.02] shadow-2xl"
             onMouseEnter={() => speak(t('tutorial') + ". " + t('tutorialDesc'))}
@@ -5392,7 +5713,7 @@ export default function RhythmRealm() {
           </button>
 
           {/* Beat Library */}
-          <button 
+          <button
             onClick={() => setView('library')}
             className="w-full p-4 sm:p-6 bg-gradient-to-br from-amber-500/90 to-orange-600/90 backdrop-blur-sm rounded-2xl sm:rounded-3xl text-left border-b-8 border-orange-700 active:border-b-0 active:translate-y-2 transition-all hover:scale-[1.02] shadow-2xl"
             onMouseEnter={() => speak(t('beatLibrary') + ". " + t('beatLibraryDesc'))}
@@ -5412,7 +5733,7 @@ export default function RhythmRealm() {
           </button>
 
           {/* DJ Mode */}
-          <button 
+          <button
             onClick={() => {
               AudioEngine.init();
               setPreviousView('modes');
@@ -5447,7 +5768,7 @@ export default function RhythmRealm() {
                 <h2 id="new-player-title" className="text-2xl sm:text-3xl font-black text-white mb-2">Welcome to Free Play!</h2>
                 <p className="text-white/70 text-sm sm:text-base">Are you new to making beats?</p>
               </div>
-              
+
               <div className="space-y-3">
                 {/* New Player - Interactive Tutorial in Studio */}
                 <button
@@ -5529,9 +5850,9 @@ export default function RhythmRealm() {
 
   if (view === 'tutorials') {
     const THEMED_TUTORIALS = [
-      { 
-        name: "🎵 Basics: Happy Beat", 
-        icon: "🎵", 
+      {
+        name: "🎵 Basics: Happy Beat",
+        icon: "🎵",
         desc: "Learn the FUNDAMENTALS - kick, snare, hi-hat, bass. Perfect for beginners!",
         theme: "from-yellow-400 to-orange-500",
         borderColor: "border-orange-600",
@@ -5539,9 +5860,9 @@ export default function RhythmRealm() {
         difficulty: "Beginner",
         concepts: ["Four-on-the-floor", "Backbeat", "Eighth notes"],
       },
-      { 
-        name: "🌙 Lo-Fi & Chill", 
-        icon: "🌙", 
+      {
+        name: "🌙 Lo-Fi & Chill",
+        icon: "🌙",
         desc: "Master the art of SPACE and GROOVE. Less is more!",
         theme: "from-slate-500 to-indigo-600",
         borderColor: "border-indigo-700",
@@ -5549,9 +5870,9 @@ export default function RhythmRealm() {
         difficulty: "Beginner",
         concepts: ["Swing feel", "Sparse patterns", "Chord pads"],
       },
-      { 
-        name: "🏠 House Music 101", 
-        icon: "💿", 
+      {
+        name: "🏠 House Music 101",
+        icon: "💿",
         desc: "The classic FOUR-ON-THE-FLOOR and offbeat hi-hats!",
         theme: "from-pink-500 to-purple-600",
         borderColor: "border-purple-700",
@@ -5559,9 +5880,9 @@ export default function RhythmRealm() {
         difficulty: "Beginner",
         concepts: ["Four-on-the-floor", "Offbeat hi-hats", "Synth stabs"],
       },
-      { 
-        name: "🌍 World: Afrobeat", 
-        icon: "🪘", 
+      {
+        name: "🌍 World: Afrobeat",
+        icon: "🪘",
         desc: "Learn POLYRHYTHM - multiple rhythms playing together!",
         theme: "from-orange-500 to-red-600",
         borderColor: "border-red-700",
@@ -5569,9 +5890,9 @@ export default function RhythmRealm() {
         difficulty: "Intermediate",
         concepts: ["Syncopation", "Polyrhythm", "World rhythms"],
       },
-      { 
-        name: "🚀 Drum & Bass", 
-        icon: "⚡", 
+      {
+        name: "🚀 Drum & Bass",
+        icon: "⚡",
         desc: "Fast, intense, rolling breaks and heavy bass!",
         theme: "from-indigo-500 to-violet-600",
         borderColor: "border-violet-700",
@@ -5579,9 +5900,9 @@ export default function RhythmRealm() {
         difficulty: "Intermediate",
         concepts: ["Two-step pattern", "Snare rolls", "Rolling bass"],
       },
-      { 
-        name: "👑 Trap Beats", 
-        icon: "🔥", 
+      {
+        name: "👑 Trap Beats",
+        icon: "🔥",
         desc: "Hi-hat rolls, heavy 808s, and that BOUNCE!",
         theme: "from-red-600 to-red-900",
         borderColor: "border-red-800",
@@ -5589,9 +5910,9 @@ export default function RhythmRealm() {
         difficulty: "Intermediate",
         concepts: ["Hi-hat rolls", "808 bass", "Sparse kicks"],
       },
-      { 
-        name: "🔥 Reggaeton Dembow", 
-        icon: "💿", 
+      {
+        name: "🔥 Reggaeton Dembow",
+        icon: "💿",
         desc: "The DEMBOW rhythm that powers Latin hits!",
         theme: "from-yellow-500 to-orange-600",
         borderColor: "border-orange-700",
@@ -5599,9 +5920,9 @@ export default function RhythmRealm() {
         difficulty: "Intermediate",
         concepts: ["Dembow pattern", "Latin rhythm", "Dance groove"],
       },
-      { 
-        name: "🎤 Hip Hop Boom Bap", 
-        icon: "🎧", 
+      {
+        name: "🎤 Hip Hop Boom Bap",
+        icon: "🎧",
         desc: "Classic hip hop - BOOM (kick) BAP (snare)!",
         theme: "from-amber-600 to-stone-700",
         borderColor: "border-stone-700",
@@ -5609,9 +5930,9 @@ export default function RhythmRealm() {
         difficulty: "Beginner",
         concepts: ["Boom bap", "Swing", "Head-nodding groove"],
       },
-      { 
-        name: "🎸 Rock Drumming", 
-        icon: "🤘", 
+      {
+        name: "🎸 Rock Drumming",
+        icon: "🤘",
         desc: "Simple, powerful, driving ROCK beat!",
         theme: "from-gray-600 to-red-800",
         borderColor: "border-red-900",
@@ -5619,9 +5940,9 @@ export default function RhythmRealm() {
         difficulty: "Beginner",
         concepts: ["Backbeat", "Tom fills", "Steady rhythm"],
       },
-      { 
-        name: "🤖 Techno Hypnosis", 
-        icon: "🔊", 
+      {
+        name: "🤖 Techno Hypnosis",
+        icon: "🔊",
         desc: "Minimal, hypnotic, REPETITIVE trance state!",
         theme: "from-cyan-500 to-gray-800",
         borderColor: "border-gray-800",
@@ -5640,40 +5961,40 @@ export default function RhythmRealm() {
           <h2 className="text-xl sm:text-3xl font-black bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">📚 TUTORIALS</h2>
           <div className="w-10 sm:w-12"></div>
         </div>
-        
+
         <div className="relative z-10 flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 sm:space-y-4">
           <div className="text-center mb-4 sm:mb-6">
             <p className="text-cyan-300/80 text-sm sm:text-lg font-medium">Learn different music styles step by step!</p>
             <p className="text-white/50 text-xs sm:text-sm mt-1">Each tutorial teaches you real music concepts 🎶</p>
           </div>
-          
+
           {/* Difficulty Legend */}
           <div className="flex justify-center gap-2 sm:gap-4 mb-3 sm:mb-4">
             <span className="text-[10px] sm:text-xs bg-green-500/20 text-green-400 px-2 sm:px-3 py-1 rounded-full">🟢 Beginner</span>
             <span className="text-[10px] sm:text-xs bg-yellow-500/20 text-yellow-400 px-2 sm:px-3 py-1 rounded-full">🟡 Intermediate</span>
           </div>
-          
+
           {THEMED_TUTORIALS.map((tutorial, index) => {
             const scenario = SCENARIOS[tutorial.scenarioIndex];
-            
+
             const handleTutorialSelect = () => {
               console.log('Tutorial clicked:', tutorial.name, 'scenarioIndex:', tutorial.scenarioIndex);
               AudioEngine.init();
-              
+
               const selectedScenario = SCENARIOS[tutorial.scenarioIndex];
               console.log('Selected scenario:', selectedScenario);
-              
+
               // Clear the grid for step-by-step learning
               const newGrid = {};
               Object.keys(SOUND_VARIANTS).forEach(key => newGrid[key] = Array(STEPS).fill(false));
-              
+
               // Get all instruments used in the tutorial
               const tutorialInstruments = selectedScenario.tutorial
                 .filter(step => step.targetInstrument)
                 .map(step => step.targetInstrument);
               const uniqueInstruments = [...new Set(tutorialInstruments)];
               console.log('Instruments:', uniqueInstruments);
-              
+
               // Update all states
               setGrid(newGrid);
               setCurrentScenario(selectedScenario);
@@ -5687,9 +6008,9 @@ export default function RhythmRealm() {
               setPreviousView('tutorials');
               setView('studio');
             };
-            
+
             return (
-              <button 
+              <button
                 key={tutorial.name}
                 onClick={handleTutorialSelect}
                 className={`w-full p-3 sm:p-5 bg-gradient-to-br ${tutorial.theme} backdrop-blur-sm rounded-2xl sm:rounded-3xl text-left border-b-6 ${tutorial.borderColor} active:border-b-0 active:translate-y-1 transition-all hover:scale-[1.01] shadow-xl`}
@@ -5733,19 +6054,19 @@ export default function RhythmRealm() {
       <div className="h-screen w-full text-white flex flex-col overflow-hidden font-sans relative">
         <style>{cssStyles}</style>
         <PixelMusicBackground theme={currentTheme} />
-        
+
         {/* Achievement Notification */}
         <AchievementNotification />
-        
+
         <div className="relative z-10 px-4 sm:px-6 py-4 sm:py-6 flex items-center justify-between border-b border-white/10 bg-black/30 backdrop-blur-sm">
           <button onClick={() => setView('modes')} className="p-2 sm:p-3 bg-white/10 hover:bg-white/20 rounded-xl sm:rounded-2xl shadow-lg transition-all active:scale-95"><Icons.ChevronLeft /></button>
           <h2 className="text-xl sm:text-3xl font-black bg-gradient-to-r from-amber-400 via-orange-400 to-pink-400 bg-clip-text text-transparent">🎵 BEAT LIBRARY</h2>
           <div className="w-10 sm:w-12"></div>
         </div>
-        
+
         <div className="relative z-10 flex-1 overflow-y-auto p-6 space-y-4">
           {BEAT_GUIDES.map((guide, index) => (
-            <button 
+            <button
               key={guide.name}
               onClick={() => {
                 AudioEngine.init();
@@ -5800,16 +6121,16 @@ export default function RhythmRealm() {
       <div className="h-screen w-full text-white flex flex-col overflow-hidden font-sans relative">
         <style>{cssStyles}</style>
         <PixelMusicBackground theme={currentTheme} />
-        
+
         {/* Achievement Notification */}
         <AchievementNotification />
-        
+
         <div className="relative z-10 px-4 sm:px-6 py-4 sm:py-6 flex items-center justify-between border-b border-white/10 bg-black/30 backdrop-blur-sm">
           <button onClick={() => setView('splash')} className="p-2 sm:p-3 bg-white/10 hover:bg-white/20 rounded-xl sm:rounded-2xl shadow-lg transition-all active:scale-95" aria-label={t('back')}><Icons.ChevronLeft /></button>
           <h2 className="text-xl sm:text-3xl font-black bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">⚙️ {t('settings').toUpperCase()}</h2>
           <div className="w-10 sm:w-12"></div>
         </div>
-        
+
         <div className="relative z-10 flex-1 overflow-y-auto p-6 space-y-6">
           {/* Volume Control */}
           <div className="bg-black/40 backdrop-blur-md rounded-3xl p-6 border border-purple-500/30">
@@ -5817,10 +6138,10 @@ export default function RhythmRealm() {
               <span className="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center">🔊</span>
               {t('masterVolume')}
             </h3>
-            <input 
-              type="range" 
-              min="0" 
-              max="100" 
+            <input
+              type="range"
+              min="0"
+              max="100"
               defaultValue="70"
               className="w-full h-3 bg-white/20 rounded-lg appearance-none cursor-pointer accent-cyan-400"
             />
@@ -5852,7 +6173,7 @@ export default function RhythmRealm() {
             </h3>
             <div className="grid grid-cols-3 gap-3">
               {VISUAL_THEMES.map((theme) => (
-                <button 
+                <button
                   key={theme.id}
                   onClick={() => setCurrentTheme(theme)}
                   className={`p-3 rounded-2xl bg-gradient-to-br ${theme.primary} hover:scale-105 transition-all flex flex-col items-center gap-2 ${currentTheme.id === theme.id ? 'ring-4 ring-white shadow-lg scale-105' : 'opacity-70 hover:opacity-100'}`}
@@ -5878,7 +6199,7 @@ export default function RhythmRealm() {
               {t('accessibility')}
             </h3>
             <p className="text-sm text-white/70 mb-4">Make the app easier to use for everyone</p>
-            
+
             <div className="space-y-4">
               {/* Text-to-Speech */}
               <div className="flex items-center justify-between p-3 bg-black/30 rounded-2xl">
@@ -6040,11 +6361,10 @@ export default function RhythmRealm() {
                           window.speechSynthesis.speak(utterance);
                         }
                       }}
-                      className={`p-2 rounded-xl text-xs font-bold transition-all flex flex-col items-center gap-1 ${
-                        currentLanguage === code 
-                          ? 'bg-gradient-to-r from-blue-400 to-cyan-500 text-black' 
-                          : 'bg-white/10 hover:bg-white/20'
-                      }`}
+                      className={`p-2 rounded-xl text-xs font-bold transition-all flex flex-col items-center gap-1 ${currentLanguage === code
+                        ? 'bg-gradient-to-r from-blue-400 to-cyan-500 text-black'
+                        : 'bg-white/10 hover:bg-white/20'
+                        }`}
                       aria-label={`Change language to ${lang.name}`}
                     >
                       <span className="text-lg">{lang.flag}</span>
@@ -6144,28 +6464,28 @@ export default function RhythmRealm() {
   if (view === 'djmode') {
     // DJ Mode Preloaded Beats - Basic Patterns
     const DJ_BEATS = [
-      { id: 'house', name: 'House', icon: '🏠', bpm: 128, pattern: { kick: [0,4,8,12,16,20,24,28], snare: [4,12,20,28], hihat: [2,6,10,14,18,22,26,30] }},
-      { id: 'hiphop', name: 'Hip Hop', icon: '🎤', bpm: 90, pattern: { kick: [0,10,16,26], snare: [4,12,20,28], hihat: [0,4,8,12,16,20,24,28] }},
-      { id: 'trap', name: 'Trap', icon: '👑', bpm: 140, pattern: { kick: [0,14,16,30], snare: [4,12,20,28], hihat: [0,2,4,5,6,8,10,12,13,14,16,18,20,21,22,24,26,28,29,30] }},
-      { id: 'techno', name: 'Techno', icon: '🤖', bpm: 130, pattern: { kick: [0,4,8,12,16,20,24,28], snare: [4,12,20,28], hihat: [2,6,10,14,18,22,26,30] }},
-      { id: 'reggaeton', name: 'Reggaeton', icon: '🔥', bpm: 95, pattern: { kick: [0,6,16,22], snare: [4,10,12,20,26,28], hihat: [0,4,8,12,16,20,24,28] }},
-      { id: 'dnb', name: 'Drum & Bass', icon: '⚡', bpm: 170, pattern: { kick: [0,12,14,16,28,30], snare: [8,24], hihat: [0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30] }},
-      { id: 'lofi', name: 'Lo-Fi', icon: '🌙', bpm: 80, pattern: { kick: [0,10,16,26], snare: [4,20], hihat: [0,4,8,12,16,20,24,28] }},
-      { id: 'rock', name: 'Rock', icon: '🎸', bpm: 120, pattern: { kick: [0,8,16,24], snare: [4,12,20,28], hihat: [0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30] }},
+      { id: 'house', name: 'House', icon: '🏠', bpm: 128, pattern: { kick: [0, 4, 8, 12, 16, 20, 24, 28], snare: [4, 12, 20, 28], hihat: [2, 6, 10, 14, 18, 22, 26, 30] } },
+      { id: 'hiphop', name: 'Hip Hop', icon: '🎤', bpm: 90, pattern: { kick: [0, 10, 16, 26], snare: [4, 12, 20, 28], hihat: [0, 4, 8, 12, 16, 20, 24, 28] } },
+      { id: 'trap', name: 'Trap', icon: '👑', bpm: 140, pattern: { kick: [0, 14, 16, 30], snare: [4, 12, 20, 28], hihat: [0, 2, 4, 5, 6, 8, 10, 12, 13, 14, 16, 18, 20, 21, 22, 24, 26, 28, 29, 30] } },
+      { id: 'techno', name: 'Techno', icon: '🤖', bpm: 130, pattern: { kick: [0, 4, 8, 12, 16, 20, 24, 28], snare: [4, 12, 20, 28], hihat: [2, 6, 10, 14, 18, 22, 26, 30] } },
+      { id: 'reggaeton', name: 'Reggaeton', icon: '🔥', bpm: 95, pattern: { kick: [0, 6, 16, 22], snare: [4, 10, 12, 20, 26, 28], hihat: [0, 4, 8, 12, 16, 20, 24, 28] } },
+      { id: 'dnb', name: 'Drum & Bass', icon: '⚡', bpm: 170, pattern: { kick: [0, 12, 14, 16, 28, 30], snare: [8, 24], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30] } },
+      { id: 'lofi', name: 'Lo-Fi', icon: '🌙', bpm: 80, pattern: { kick: [0, 10, 16, 26], snare: [4, 20], hihat: [0, 4, 8, 12, 16, 20, 24, 28] } },
+      { id: 'rock', name: 'Rock', icon: '🎸', bpm: 120, pattern: { kick: [0, 8, 16, 24], snare: [4, 12, 20, 28], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30] } },
     ];
 
     // TRENDING MUSIC PRESETS - Full song patterns with multiple instruments
     const DJ_TRACKS = [
-      { 
-        id: 'blinding_lights', 
-        name: 'Blinding Lights', 
+      {
+        id: 'blinding_lights',
+        name: 'Blinding Lights',
         artist: 'The Weeknd Style',
-        icon: '🌟', 
-        bpm: 171, 
+        icon: '🌟',
+        bpm: 171,
         genre: 'Synthwave Pop',
         color: 'from-purple-500 to-pink-500',
         // Signature 80s synth-wave with driving beat, arpeggiated synth, punchy snare
-        pattern: { 
+        pattern: {
           kick: [0, 4, 8, 12, 16, 20, 24, 28], // Four-on-the-floor driving beat
           snare: [4, 12, 20, 28], // Gated reverb snare on 2 & 4
           hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], // Constant 8th notes
@@ -6174,16 +6494,16 @@ export default function RhythmRealm() {
           keys: [0, 6, 8, 14, 16, 22, 24, 30] // Synth stabs on offbeats
         }
       },
-      { 
-        id: 'bad_guy', 
-        name: 'Bad Guy', 
+      {
+        id: 'bad_guy',
+        name: 'Bad Guy',
         artist: 'Billie Eilish Style',
-        icon: '😈', 
-        bpm: 135, 
+        icon: '😈',
+        bpm: 135,
         genre: 'Dark Pop',
         color: 'from-green-400 to-emerald-600',
         // Minimalist, bass-heavy with sparse percussion, signature bouncy bass
-        pattern: { 
+        pattern: {
           kick: [0, 3, 8, 11, 16, 19, 24, 27], // Syncopated kick matching the "duh" pattern
           snare: [6, 14, 22, 30], // Offbeat finger snaps
           hihat: [], // Very minimal - the song has almost no hi-hats
@@ -6192,16 +6512,16 @@ export default function RhythmRealm() {
           perc: [2, 6, 10, 14, 18, 22, 26, 30] // Mouth clicks/percussion
         }
       },
-      { 
-        id: 'industry_baby', 
-        name: 'Industry Baby', 
+      {
+        id: 'industry_baby',
+        name: 'Industry Baby',
         artist: 'Lil Nas X Style',
-        icon: '🏆', 
-        bpm: 150, 
+        icon: '🏆',
+        bpm: 150,
         genre: 'Hip Hop Pop',
         color: 'from-yellow-400 to-orange-500',
         // Marching band inspired with brass hits, hard-hitting trap drums
-        pattern: { 
+        pattern: {
           kick: [0, 6, 8, 12, 16, 22, 24, 28], // Trap-style kick with variations
           snare: [4, 12, 20, 28], // Hard snare on 2 & 4
           hihat: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31], // Rapid hi-hat rolls
@@ -6210,16 +6530,16 @@ export default function RhythmRealm() {
           perc: [4, 5, 12, 13, 20, 21, 28, 29] // Marching snare rolls
         }
       },
-      { 
-        id: 'stay', 
-        name: 'Stay', 
+      {
+        id: 'stay',
+        name: 'Stay',
         artist: 'Kid Laroi Style',
-        icon: '💖', 
-        bpm: 170, 
+        icon: '💖',
+        bpm: 170,
         genre: 'Pop/EDM',
         color: 'from-red-400 to-rose-600',
         // High energy with guitar riff, emotional synths, driving drums
-        pattern: { 
+        pattern: {
           kick: [0, 4, 8, 12, 16, 20, 24, 28], // Straight four-on-the-floor
           snare: [4, 12, 20, 28], // Punchy snare
           hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], // Driving 8th notes
@@ -6228,16 +6548,16 @@ export default function RhythmRealm() {
           keys: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30] // Guitar-like strumming pattern
         }
       },
-      { 
-        id: 'heat_waves', 
-        name: 'Heat Waves', 
+      {
+        id: 'heat_waves',
+        name: 'Heat Waves',
         artist: 'Glass Animals Style',
-        icon: '🌊', 
-        bpm: 81, 
+        icon: '🌊',
+        bpm: 81,
         genre: 'Indie Pop',
         color: 'from-orange-400 to-amber-600',
         // Dreamy, wavy synths, relaxed groove with psychedelic feel
-        pattern: { 
+        pattern: {
           kick: [0, 6, 8, 14, 16, 22, 24, 30], // Laid-back syncopated kick
           snare: [8, 24], // Sparse snare on 3 only
           hihat: [4, 12, 20, 28], // Minimal closed hi-hat
@@ -6247,16 +6567,16 @@ export default function RhythmRealm() {
           perc: [2, 6, 10, 14, 18, 22, 26, 30] // Shaker pattern
         }
       },
-      { 
-        id: 'levitating', 
-        name: 'Levitating', 
+      {
+        id: 'levitating',
+        name: 'Levitating',
         artist: 'Dua Lipa Style',
-        icon: '🚀', 
-        bpm: 103, 
+        icon: '🚀',
+        bpm: 103,
         genre: 'Disco Pop',
         color: 'from-violet-400 to-purple-600',
         // Nu-disco with funky bass, four-on-the-floor, string stabs
-        pattern: { 
+        pattern: {
           kick: [0, 4, 8, 12, 16, 20, 24, 28], // Classic disco four-on-the-floor
           snare: [4, 12, 20, 28], // Crisp snare
           hihat: [2, 6, 10, 14, 18, 22, 26, 30], // Offbeat disco hi-hats
@@ -6266,16 +6586,16 @@ export default function RhythmRealm() {
           perc: [0, 4, 8, 12, 16, 20, 24, 28] // Handclaps
         }
       },
-      { 
-        id: 'peaches', 
-        name: 'Peaches', 
+      {
+        id: 'peaches',
+        name: 'Peaches',
         artist: 'Justin Bieber Style',
-        icon: '🍑', 
-        bpm: 90, 
+        icon: '🍑',
+        bpm: 90,
         genre: 'R&B Pop',
         color: 'from-pink-400 to-rose-500',
         // Smooth R&B with guitar, laid-back drums, mellow vibes
-        pattern: { 
+        pattern: {
           kick: [0, 10, 16, 26], // Sparse, laid-back kick
           snare: [8, 24], // Relaxed snare hits
           hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], // Soft hi-hat
@@ -6284,16 +6604,16 @@ export default function RhythmRealm() {
           synth: [0, 8, 16, 24] // Mellow pad
         }
       },
-      { 
-        id: 'montero', 
-        name: 'Montero', 
+      {
+        id: 'montero',
+        name: 'Montero',
         artist: 'Lil Nas X Style',
-        icon: '🎸', 
-        bpm: 178, 
+        icon: '🎸',
+        bpm: 178,
         genre: 'Pop Trap',
         color: 'from-amber-400 to-red-500',
         // Spanish guitar inspired with flamenco rhythm, trap drums
-        pattern: { 
+        pattern: {
           kick: [0, 3, 8, 11, 16, 19, 24, 27], // Reggaeton-influenced kick
           snare: [4, 12, 20, 28], // Hard snare
           hihat: [0, 1, 2, 4, 5, 6, 8, 9, 10, 12, 13, 14, 16, 17, 18, 20, 21, 22, 24, 25, 26, 28, 29, 30], // Rolling hi-hats with gaps
@@ -6302,16 +6622,16 @@ export default function RhythmRealm() {
           lead: [0, 8, 16, 24] // Guitar chord stabs
         }
       },
-      { 
-        id: 'save_your_tears', 
-        name: 'Save Your Tears', 
+      {
+        id: 'save_your_tears',
+        name: 'Save Your Tears',
         artist: 'The Weeknd Style',
-        icon: '😢', 
-        bpm: 118, 
+        icon: '😢',
+        bpm: 118,
         genre: 'Synth Pop',
         color: 'from-blue-400 to-indigo-600',
         // 80s inspired with gated drums, atmospheric synths
-        pattern: { 
+        pattern: {
           kick: [0, 8, 16, 24], // Half-time feel kick
           snare: [4, 12, 20, 28], // Gated reverb snare
           hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], // Steady closed hi-hat
@@ -6320,16 +6640,16 @@ export default function RhythmRealm() {
           keys: [0, 2, 8, 10, 16, 18, 24, 26] // Atmospheric pad swells
         }
       },
-      { 
-        id: 'drivers_license', 
-        name: 'Drivers License', 
+      {
+        id: 'drivers_license',
+        name: 'Drivers License',
         artist: 'Olivia Rodrigo Style',
-        icon: '🚗', 
-        bpm: 72, 
+        icon: '🚗',
+        bpm: 72,
         genre: 'Sad Pop',
         color: 'from-slate-400 to-gray-600',
         // Piano ballad building to emotional climax, sparse production
-        pattern: { 
+        pattern: {
           kick: [0, 16], // Very sparse kick, building tension
           snare: [8, 24], // Minimal snare
           hihat: [], // No hi-hat - raw emotional feel
@@ -6338,16 +6658,16 @@ export default function RhythmRealm() {
           synth: [0, 4, 8, 12, 16, 20, 24, 28] // String swells
         }
       },
-      { 
-        id: 'as_it_was', 
-        name: 'As It Was', 
+      {
+        id: 'as_it_was',
+        name: 'As It Was',
         artist: 'Harry Styles Style',
-        icon: '🌈', 
-        bpm: 174, 
+        icon: '🌈',
+        bpm: 174,
         genre: 'Synth Pop',
         color: 'from-cyan-400 to-teal-500',
         // Bright synth-pop with distinctive synth riff, upbeat energy
-        pattern: { 
+        pattern: {
           kick: [0, 4, 8, 12, 16, 20, 24, 28], // Driving four-on-the-floor
           snare: [4, 12, 20, 28], // Crisp snare
           hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], // Bright hi-hats
@@ -6356,16 +6676,16 @@ export default function RhythmRealm() {
           keys: [0, 8, 12, 16, 24, 28] // Synth pad accents
         }
       },
-      { 
-        id: 'watermelon_sugar', 
-        name: 'Watermelon Sugar', 
+      {
+        id: 'watermelon_sugar',
+        name: 'Watermelon Sugar',
         artist: 'Harry Styles Style',
-        icon: '🍉', 
-        bpm: 95, 
+        icon: '🍉',
+        bpm: 95,
         genre: 'Funk Pop',
         color: 'from-green-400 to-lime-500',
         // Funky, groovy with wah guitar, tight drums, summer vibes
-        pattern: { 
+        pattern: {
           kick: [0, 6, 8, 14, 16, 22, 24, 30], // Funky syncopated kick
           snare: [4, 12, 20, 28], // Tight snare
           hihat: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31], // 16th note hi-hats for funky feel
@@ -6391,7 +6711,7 @@ export default function RhythmRealm() {
     const triggerDjEffect = (effectId) => {
       AudioEngine.init();
       const t = AudioEngine.ctx.currentTime;
-      
+
       if (effectId === 'airhorn') {
         const osc = AudioEngine.ctx.createOscillator();
         const gain = AudioEngine.ctx.createGain();
@@ -6535,7 +6855,7 @@ export default function RhythmRealm() {
         unloadDeck(deck);
         return;
       }
-      
+
       setDjDecks(prev => ({ ...prev, [deck]: beat }));
       setTempo(beat.bpm);
       // Load the pattern into the grid
@@ -6550,7 +6870,7 @@ export default function RhythmRealm() {
       });
       setGrid(newGrid);
       setActiveInstrumentIds(Object.keys(beat.pattern));
-      
+
       // Auto-advance DJ tutorial
       if (djTutorialActive) {
         if (djTutorialStep === 0 && deck === 'left') {
@@ -6630,7 +6950,7 @@ export default function RhythmRealm() {
     // Handle tutorial progression based on actions
     const handleDjTutorialAction = (action) => {
       if (!djTutorialActive) return;
-      
+
       if (djTutorialStep === 1 && action === 'play') {
         setTimeout(() => setDjTutorialStep(2), 500);
       } else if (djTutorialStep === 3 && action === 'crossfader') {
@@ -6649,7 +6969,7 @@ export default function RhythmRealm() {
         <style>{cssStyles}</style>
         <a href="#dj-decks" className="skip-link" onFocus={() => speak('Skip to DJ decks')}>Skip to DJ controls</a>
         <VoiceControlIndicator />
-        
+
         {/* DJ Tutorial Overlay */}
         {djTutorialActive && currentDjTutorial && (
           <div className="absolute top-16 left-1/2 -translate-x-1/2 z-50 max-w-sm w-[90%] animate-bounce-in" role="dialog" aria-modal="true" aria-label="DJ Tutorial">
@@ -6670,7 +6990,7 @@ export default function RhythmRealm() {
                     <span className="text-xs font-bold bg-white/20 px-2 py-0.5 rounded-full">
                       Step {djTutorialStep + 1}/{DJ_TUTORIAL_STEPS.length}
                     </span>
-                    <button 
+                    <button
                       onClick={() => setDjTutorialActive(false)}
                       className="text-white/60 hover:text-white text-xs"
                     >
@@ -6680,7 +7000,7 @@ export default function RhythmRealm() {
                   <h3 className="font-black text-lg mb-1">{currentDjTutorial.title}</h3>
                   <p className="text-sm text-white/90 leading-snug">{currentDjTutorial.text}</p>
                   {djTutorialStep === 7 && (
-                    <button 
+                    <button
                       onClick={() => setDjTutorialActive(false)}
                       className="mt-3 w-full py-2 bg-white text-purple-600 font-bold rounded-xl hover:bg-white/90 transition-all"
                     >
@@ -6696,7 +7016,7 @@ export default function RhythmRealm() {
             )}
           </div>
         )}
-        
+
         {/* DJ Header */}
         <div className="relative z-10 px-4 py-3 flex items-center justify-between border-b border-cyan-500/30 bg-black/60 backdrop-blur-md">
           <button onClick={() => { setIsPlaying(false); setDjTutorialActive(false); setView('modes'); }} className="p-2 bg-white/10 hover:bg-white/20 rounded-xl text-white transition-all">
@@ -6710,7 +7030,7 @@ export default function RhythmRealm() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button 
+            <button
               onClick={() => { setDjTutorialActive(!djTutorialActive); setDjTutorialStep(0); }}
               className={`p-2 rounded-xl transition-all ${djTutorialActive ? 'bg-purple-500 text-white' : 'bg-white/10 hover:bg-white/20 text-white'}`}
               title="DJ Tutorial"
@@ -6725,7 +7045,7 @@ export default function RhythmRealm() {
 
         {/* Main DJ Interface */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          
+
           {/* TRENDING TRACKS Section */}
           <div className={`bg-gradient-to-r from-purple-900/40 via-slate-800/60 to-cyan-900/40 rounded-2xl p-4 border border-white/20 transition-all ${djTutorialActive && djTutorialStep === 0 ? 'ring-4 ring-yellow-400 animate-pulse' : ''}`}>
             <div className="flex items-center justify-between mb-3">
@@ -6766,10 +7086,10 @@ export default function RhythmRealm() {
                 <div className="text-lg font-black mt-1">{djDecks.left?.name || 'Empty'}</div>
                 {djDecks.left?.artist && <div className="text-xs text-cyan-400/70">{djDecks.left.artist}</div>}
               </div>
-              
+
               {/* Turntable */}
               <div className="relative w-full aspect-square max-w-[150px] mx-auto mb-3">
-                <div 
+                <div
                   className={`w-full h-full rounded-full bg-gradient-to-br from-slate-700 to-slate-900 border-4 border-slate-600 shadow-inner flex items-center justify-center ${isPlaying && djDecks.left ? 'animate-spin-slow' : ''}`}
                   style={{ animationDuration: '2s' }}
                 >
@@ -6787,26 +7107,26 @@ export default function RhythmRealm() {
 
               {/* Deck Controls */}
               <div className={`flex justify-center gap-2 mb-3 transition-all ${djTutorialActive && djTutorialStep === 6 ? 'ring-2 ring-yellow-400 rounded-xl p-1' : ''}`}>
-                <button 
+                <button
                   onClick={() => { if (djDecks.left) { setDjLooping(p => ({ ...p, left: !p.left })); handleDjTutorialAction('loop'); } }}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${djLooping.left ? 'bg-cyan-500 text-black' : 'bg-slate-700 hover:bg-slate-600'}`}
                 >
                   🔁 LOOP
                 </button>
-                <button 
+                <button
                   onClick={() => djDecks.left && triggerDjEffect('scratch')}
                   className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-bold transition-all"
                 >
                   💿 SCRATCH
                 </button>
                 {djDecks.left && (
-                  <button 
+                  <button
                     onClick={() => unloadDeck('left')}
                     className="px-3 py-1.5 bg-red-600 hover:bg-red-500 rounded-lg text-xs font-bold transition-all"
                     title="Eject track"
-                    >
+                  >
                     ⏏️ EJECT
-                    </button>
+                  </button>
                 )}
                 <button
                   onClick={() => djDecks.left && triggerDjEffect('scratch')}
@@ -6837,10 +7157,10 @@ export default function RhythmRealm() {
                 <div className="text-lg font-black mt-1">{djDecks.right?.name || 'Empty'}</div>
                 {djDecks.right?.artist && <div className="text-xs text-purple-400/70">{djDecks.right.artist}</div>}
               </div>
-              
+
               {/* Turntable */}
               <div className="relative w-full aspect-square max-w-[150px] mx-auto mb-3">
-                <div 
+                <div
                   className={`w-full h-full rounded-full bg-gradient-to-br from-slate-700 to-slate-900 border-4 border-slate-600 shadow-inner flex items-center justify-center ${isPlaying && djDecks.right ? 'animate-spin-slow' : ''}`}
                   style={{ animationDuration: '2s' }}
                 >
@@ -6856,20 +7176,20 @@ export default function RhythmRealm() {
 
               {/* Deck Controls */}
               <div className={`flex justify-center gap-2 mb-3 transition-all ${djTutorialActive && djTutorialStep === 6 ? 'ring-2 ring-yellow-400 rounded-xl p-1' : ''}`}>
-                <button 
+                <button
                   onClick={() => { if (djDecks.right) { setDjLooping(p => ({ ...p, right: !p.right })); handleDjTutorialAction('loop'); } }}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${djLooping.right ? 'bg-purple-500 text-black' : 'bg-slate-700 hover:bg-slate-600'}`}
                 >
                   🔁 LOOP
                 </button>
-                <button 
+                <button
                   onClick={() => djDecks.right && triggerDjEffect('scratch')}
                   className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-bold transition-all"
                 >
                   💿 SCRATCH
                 </button>
                 {djDecks.right && (
-                  <button 
+                  <button
                     onClick={() => unloadDeck('right')}
                     className="px-3 py-1.5 bg-red-600 hover:bg-red-500 rounded-lg text-xs font-bold transition-all"
                     title="Eject track"
@@ -6918,19 +7238,19 @@ export default function RhythmRealm() {
           <div className="flex gap-4">
             {/* Play Controls */}
             <div className={`flex-1 bg-slate-800/80 rounded-2xl p-4 border border-white/10 flex items-center justify-center gap-4 transition-all ${djTutorialActive && djTutorialStep === 1 ? 'ring-4 ring-yellow-400 animate-pulse' : ''}`}>
-              <button 
+              <button
                 onClick={() => setCurrentStep(0)}
                 className="w-12 h-12 bg-slate-700 hover:bg-slate-600 rounded-xl flex items-center justify-center text-xl transition-all"
               >
                 ⏮
               </button>
-              <button 
+              <button
                 onClick={() => { AudioEngine.init(); setIsPlaying(!isPlaying); handleDjTutorialAction('play'); }}
                 className={`w-16 h-16 rounded-full flex items-center justify-center text-3xl transition-all shadow-lg ${isPlaying ? 'bg-red-500 hover:bg-red-600 animate-pulse' : 'bg-green-500 hover:bg-green-600'}`}
               >
                 {isPlaying ? '⏸' : '▶'}
               </button>
-              <button 
+              <button
                 onClick={() => setCurrentStep(0)}
                 className="w-12 h-12 bg-slate-700 hover:bg-slate-600 rounded-xl flex items-center justify-center text-xl transition-all"
               >
@@ -6953,7 +7273,7 @@ export default function RhythmRealm() {
 
           {/* Effect Pads */}
           <div className={`bg-slate-800/80 rounded-2xl p-4 border border-white/10 transition-all ${djTutorialActive && djTutorialStep === 4 ? 'ring-4 ring-yellow-400 animate-pulse' : ''}`}>
-              <div className="text-sm font-black text-white/80 mb-3 flex items-center gap-2">
+            <div className="text-sm font-black text-white/80 mb-3 flex items-center gap-2">
               <span className="text-xl">🎛️</span> FX PADS
             </div>
             <div className="grid grid-cols-4 gap-2">
@@ -6984,7 +7304,7 @@ export default function RhythmRealm() {
               ].map(effect => (
                 <div key={effect.id} className="flex flex-col items-center">
                   <div className="text-xl mb-1">{effect.icon}</div>
-                  <div 
+                  <div
                     className="w-12 h-12 rounded-full bg-slate-700 border-4 border-slate-600 relative cursor-pointer"
                     style={{
                       background: `conic-gradient(from 180deg, ${effect.color === 'cyan' ? '#06b6d4' : effect.color === 'purple' ? '#a855f7' : effect.color === 'pink' ? '#ec4899' : '#f59e0b'} ${djEffects[effect.id]}%, #374151 ${djEffects[effect.id]}%)`
@@ -7011,13 +7331,12 @@ export default function RhythmRealm() {
               {[...Array(32)].map((_, i) => (
                 <div
                   key={i}
-                  className={`flex-1 h-8 rounded transition-all ${
-                    i === currentStep 
-                      ? 'bg-gradient-to-t from-cyan-500 to-purple-500 shadow-lg shadow-cyan-500/50' 
-                      : i % 4 === 0 
-                        ? 'bg-slate-600' 
-                        : 'bg-slate-700'
-                  }`}
+                  className={`flex-1 h-8 rounded transition-all ${i === currentStep
+                    ? 'bg-gradient-to-t from-cyan-500 to-purple-500 shadow-lg shadow-cyan-500/50'
+                    : i % 4 === 0
+                      ? 'bg-slate-600'
+                      : 'bg-slate-700'
+                    }`}
                 ></div>
               ))}
             </div>
@@ -7031,12 +7350,12 @@ export default function RhythmRealm() {
   }
 
   // --- STUDIO VIEW ---
-  
+
   // Raining Music Notes Component
   const RainingNotes = () => {
     const notes = ['♫', '♩', '♪', '🎵', '🎶', '🎹', '🎸', '🥁', '🎤'];
     const colors = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#95e1d3', '#f38181', '#aa96da', '#fcbad3', '#a8d8ea', '#ff9a9e'];
-    
+
     return (
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-20">
         {[...Array(20)].map((_, i) => (
@@ -7059,78 +7378,78 @@ export default function RhythmRealm() {
       </div>
     );
   };
-  
+
   return (
     <div className={`h-screen w-full ${currentScenario ? currentScenario.bgClass : 'bg-slate-100'} text-slate-800 flex flex-col font-sans select-none transition-colors duration-500 relative ${bassShake ? 'bass-shake' : ''} ${highContrastMode ? 'high-contrast' : ''} ${largeTextMode ? 'large-text' : ''}`} role="main" aria-label="Music Studio - Beat Creation">
       <style>{cssStyles}</style>
       <a href="#beat-grid" className="skip-link" onFocus={() => speak('Skip to beat grid')}>Skip to beat grid</a>
       <VoiceControlIndicator />
-      
+
       {/* Achievement Notification */}
       <AchievementNotification />
-      
+
       {/* Raining Notes when playing */}
       {isPlaying && <RainingNotes />}
 
       {/* HEADER / VISUALS - Smaller on mobile */}
       <div className={`${isMobile ? 'h-32' : 'h-64'} w-full shrink-0 relative z-0 bg-slate-900 overflow-hidden`} aria-hidden="true">
-         {currentScenario?.renderScene && currentScenario.renderScene(beatPulse, guideProgress)}
+        {currentScenario?.renderScene && currentScenario.renderScene(beatPulse, guideProgress)}
 
-         {/* NAVIGATION */}
-         <div className="absolute top-0 left-0 w-full p-2 sm:p-4 flex justify-between items-start z-10">
-           <button 
-             onClick={() => { setIsPlaying(false); setView(previousView || 'splash'); }} 
-             className="p-2 sm:p-3 bg-white/90 rounded-xl sm:rounded-2xl shadow-lg border-b-4 border-white/50 text-slate-600 hover:scale-105 active:scale-95 transition-all"
-             onMouseEnter={() => speak("Go back")}
-             onFocus={() => speak("Go back")}
-             onMouseLeave={stopSpeaking}
-             onBlur={stopSpeaking}
-             aria-label="Go back to previous screen"
-           ><Icons.ChevronLeft /></button>
-           <div className="flex gap-2" role="toolbar" aria-label="Studio controls">
-                <button 
-                  onClick={() => { setIsPlaying(false); setView('splash'); }} 
-                  className="p-2 sm:p-3 bg-white/90 rounded-xl sm:rounded-2xl shadow-lg border-b-4 border-white/50 text-slate-600 hover:scale-105 active:scale-95 transition-all"
-                  onMouseEnter={() => speak("Home")}
-                  onFocus={() => speak("Home")}
-                  onMouseLeave={stopSpeaking}
-                  onBlur={stopSpeaking}
-                  aria-label="Go to home screen"
-                ><Icons.Home /></button>
-                <button 
-                  onClick={() => { setTutorialActive(!tutorialActive); setTutorialStep(0); }} 
-                  className={`p-2 sm:p-3 rounded-xl sm:rounded-2xl shadow-lg border-b-4 transition-all ${tutorialActive ? 'bg-indigo-500 text-white border-indigo-700' : 'bg-white/90 border-white/50 text-indigo-500'}`}
-                  onMouseEnter={() => speak(tutorialActive ? "Turn off tutorial" : "Turn on tutorial guide")}
-                  onFocus={() => speak(tutorialActive ? "Turn off tutorial" : "Turn on tutorial guide")}
-                  onMouseLeave={stopSpeaking}
-                  onBlur={stopSpeaking}
-                  aria-label={tutorialActive ? "Disable tutorial" : "Enable tutorial"}
-                  aria-pressed={tutorialActive}
-                ><Icons.GradCap /></button>
-                <button 
-                  onClick={() => { setShowOnboarding(true); setOnboardingStep(0); }} 
-                  className="p-2 sm:p-3 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl sm:rounded-2xl shadow-lg border-b-4 border-blue-600 text-white hover:scale-105 active:scale-95 transition-all"
-                  onMouseEnter={() => speak("Open help tutorial")}
-                  onFocus={() => speak("Open help tutorial")}
-                  onMouseLeave={stopSpeaking}
-                  onBlur={stopSpeaking}
-                  aria-label="Open interactive help tutorial"
-                  title="Help Tutorial"
-                >â“</button>
-                <button 
-                  onClick={() => setShowVictory(true)} 
-                  className={`p-2 sm:p-3 rounded-xl sm:rounded-2xl shadow-lg border-b-4 text-white hover:scale-105 active:scale-95 transition-all ${currentScore >= 50 ? 'bg-green-400 border-green-600' : 'bg-slate-400 border-slate-600 cursor-not-allowed'}`} 
-                  disabled={currentScore < 50}
-                  onMouseEnter={() => speak(currentScore >= 50 ? "Complete and show victory" : "Need 50 percent score to complete")}
-                  onFocus={() => speak(currentScore >= 50 ? "Complete and show victory" : "Need 50 percent score to complete")}
-                  onMouseLeave={stopSpeaking}
-                  onBlur={stopSpeaking}
-                  aria-label={currentScore >= 50 ? "Complete and show victory screen" : "Victory unavailable - need 50% score"}
-                ><Icons.Star /></button>
-           </div>
-         </div>
+        {/* NAVIGATION */}
+        <div className="absolute top-0 left-0 w-full p-2 sm:p-4 flex justify-between items-start z-10">
+          <button
+            onClick={() => { setIsPlaying(false); setView(previousView || 'splash'); }}
+            className="p-2 sm:p-3 bg-white/90 rounded-xl sm:rounded-2xl shadow-lg border-b-4 border-white/50 text-slate-600 hover:scale-105 active:scale-95 transition-all"
+            onMouseEnter={() => speak("Go back")}
+            onFocus={() => speak("Go back")}
+            onMouseLeave={stopSpeaking}
+            onBlur={stopSpeaking}
+            aria-label="Go back to previous screen"
+          ><Icons.ChevronLeft /></button>
+          <div className="flex gap-2" role="toolbar" aria-label="Studio controls">
+            <button
+              onClick={() => { setIsPlaying(false); setView('splash'); }}
+              className="p-2 sm:p-3 bg-white/90 rounded-xl sm:rounded-2xl shadow-lg border-b-4 border-white/50 text-slate-600 hover:scale-105 active:scale-95 transition-all"
+              onMouseEnter={() => speak("Home")}
+              onFocus={() => speak("Home")}
+              onMouseLeave={stopSpeaking}
+              onBlur={stopSpeaking}
+              aria-label="Go to home screen"
+            ><Icons.Home /></button>
+            <button
+              onClick={() => { setTutorialActive(!tutorialActive); setTutorialStep(0); }}
+              className={`p-2 sm:p-3 rounded-xl sm:rounded-2xl shadow-lg border-b-4 transition-all ${tutorialActive ? 'bg-indigo-500 text-white border-indigo-700' : 'bg-white/90 border-white/50 text-indigo-500'}`}
+              onMouseEnter={() => speak(tutorialActive ? "Turn off tutorial" : "Turn on tutorial guide")}
+              onFocus={() => speak(tutorialActive ? "Turn off tutorial" : "Turn on tutorial guide")}
+              onMouseLeave={stopSpeaking}
+              onBlur={stopSpeaking}
+              aria-label={tutorialActive ? "Disable tutorial" : "Enable tutorial"}
+              aria-pressed={tutorialActive}
+            ><Icons.GradCap /></button>
+            <button
+              onClick={() => { setShowOnboarding(true); setOnboardingStep(0); }}
+              className="p-2 sm:p-3 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl sm:rounded-2xl shadow-lg border-b-4 border-blue-600 text-white hover:scale-105 active:scale-95 transition-all"
+              onMouseEnter={() => speak("Open help tutorial")}
+              onFocus={() => speak("Open help tutorial")}
+              onMouseLeave={stopSpeaking}
+              onBlur={stopSpeaking}
+              aria-label="Open interactive help tutorial"
+              title="Help Tutorial"
+            >â“</button>
+            <button
+              onClick={() => setShowVictory(true)}
+              className={`p-2 sm:p-3 rounded-xl sm:rounded-2xl shadow-lg border-b-4 text-white hover:scale-105 active:scale-95 transition-all ${currentScore >= 50 ? 'bg-green-400 border-green-600' : 'bg-slate-400 border-slate-600 cursor-not-allowed'}`}
+              disabled={currentScore < 50}
+              onMouseEnter={() => speak(currentScore >= 50 ? "Complete and show victory" : "Need 50 percent score to complete")}
+              onFocus={() => speak(currentScore >= 50 ? "Complete and show victory" : "Need 50 percent score to complete")}
+              onMouseLeave={stopSpeaking}
+              onBlur={stopSpeaking}
+              aria-label={currentScore >= 50 ? "Complete and show victory screen" : "Victory unavailable - need 50% score"}
+            ><Icons.Star /></button>
+          </div>
+        </div>
       </div>
-      
+
       {/* Tutorial Overlay - Mobile Responsive */}
       {tutorialActive && currentScenario && currentScenario.tutorial && (
         <div className="absolute top-2 sm:top-4 left-1/2 -translate-x-1/2 z-50 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-2 sm:px-4 py-2 sm:py-3 rounded-xl sm:rounded-2xl shadow-xl border-2 border-white animate-bounce-in flex flex-col items-center gap-1 max-w-[90%] sm:max-w-md w-full pointer-events-none">
@@ -7138,12 +7457,12 @@ export default function RhythmRealm() {
             <div className="text-lg sm:text-2xl animate-bounce">👠</div>
             <div className="flex-1 min-w-0">
               <div className="font-bold uppercase tracking-wider text-[8px] sm:text-[10px] text-indigo-200 mb-0.5 flex flex-wrap items-center gap-1">
-                 <span className="bg-white/20 px-1.5 py-0.5 rounded-full">Step {tutorialStep + 1}/{currentScenario.tutorial.length}</span>
-                 {currentScenario.tutorial[tutorialStep].targetInstrument && (
+                <span className="bg-white/20 px-1.5 py-0.5 rounded-full">Step {tutorialStep + 1}/{currentScenario.tutorial.length}</span>
+                {currentScenario.tutorial[tutorialStep].targetInstrument && (
                   <span className="bg-green-500 px-1.5 py-0.5 rounded-full animate-pulse">
                     {currentScenario.tutorial[tutorialStep].targetSteps.filter(s => !grid[currentScenario.tutorial[tutorialStep].targetInstrument][s]).length} left
                   </span>
-                 )}
+                )}
               </div>
               <div className="font-bold text-sm sm:text-base leading-tight truncate">{currentScenario.tutorial[tutorialStep].text}</div>
             </div>
@@ -7153,13 +7472,12 @@ export default function RhythmRealm() {
               <div className="text-[10px] sm:text-xs text-indigo-200 mb-1">Tap <span className="text-yellow-300 font-black">YELLOW</span> squares:</div>
               <div className="flex gap-0.5 flex-wrap justify-center">
                 {currentScenario.tutorial[tutorialStep].targetSteps.map(step => (
-                  <div 
-                    key={step} 
-                    className={`w-5 h-5 sm:w-6 sm:h-6 rounded flex items-center justify-center text-[10px] sm:text-xs font-bold transition-all ${
-                      grid[currentScenario.tutorial[tutorialStep].targetInstrument]?.[step] 
-                        ? 'bg-green-500 text-white' 
-                        : 'bg-yellow-400 text-yellow-900 animate-pulse'
-                    }`}
+                  <div
+                    key={step}
+                    className={`w-5 h-5 sm:w-6 sm:h-6 rounded flex items-center justify-center text-[10px] sm:text-xs font-bold transition-all ${grid[currentScenario.tutorial[tutorialStep].targetInstrument]?.[step]
+                      ? 'bg-green-500 text-white'
+                      : 'bg-yellow-400 text-yellow-900 animate-pulse'
+                      }`}
                   >
                     {step + 1}
                   </div>
@@ -7168,7 +7486,7 @@ export default function RhythmRealm() {
             </div>
           )}
           {!currentScenario.tutorial[tutorialStep].targetInstrument && (
-            <button 
+            <button
               onClick={() => { setTutorialActive(false); setIsPlaying(true); }}
               className="mt-1 bg-green-500 hover:bg-green-400 text-white font-black px-4 py-2 rounded-full text-sm sm:text-base flex items-center gap-2 shadow-lg pointer-events-auto"
             >
@@ -7180,166 +7498,164 @@ export default function RhythmRealm() {
 
       {/* MAIN CONTENT AREA */}
       <div className="flex-1 overflow-hidden bg-slate-900 relative z-10 rounded-t-3xl shadow-[0_-20px_40px_rgba(0,0,0,0.3)] -mt-6 flex flex-col">
-         
-         {/* Mobile Step Navigation */}
-         {isMobile && (
-           <div className="flex items-center justify-between px-4 py-2 bg-slate-800 border-b border-slate-700">
-             <button 
-               onClick={() => scrollMobileSteps('left')} 
-               disabled={mobileStepOffset === 0}
-               className={`p-2 rounded-lg ${mobileStepOffset === 0 ? 'opacity-30' : 'bg-slate-700 active:bg-slate-600'}`}
-             >
-               <Icons.ChevronLeft />
-             </button>
-             <span className="text-xs text-slate-400 font-bold">
-               Steps {mobileStepOffset + 1}-{Math.min(mobileStepOffset + mobileStepsVisible, STEPS)} of {STEPS}
-             </span>
-             <button 
-               onClick={() => scrollMobileSteps('right')} 
-               disabled={mobileStepOffset >= STEPS - mobileStepsVisible}
-               className={`p-2 rounded-lg ${mobileStepOffset >= STEPS - mobileStepsVisible ? 'opacity-30' : 'bg-slate-700 active:bg-slate-600'}`}
-             >
-               <Icons.ChevronRight />
-             </button>
-           </div>
-         )}
-         
-         {/* --- COMPOSER GRID --- */}
-         <div className="flex-1 overflow-x-auto overflow-y-auto p-2 sm:p-4">
-            <div className={`${isMobile ? '' : 'min-w-max'} space-y-1 pb-24`}>
-                 {/* Step indicators - hidden on mobile, clickable to seek */}
-                 {!isMobile && (
-                 <div className="flex items-center gap-3 mb-1 p-2">
-                   <div className="w-[180px] shrink-0 text-xs text-slate-500 text-right pr-2">Click to seek →</div>
-                   <div className="grid gap-0.5 flex-1 p-1" style={{ gridTemplateColumns: 'repeat(32, minmax(24px, 1fr))' }}>
-                     {[...Array(STEPS)].map((_, i) => (
-                       <div 
-                         key={i} 
-                         onClick={() => seekToStep(i)}
-                         className={`h-3 rounded-full cursor-pointer transition-all hover:scale-y-150 ${
-                           currentStep === i 
-                             ? 'bg-cyan-400 shadow-lg shadow-cyan-400/50' 
-                             : i % 4 === 0 
-                               ? 'bg-slate-500 hover:bg-slate-400' 
-                               : 'bg-slate-800 hover:bg-slate-600'
-                         } relative`}
-                       >
-                         {(i % 4 === 0) && <span className="text-[10px] font-bold text-slate-500 absolute -top-4 left-1/2 -translate-x-1/2">{Math.floor(i/4)+1}</span>}
-                       </div>
-                     ))}
-                   </div>
-                 </div>
-                 )}
 
-                 {/* RENDER ACTIVE INSTRUMENTS */}
-                 {activeInstrumentIds.map((instKey) => {
-                   const variantIdx = instrumentConfig[instKey];
-                   const currentVariant = SOUND_VARIANTS[instKey][variantIdx];
-                   const instrumentInfo = INSTRUMENTS_DATA.find(i => i.id === instKey);
-                   
-                   let isTutorialTarget = false;
-                   let notesToClick = [];
-                   if (tutorialActive && currentScenario && currentScenario.tutorial) {
-                     const currentTask = currentScenario.tutorial[tutorialStep];
-                     if (currentTask && currentTask.targetInstrument === instKey) {
-                        isTutorialTarget = true;
-                        notesToClick = currentTask.targetSteps;
-                     }
-                   }
-                   
-                   const rowOpacity = tutorialActive && !isTutorialTarget ? 'opacity-30 pointer-events-none grayscale' : 'opacity-100';
+        {/* Mobile Step Navigation */}
+        {isMobile && (
+          <div className="flex items-center justify-between px-4 py-2 bg-slate-800 border-b border-slate-700">
+            <button
+              onClick={() => scrollMobileSteps('left')}
+              disabled={mobileStepOffset === 0}
+              className={`p-2 rounded-lg ${mobileStepOffset === 0 ? 'opacity-30' : 'bg-slate-700 active:bg-slate-600'}`}
+            >
+              <Icons.ChevronLeft />
+            </button>
+            <span className="text-xs text-slate-400 font-bold">
+              Steps {mobileStepOffset + 1}-{Math.min(mobileStepOffset + mobileStepsVisible, STEPS)} of {STEPS}
+            </span>
+            <button
+              onClick={() => scrollMobileSteps('right')}
+              disabled={mobileStepOffset >= STEPS - mobileStepsVisible}
+              className={`p-2 rounded-lg ${mobileStepOffset >= STEPS - mobileStepsVisible ? 'opacity-30' : 'bg-slate-700 active:bg-slate-600'}`}
+            >
+              <Icons.ChevronRight />
+            </button>
+          </div>
+        )}
 
-                   // Calculate visible steps for mobile
-                   const visibleSteps = isMobile 
-                     ? [...Array(mobileStepsVisible)].map((_, i) => i + mobileStepOffset)
-                     : [...Array(STEPS)].map((_, i) => i);
+        {/* --- COMPOSER GRID --- */}
+        <div className="flex-1 overflow-x-auto overflow-y-auto p-2 sm:p-4">
+          <div className={`${isMobile ? '' : 'min-w-max'} space-y-1 pb-24`}>
+            {/* Step indicators - hidden on mobile, clickable to seek */}
+            {!isMobile && (
+              <div className="flex items-center gap-3 mb-1 p-2">
+                <div className="w-[180px] shrink-0 text-xs text-slate-500 text-right pr-2">Click to seek →</div>
+                <div className="grid gap-0.5 flex-1 p-1" style={{ gridTemplateColumns: 'repeat(32, minmax(24px, 1fr))' }}>
+                  {[...Array(STEPS)].map((_, i) => (
+                    <div
+                      key={i}
+                      onClick={() => seekToStep(i)}
+                      className={`h-3 rounded-full cursor-pointer transition-all hover:scale-y-150 ${currentStep === i
+                        ? 'bg-cyan-400 shadow-lg shadow-cyan-400/50'
+                        : i % 4 === 0
+                          ? 'bg-slate-500 hover:bg-slate-400'
+                          : 'bg-slate-800 hover:bg-slate-600'
+                        } relative`}
+                    >
+                      {(i % 4 === 0) && <span className="text-[10px] font-bold text-slate-500 absolute -top-4 left-1/2 -translate-x-1/2">{Math.floor(i / 4) + 1}</span>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
-                   return (
-                     <div key={instKey} className={`relative flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 group rounded-lg p-1.5 sm:p-2 transition-all ${rowOpacity} ${isTutorialTarget ? 'bg-indigo-500/20 ring-2 ring-indigo-400 shadow-lg z-20' : 'hover:bg-slate-800/30'}`}>
-                       {isTutorialTarget && !isMobile && <div className="absolute -left-10 top-1/2 -translate-y-1/2 animate-[bounce_1s_infinite] text-3xl z-50 filter drop-shadow-lg">👠</div>}
-                       <div className="flex items-center gap-1 w-full sm:w-[180px] shrink-0 relative">
-                           {/* Remove Button */}
-                           <button 
-                             onClick={() => removeTrack(instKey)}
-                             className={`${isMobile ? '' : 'opacity-0 group-hover:opacity-100'} bg-red-500 hover:bg-red-400 text-white rounded-full w-5 h-5 flex items-center justify-center transition-all z-10 shadow-md shrink-0 text-xs`}
-                             title="Remove Track"
-                           >
-                             <Icons.Minus />
-                           </button>
+            {/* RENDER ACTIVE INSTRUMENTS */}
+            {activeInstrumentIds.map((instKey) => {
+              const variantIdx = instrumentConfig[instKey];
+              const currentVariant = SOUND_VARIANTS[instKey][variantIdx];
+              const instrumentInfo = INSTRUMENTS_DATA.find(i => i.id === instKey);
 
-                           <button onClick={() => setShowSoundPicker(showSoundPicker === instKey ? null : instKey)} className="flex items-center gap-1.5 bg-slate-800/80 hover:bg-slate-700 p-1 pr-2 rounded-lg transition-all border border-slate-700/50 active:scale-95 relative">
-                             <div className={`w-6 h-6 rounded-md flex items-center justify-center text-sm shadow-inner ${instrumentInfo.color} text-white`}>{currentVariant.icon}</div>
-                             <div className="flex flex-col text-left">
-                               <span className="text-[8px] font-black text-slate-500 uppercase leading-tight">{instKey}</span>
-                               <span className="text-[9px] font-bold text-slate-300 truncate w-10">{currentVariant.name}</span>
-                             </div>
-                             <span className="text-[8px] text-slate-500">—¼</span>
-                           </button>
-                           
-                           {/* Sound Variant Picker Popup */}
-                           {showSoundPicker === instKey && (
-                             <div className="absolute top-full left-0 mt-1 z-50 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-2 min-w-[200px] animate-bounce-in" onClick={(e) => e.stopPropagation()}>
-                               <div className="text-[10px] font-black text-slate-400 uppercase mb-2 px-1">Select Sound for {instKey}</div>
-                               <div className="grid grid-cols-2 gap-1">
-                                 {SOUND_VARIANTS[instKey].map((variant, idx) => (
-                                   <button
-                                     key={idx}
-                                     onClick={() => {
-                                       setInstrumentConfig(prev => ({ ...prev, [instKey]: idx }));
-                                       AudioEngine.init();
-                                       AudioEngine.trigger(variant, 0, soundSettings[instKey] || {});
-                                       setShowSoundPicker(null);
-                                     }}
-                                     className={`flex items-center gap-2 p-2 rounded-lg transition-all text-left ${
-                                       instrumentConfig[instKey] === idx 
-                                         ? `${instrumentInfo.color} text-white shadow-lg` 
-                                         : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
-                                     }`}
-                                   >
-                                     <span className="text-lg">{variant.icon}</span>
-                                     <span className="text-xs font-bold">{variant.name}</span>
-                                   </button>
-                                 ))}
-                               </div>
-                               <button 
-                                 onClick={() => setShowSoundPicker(null)}
-                                 className="w-full mt-2 p-1.5 bg-slate-800 hover:bg-slate-700 rounded-lg text-xs text-slate-400 font-bold"
-                               >
-                                 Close
-                               </button>
-                             </div>
-                           )}
-                           
-                           {/* Mute Toggle */}
-                           <button 
-                             onClick={() => handleSoundSettingChange(instKey, 'muted', !soundSettings[instKey]?.muted)} 
-                             className={`w-6 h-6 rounded-md flex items-center justify-center transition-all text-xs ${soundSettings[instKey]?.muted ? 'bg-red-500/90 text-white' : 'bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-700 border border-slate-700/50'}`}
-                             title={soundSettings[instKey]?.muted ? 'Unmute' : 'Mute'}
-                           >
-                             {soundSettings[instKey]?.muted ? '🔇' : '🔊'}
-                           </button>
-                           <button onClick={() => setActiveSoundLab(activeSoundLab === instKey ? null : instKey)} className={`w-6 h-6 rounded-md flex items-center justify-center transition-all text-xs ${activeSoundLab === instKey ? 'bg-indigo-500 text-white' : 'bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-700 border border-slate-700/50'}`}><Icons.Sliders /></button>
-                           <button onClick={() => smartFill(instKey)} className="w-6 h-6 rounded-md bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center hover:from-indigo-400 hover:to-purple-500 shadow-sm text-xs"><Icons.Wand /></button>
-                       </div>
-                       
-                       {activeSoundLab === instKey && soundSettings[instKey] && (<SoundLab instKey={instKey} config={soundSettings[instKey]} onChange={(k, v) => handleSoundSettingChange(instKey, k, v)} onClose={() => setActiveSoundLab(null)} />)}
-                       
-                       <div className={`grid gap-0.5 p-1 bg-slate-950/80 rounded-lg border border-slate-800/50 flex-1`} style={{ gridTemplateColumns: `repeat(${isMobile ? mobileStepsVisible : 32}, minmax(24px, 1fr))` }}>
-                         {visibleSteps.map((stepIndex) => {
-                           const isActive = grid[instKey][stepIndex];
-                           const isCurrent = currentStep === stepIndex;
-                           const isBeatStart = stepIndex % 4 === 0;
-                           
-                           const isTargetStep = isTutorialTarget && notesToClick.includes(stepIndex) && !isActive;
-                           const isCompletedTarget = isTutorialTarget && notesToClick.includes(stepIndex) && isActive;
+              let isTutorialTarget = false;
+              let notesToClick = [];
+              if (tutorialActive && currentScenario && currentScenario.tutorial) {
+                const currentTask = currentScenario.tutorial[tutorialStep];
+                if (currentTask && currentTask.targetInstrument === instKey) {
+                  isTutorialTarget = true;
+                  notesToClick = currentTask.targetSteps;
+                }
+              }
 
-                           return (
-                             <button
-                               key={stepIndex}
-                               onMouseDown={() => handleMouseDown(instKey, stepIndex)}
-                               onMouseEnter={() => handleMouseEnter(instKey, stepIndex)}
-                               onTouchStart={(e) => { e.preventDefault(); handleTouchStart(instKey, stepIndex); }}
-                               className={`
+              const rowOpacity = tutorialActive && !isTutorialTarget ? 'opacity-30 pointer-events-none grayscale' : 'opacity-100';
+
+              // Calculate visible steps for mobile
+              const visibleSteps = isMobile
+                ? [...Array(mobileStepsVisible)].map((_, i) => i + mobileStepOffset)
+                : [...Array(STEPS)].map((_, i) => i);
+
+              return (
+                <div key={instKey} className={`relative flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 group rounded-lg p-1.5 sm:p-2 transition-all ${rowOpacity} ${isTutorialTarget ? 'bg-indigo-500/20 ring-2 ring-indigo-400 shadow-lg z-20' : 'hover:bg-slate-800/30'}`}>
+                  {isTutorialTarget && !isMobile && <div className="absolute -left-10 top-1/2 -translate-y-1/2 animate-[bounce_1s_infinite] text-3xl z-50 filter drop-shadow-lg">👠</div>}
+                  <div className="flex items-center gap-1 w-full sm:w-[180px] shrink-0 relative">
+                    {/* Remove Button */}
+                    <button
+                      onClick={() => removeTrack(instKey)}
+                      className={`${isMobile ? '' : 'opacity-0 group-hover:opacity-100'} bg-red-500 hover:bg-red-400 text-white rounded-full w-5 h-5 flex items-center justify-center transition-all z-10 shadow-md shrink-0 text-xs`}
+                      title="Remove Track"
+                    >
+                      <Icons.Minus />
+                    </button>
+
+                    <button onClick={() => setShowSoundPicker(showSoundPicker === instKey ? null : instKey)} className="flex items-center gap-1.5 bg-slate-800/80 hover:bg-slate-700 p-1 pr-2 rounded-lg transition-all border border-slate-700/50 active:scale-95 relative">
+                      <div className={`w-6 h-6 rounded-md flex items-center justify-center text-sm shadow-inner ${instrumentInfo.color} text-white`}>{currentVariant.icon}</div>
+                      <div className="flex flex-col text-left">
+                        <span className="text-[8px] font-black text-slate-500 uppercase leading-tight">{instKey}</span>
+                        <span className="text-[9px] font-bold text-slate-300 truncate w-10">{currentVariant.name}</span>
+                      </div>
+                      <span className="text-[8px] text-slate-500">—¼</span>
+                    </button>
+
+                    {/* Sound Variant Picker Popup */}
+                    {showSoundPicker === instKey && (
+                      <div className="absolute top-full left-0 mt-1 z-50 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-2 min-w-[200px] animate-bounce-in" onClick={(e) => e.stopPropagation()}>
+                        <div className="text-[10px] font-black text-slate-400 uppercase mb-2 px-1">Select Sound for {instKey}</div>
+                        <div className="grid grid-cols-2 gap-1">
+                          {SOUND_VARIANTS[instKey].map((variant, idx) => (
+                            <button
+                              key={idx}
+                              onClick={() => {
+                                setInstrumentConfig(prev => ({ ...prev, [instKey]: idx }));
+                                AudioEngine.init();
+                                AudioEngine.trigger(variant, 0, soundSettings[instKey] || {});
+                                setShowSoundPicker(null);
+                              }}
+                              className={`flex items-center gap-2 p-2 rounded-lg transition-all text-left ${instrumentConfig[instKey] === idx
+                                ? `${instrumentInfo.color} text-white shadow-lg`
+                                : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
+                                }`}
+                            >
+                              <span className="text-lg">{variant.icon}</span>
+                              <span className="text-xs font-bold">{variant.name}</span>
+                            </button>
+                          ))}
+                        </div>
+                        <button
+                          onClick={() => setShowSoundPicker(null)}
+                          className="w-full mt-2 p-1.5 bg-slate-800 hover:bg-slate-700 rounded-lg text-xs text-slate-400 font-bold"
+                        >
+                          Close
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Mute Toggle */}
+                    <button
+                      onClick={() => handleSoundSettingChange(instKey, 'muted', !soundSettings[instKey]?.muted)}
+                      className={`w-6 h-6 rounded-md flex items-center justify-center transition-all text-xs ${soundSettings[instKey]?.muted ? 'bg-red-500/90 text-white' : 'bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-700 border border-slate-700/50'}`}
+                      title={soundSettings[instKey]?.muted ? 'Unmute' : 'Mute'}
+                    >
+                      {soundSettings[instKey]?.muted ? '🔇' : '🔊'}
+                    </button>
+                    <button onClick={() => setActiveSoundLab(activeSoundLab === instKey ? null : instKey)} className={`w-6 h-6 rounded-md flex items-center justify-center transition-all text-xs ${activeSoundLab === instKey ? 'bg-indigo-500 text-white' : 'bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-700 border border-slate-700/50'}`}><Icons.Sliders /></button>
+                    <button onClick={() => smartFill(instKey)} className="w-6 h-6 rounded-md bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center hover:from-indigo-400 hover:to-purple-500 shadow-sm text-xs"><Icons.Wand /></button>
+                  </div>
+
+                  {activeSoundLab === instKey && soundSettings[instKey] && (<SoundLab instKey={instKey} config={soundSettings[instKey]} onChange={(k, v) => handleSoundSettingChange(instKey, k, v)} onClose={() => setActiveSoundLab(null)} />)}
+
+                  <div className={`grid gap-0.5 p-1 bg-slate-950/80 rounded-lg border border-slate-800/50 flex-1`} style={{ gridTemplateColumns: `repeat(${isMobile ? mobileStepsVisible : 32}, minmax(24px, 1fr))` }}>
+                    {visibleSteps.map((stepIndex) => {
+                      const isActive = grid[instKey][stepIndex];
+                      const isCurrent = currentStep === stepIndex;
+                      const isBeatStart = stepIndex % 4 === 0;
+
+                      const isTargetStep = isTutorialTarget && notesToClick.includes(stepIndex) && !isActive;
+                      const isCompletedTarget = isTutorialTarget && notesToClick.includes(stepIndex) && isActive;
+
+                      return (
+                        <button
+                          key={stepIndex}
+                          onMouseDown={() => handleMouseDown(instKey, stepIndex)}
+                          onMouseEnter={() => handleMouseEnter(instKey, stepIndex)}
+                          onTouchStart={(e) => { e.preventDefault(); handleTouchStart(instKey, stepIndex); }}
+                          className={`
                                  aspect-square rounded transition-all duration-75 ease-out relative overflow-hidden mobile-step
                                  ${isActive ? `${instrumentInfo.color} shadow-md shadow-current/30 scale-95` : 'bg-slate-700/40 border border-slate-600/30 hover:bg-slate-600/50 hover:border-slate-500/50'}
                                  ${isCurrent ? 'ring-2 ring-cyan-400 z-10 brightness-125' : ''}
@@ -7347,81 +7663,80 @@ export default function RhythmRealm() {
                                  ${isTargetStep ? 'bg-yellow-400 border-yellow-500 border-2 shadow-[0_0_15px_rgba(250,204,21,0.8)] z-30' : ''}
                                  ${isCompletedTarget ? 'ring-2 ring-green-400 shadow-[0_0_10px_rgba(74,222,128,0.6)]' : ''}
                                `}
-                               style={isTargetStep ? { animation: 'pulse 0.5s ease-in-out infinite' } : {}}
-                             >
-                               {isTargetStep && (
-                                 <span className="absolute inset-0 rounded bg-yellow-300 animate-ping opacity-50 pointer-events-none"></span>
-                               )}
-                               {isTargetStep && (
-                                 <span className="absolute inset-0 flex items-center justify-center text-xs font-black text-yellow-900 pointer-events-none">!</span>
-                               )}
-                               {isCompletedTarget && (
-                                 <span className="absolute inset-0 flex items-center justify-center text-xs pointer-events-none">✔</span>
-                               )}
-                             </button>
-                           );
-                         })}
-                       </div>
-                     </div>
-                   );
-                 })}
-
-                 {/* ADD TRACK BUTTON */}
-                 {activeInstrumentIds.length < 12 && (
-                   <div className={`${isMobile ? 'pl-2' : 'ml-[180px] pl-3'} pt-3`}>
-                      {!showAddTrackMenu ? (
-                        <button 
-                          onClick={() => setShowAddTrackMenu(true)}
-                          className="flex items-center gap-2 px-3 py-1.5 bg-slate-800/60 border-2 border-dashed border-slate-600/50 rounded-lg text-slate-400 hover:text-white hover:border-slate-400 hover:bg-slate-700 transition-all font-bold text-xs active:scale-95"
+                          style={isTargetStep ? { animation: 'pulse 0.5s ease-in-out infinite' } : {}}
                         >
-                          <Icons.Plus /> ADD TRACK
+                          {isTargetStep && (
+                            <span className="absolute inset-0 rounded bg-yellow-300 animate-ping opacity-50 pointer-events-none"></span>
+                          )}
+                          {isTargetStep && (
+                            <span className="absolute inset-0 flex items-center justify-center text-xs font-black text-yellow-900 pointer-events-none">!</span>
+                          )}
+                          {isCompletedTarget && (
+                            <span className="absolute inset-0 flex items-center justify-center text-xs pointer-events-none">✔</span>
+                          )}
                         </button>
-                      ) : (
-                        <div className="bg-slate-900 border border-slate-700 rounded-xl p-4 animate-bounce-in w-full max-w-3xl shadow-2xl">
-                           <div className="flex justify-between items-center mb-3">
-                             <h4 className="text-white font-black text-sm uppercase tracking-wide">🎵 All Instruments</h4>
-                             <button onClick={() => setShowAddTrackMenu(false)} className="text-slate-400 hover:text-white p-1 hover:bg-slate-800 rounded-lg transition-all"><Icons.Close /></button>
-                           </div>
-                           <p className="text-[10px] text-slate-500 mb-3">Click to add • Green = already added</p>
-                           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
-                              {INSTRUMENTS_DATA.map(inst => {
-                                const isAdded = activeInstrumentIds.includes(inst.id);
-                                const variant = SOUND_VARIANTS[inst.id][0];
-                                return (
-                                  <button 
-                                    key={inst.id}
-                                    onClick={() => !isAdded && addTrack(inst.id)}
-                                    disabled={isAdded}
-                                    className={`flex flex-col items-center gap-1 p-3 rounded-xl transition-all text-center ${
-                                      isAdded 
-                                        ? 'bg-green-500/20 border-2 border-green-500/50 cursor-default' 
-                                        : 'bg-slate-800 border border-slate-700 hover:border-slate-500 hover:bg-slate-700 active:scale-95 cursor-pointer'
-                                    }`}
-                                  >
-                                     <div className={`w-10 h-10 rounded-xl ${inst.color} flex items-center justify-center text-xl shadow-lg ${isAdded ? 'opacity-60' : ''}`}>
-                                       {variant.icon}
-                                     </div>
-                                     <span className={`text-xs font-bold ${isAdded ? 'text-green-400' : 'text-slate-300'}`}>{inst.name}</span>
-                                     {isAdded && <span className="text-[8px] text-green-400 font-bold">✔ ADDED</span>}
-                                  </button>
-                                );
-                              })}
-                           </div>
-                           <div className="mt-3 pt-3 border-t border-slate-700 flex justify-between items-center">
-                             <span className="text-xs text-slate-500">{activeInstrumentIds.length}/12 tracks added</span>
-                             <button 
-                               onClick={() => setShowAddTrackMenu(false)}
-                               className="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-xs font-bold text-slate-300 transition-all"
-                             >
-                               Done
-                             </button>
-                           </div>
-                        </div>
-                      )}
-                   </div>
-                 )}
-            </div>
-         </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* ADD TRACK BUTTON */}
+            {activeInstrumentIds.length < 12 && (
+              <div className={`${isMobile ? 'pl-2' : 'ml-[180px] pl-3'} pt-3`}>
+                {!showAddTrackMenu ? (
+                  <button
+                    onClick={() => setShowAddTrackMenu(true)}
+                    className="flex items-center gap-2 px-3 py-1.5 bg-slate-800/60 border-2 border-dashed border-slate-600/50 rounded-lg text-slate-400 hover:text-white hover:border-slate-400 hover:bg-slate-700 transition-all font-bold text-xs active:scale-95"
+                  >
+                    <Icons.Plus /> ADD TRACK
+                  </button>
+                ) : (
+                  <div className="bg-slate-900 border border-slate-700 rounded-xl p-4 animate-bounce-in w-full max-w-3xl shadow-2xl">
+                    <div className="flex justify-between items-center mb-3">
+                      <h4 className="text-white font-black text-sm uppercase tracking-wide">🎵 All Instruments</h4>
+                      <button onClick={() => setShowAddTrackMenu(false)} className="text-slate-400 hover:text-white p-1 hover:bg-slate-800 rounded-lg transition-all"><Icons.Close /></button>
+                    </div>
+                    <p className="text-[10px] text-slate-500 mb-3">Click to add • Green = already added</p>
+                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
+                      {INSTRUMENTS_DATA.map(inst => {
+                        const isAdded = activeInstrumentIds.includes(inst.id);
+                        const variant = SOUND_VARIANTS[inst.id][0];
+                        return (
+                          <button
+                            key={inst.id}
+                            onClick={() => !isAdded && addTrack(inst.id)}
+                            disabled={isAdded}
+                            className={`flex flex-col items-center gap-1 p-3 rounded-xl transition-all text-center ${isAdded
+                              ? 'bg-green-500/20 border-2 border-green-500/50 cursor-default'
+                              : 'bg-slate-800 border border-slate-700 hover:border-slate-500 hover:bg-slate-700 active:scale-95 cursor-pointer'
+                              }`}
+                          >
+                            <div className={`w-10 h-10 rounded-xl ${inst.color} flex items-center justify-center text-xl shadow-lg ${isAdded ? 'opacity-60' : ''}`}>
+                              {variant.icon}
+                            </div>
+                            <span className={`text-xs font-bold ${isAdded ? 'text-green-400' : 'text-slate-300'}`}>{inst.name}</span>
+                            {isAdded && <span className="text-[8px] text-green-400 font-bold">✔ ADDED</span>}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <div className="mt-3 pt-3 border-t border-slate-700 flex justify-between items-center">
+                      <span className="text-xs text-slate-500">{activeInstrumentIds.length}/12 tracks added</span>
+                      <button
+                        onClick={() => setShowAddTrackMenu(false)}
+                        className="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-xs font-bold text-slate-300 transition-all"
+                      >
+                        Done
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Seek Bar - Timeline Scrubber */}
@@ -7430,7 +7745,7 @@ export default function RhythmRealm() {
           <span className="text-xs font-mono text-slate-400 w-10 sm:w-12 text-right">
             {Math.floor(currentStep / 4) + 1}:{(currentStep % 4) + 1}
           </span>
-          <div 
+          <div
             ref={seekBarRef}
             className="flex-1 h-8 sm:h-10 bg-slate-800 rounded-xl cursor-pointer relative overflow-hidden group touch-none"
             onClick={handleSeekBarInteraction}
@@ -7451,12 +7766,12 @@ export default function RhythmRealm() {
               ))}
             </div>
             {/* Progress fill */}
-            <div 
+            <div
               className="absolute inset-y-0 left-0 bg-gradient-to-r from-cyan-500/40 to-purple-500/40 transition-all duration-75"
               style={{ width: `${(currentStep / STEPS) * 100}%` }}
             />
             {/* Playhead */}
-            <div 
+            <div
               className="absolute top-0 bottom-0 w-1 bg-cyan-400 shadow-lg shadow-cyan-500/50 transition-all duration-75"
               style={{ left: `${(currentStep / STEPS) * 100}%` }}
             >
@@ -7474,43 +7789,43 @@ export default function RhythmRealm() {
 
       {/* Bottom Control Bar - Mobile Responsive */}
       <div className="h-auto sm:h-24 bg-white border-t-2 border-slate-100 flex flex-wrap sm:flex-nowrap items-center justify-center gap-2 sm:gap-3 shrink-0 z-20 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] px-2 sm:px-4 py-2 sm:py-0 mobile-controls">
-            {/* Play/Stop - Always prominent */}
-            <div className={`flex items-center ${isMobile ? 'order-first w-full justify-center mb-2' : ''} gap-3 sm:gap-6 bg-slate-50 px-3 sm:px-6 py-2 rounded-[2rem] border border-slate-100`}>
-               <button onClick={() => { 
-                 AudioEngine.init(); 
-                 if (!isPlaying) {
-                   // Track first play for achievement
-                   setUserStats(prev => ({ ...prev, hasPlayedBeat: true }));
-                 }
-                 setIsPlaying(!isPlaying); 
-               }} className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all duration-200 transform border-b-8 active:border-b-0 active:translate-y-2 ${isPlaying ? 'bg-red-500 border-red-700 text-white' : 'bg-green-500 border-green-700 text-white hover:bg-green-400'}`}>{isPlaying ? <Icons.Stop /> : <Icons.Play />}</button>
-            </div>
-            <Button onClick={clearGrid} variant="secondary" className="w-10 h-10 sm:w-12 sm:h-12 !px-0 !py-2 sm:!py-3 !rounded-xl sm:!rounded-2xl text-slate-400 hover:text-slate-600 flex justify-center items-center"><Icons.Trash /></Button>
-            <button onClick={() => setShowSaveModal(true)} className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl sm:rounded-2xl flex items-center justify-center text-white shadow-lg hover:scale-105 transition-all border-b-4 border-emerald-600 active:border-b-0 active:translate-y-1" title="Save Beat">
-              <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-            </button>
-            <button onClick={() => setShowLoadModal(true)} className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-xl sm:rounded-2xl flex items-center justify-center text-white shadow-lg hover:scale-105 transition-all border-b-4 border-indigo-600 active:border-b-0 active:translate-y-1" title="Load Beat">
-              <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 002-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
-            </button>
-            <div className="flex flex-col items-center justify-center bg-slate-50 px-2 sm:px-3 py-1 sm:py-2 rounded-xl sm:rounded-2xl border border-slate-100">
-               <span className="text-[8px] sm:text-[10px] text-slate-400 font-black uppercase tracking-widest leading-none mb-1">Tempo</span>
-               <div className="flex items-center gap-0.5 sm:gap-1">
-                 <button onClick={() => setTempo(t => Math.max(60, t - 5))} className="px-1 sm:px-1.5 py-0.5 bg-slate-200 hover:bg-slate-300 rounded text-[10px] sm:text-xs font-bold text-slate-600">-5</button>
-                 <button onClick={() => setTempo(t => Math.max(60, t - 1))} className="px-1 sm:px-1.5 py-0.5 bg-slate-100 hover:bg-slate-200 rounded text-[10px] sm:text-xs font-bold text-slate-500">-1</button>
-                 <span className="text-sm sm:text-lg font-black text-slate-700 leading-none w-8 sm:w-10 text-center">{tempo}</span>
-                 <button onClick={() => setTempo(t => Math.min(200, t + 1))} className="px-1 sm:px-1.5 py-0.5 bg-slate-100 hover:bg-slate-200 rounded text-[10px] sm:text-xs font-bold text-slate-500">+1</button>
-                 <button onClick={() => setTempo(t => Math.min(200, t + 5))} className="px-1 sm:px-1.5 py-0.5 bg-slate-200 hover:bg-slate-300 rounded text-[10px] sm:text-xs font-bold text-slate-600">+5</button>
-               </div>
-            </div>
+        {/* Play/Stop - Always prominent */}
+        <div className={`flex items-center ${isMobile ? 'order-first w-full justify-center mb-2' : ''} gap-3 sm:gap-6 bg-slate-50 px-3 sm:px-6 py-2 rounded-[2rem] border border-slate-100`}>
+          <button onClick={() => {
+            AudioEngine.init();
+            if (!isPlaying) {
+              // Track first play for achievement
+              setUserStats(prev => ({ ...prev, hasPlayedBeat: true }));
+            }
+            setIsPlaying(!isPlaying);
+          }} className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all duration-200 transform border-b-8 active:border-b-0 active:translate-y-2 ${isPlaying ? 'bg-red-500 border-red-700 text-white' : 'bg-green-500 border-green-700 text-white hover:bg-green-400'}`}>{isPlaying ? <Icons.Stop /> : <Icons.Play />}</button>
+        </div>
+        <Button onClick={clearGrid} variant="secondary" className="w-10 h-10 sm:w-12 sm:h-12 !px-0 !py-2 sm:!py-3 !rounded-xl sm:!rounded-2xl text-slate-400 hover:text-slate-600 flex justify-center items-center"><Icons.Trash /></Button>
+        <button onClick={() => setShowSaveModal(true)} className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl sm:rounded-2xl flex items-center justify-center text-white shadow-lg hover:scale-105 transition-all border-b-4 border-emerald-600 active:border-b-0 active:translate-y-1" title="Save Beat">
+          <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" /><polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" /></svg>
+        </button>
+        <button onClick={() => setShowLoadModal(true)} className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-xl sm:rounded-2xl flex items-center justify-center text-white shadow-lg hover:scale-105 transition-all border-b-4 border-indigo-600 active:border-b-0 active:translate-y-1" title="Load Beat">
+          <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 002-2v-4M17 8l-5-5-5 5M12 3v12" /></svg>
+        </button>
+        <div className="flex flex-col items-center justify-center bg-slate-50 px-2 sm:px-3 py-1 sm:py-2 rounded-xl sm:rounded-2xl border border-slate-100">
+          <span className="text-[8px] sm:text-[10px] text-slate-400 font-black uppercase tracking-widest leading-none mb-1">Tempo</span>
+          <div className="flex items-center gap-0.5 sm:gap-1">
+            <button onClick={() => setTempo(t => Math.max(60, t - 5))} className="px-1 sm:px-1.5 py-0.5 bg-slate-200 hover:bg-slate-300 rounded text-[10px] sm:text-xs font-bold text-slate-600">-5</button>
+            <button onClick={() => setTempo(t => Math.max(60, t - 1))} className="px-1 sm:px-1.5 py-0.5 bg-slate-100 hover:bg-slate-200 rounded text-[10px] sm:text-xs font-bold text-slate-500">-1</button>
+            <span className="text-sm sm:text-lg font-black text-slate-700 leading-none w-8 sm:w-10 text-center">{tempo}</span>
+            <button onClick={() => setTempo(t => Math.min(200, t + 1))} className="px-1 sm:px-1.5 py-0.5 bg-slate-100 hover:bg-slate-200 rounded text-[10px] sm:text-xs font-bold text-slate-500">+1</button>
+            <button onClick={() => setTempo(t => Math.min(200, t + 5))} className="px-1 sm:px-1.5 py-0.5 bg-slate-200 hover:bg-slate-300 rounded text-[10px] sm:text-xs font-bold text-slate-600">+5</button>
+          </div>
+        </div>
       </div>
-      
+
       {/* Save Beat Modal */}
       {showSaveModal && (
         <div className="absolute inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
           <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl animate-bounce-in">
             <h2 className="text-2xl font-black text-slate-800 mb-4 flex items-center gap-3">
               <span className="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center text-white">
-                <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" /><polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" /></svg>
               </span>
               Save Your Beat
             </h2>
@@ -7546,11 +7861,11 @@ export default function RhythmRealm() {
           <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl animate-bounce-in max-h-[80vh] flex flex-col">
             <h2 className="text-xl sm:text-2xl font-black text-slate-800 mb-4 flex items-center gap-3">
               <span className="w-10 h-10 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-xl flex items-center justify-center text-white">
-                <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 002-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 002-2v-4M17 8l-5-5-5 5M12 3v12" /></svg>
               </span>
               Load a Beat
             </h2>
-            
+
             {/* Favorites Filter Toggle */}
             {savedBeats.length > 0 && (
               <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-200">
@@ -7568,7 +7883,7 @@ export default function RhythmRealm() {
                 </button>
               </div>
             )}
-            
+
             <div className="flex-1 overflow-y-auto space-y-3 mb-4">
               {savedBeats.length === 0 ? (
                 <div className="text-center py-12 text-slate-400">
@@ -7665,7 +7980,7 @@ export default function RhythmRealm() {
 
       {/* Interactive Onboarding Tutorial */}
       {showOnboarding && (
-        <OnboardingTutorial 
+        <OnboardingTutorial
           step={onboardingStep}
           onNext={() => {
             // Special handling for click-grid step
@@ -7696,7 +8011,7 @@ export default function RhythmRealm() {
             <div className="text-yellow-400 mx-auto mb-6 flex justify-center drop-shadow-lg animate-bounce"><Icons.Trophy /></div>
             <h2 className="text-5xl font-black text-slate-800 mb-2 tracking-tight">YOU DID IT!</h2>
             <p className="text-slate-500 mb-4 font-bold text-xl">
-               {currentScore >= 90 ? "PERFECT RHYTHM! 🏆" : currentScore >= 70 ? "GREAT BEAT! 🎵" : "GOOD START! 👍"}
+              {currentScore >= 90 ? "PERFECT RHYTHM! 🏆" : currentScore >= 70 ? "GREAT BEAT! 🎵" : "GOOD START! 👍"}
             </p>
             <div className="flex justify-center gap-3 mb-8 text-yellow-400">
               <Icons.Star />
@@ -7723,7 +8038,7 @@ export default function RhythmRealm() {
             {!user && (
               <div className="mb-6 p-4 bg-purple-100 rounded-2xl">
                 <p className="text-purple-700 font-bold text-sm mb-2">🔐 Login to save your scores!</p>
-                <button 
+                <button
                   onClick={() => { setShowVictory(false); setShowAuthModal(true); }}
                   className="px-4 py-2 bg-purple-500 text-white rounded-xl font-bold text-sm hover:bg-purple-400 transition-all"
                 >
@@ -7731,7 +8046,7 @@ export default function RhythmRealm() {
                 </button>
               </div>
             )}
-            <Button onClick={() => { 
+            <Button onClick={() => {
               // Save score if logged in and tutorial
               if (user && currentScenario && tutorialActive) {
                 saveTutorialScore(currentScenario.id, currentScenario.name, currentScore);

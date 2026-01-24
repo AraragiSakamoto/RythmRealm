@@ -1,28 +1,147 @@
 /* Mobile-friendly overrides */
-:root{
+:root {
   --touch-size: 48px;
 }
 
 /* Increase tappable area for key controls */
-button, .btn, .rounded-xl, .rounded-2xl {
+button,
+.btn,
+.rounded-xl,
+.rounded-2xl {
   min-height: var(--touch-size);
   min-width: var(--touch-size);
 }
 
 /* Make UI stack on small screens */
 @media (max-width: 640px) {
-  .flex-1 { width: 100% !important; }
-  .grid-cols-4 { grid-template-columns: repeat(2, minmax(0,1fr)) !important; }
-  .grid-cols-3 { grid-template-columns: repeat(2, minmax(0,1fr)) !important; }
-  .p-6 { padding: 1rem !important; }
-  .text-sm { font-size: 14px !important; }
-  .text-xs { font-size: 12px !important; }
-  .h-screen { min-height: 100dvh; }
-  html, body { -webkit-user-select: none; touch-action: manipulation; }
+  .flex-1 {
+    width: 100% !important;
+  }
+
+  .grid-cols-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .grid-cols-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .p-6 {
+    padding: 1rem !important;
+  }
+
+  .text-sm {
+    font-size: 14px !important;
+  }
+
+  .text-xs {
+    font-size: 12px !important;
+  }
+
+  .h-screen {
+    min-height: 100dvh;
+  }
+
+  html,
+  body {
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: manipulation;
+  }
+}
+
+/* Landscape orientation for gameplay on mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+
+  /* Optimize layout for landscape gameplay */
+  .studio-container {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* Compact instrument rack on the left */
+  .instrument-rack {
+    width: 120px;
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+
+  /* Grid takes remaining space */
+  .beat-grid-container {
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  /* Smaller controls at bottom */
+  .playback-controls {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    left: 120px;
+    height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+  }
+
+  /* Compact grid cells */
+  .grid-cell {
+    min-width: 24px !important;
+    min-height: 24px !important;
+  }
+
+  /* Hide or minimize non-essential UI */
+  .scenario-header {
+    height: 40px;
+    font-size: 0.875rem;
+  }
+
+  /* Smaller text for landscape */
+  .text-2xl {
+    font-size: 1.25rem !important;
+  }
+
+  .text-xl {
+    font-size: 1rem !important;
+  }
+
+  .text-lg {
+    font-size: 0.875rem !important;
+  }
+}
+
+/* Portrait warning for gameplay */
+@media (max-width: 768px) and (orientation: portrait) {
+  .landscape-hint {
+    display: block !important;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.95);
+    color: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    text-align: center;
+    z-index: 9999;
+    max-width: 80%;
+  }
 }
 
 /* Ensure inputs and range controls are touch friendly */
-input[type="range"] { height: 40px; }
+input[type="range"] {
+  height: 40px;
+}
 
 /* Avoid content under notches and soft keys */
-body { padding-bottom: env(safe-area-inset-bottom); }
+body {
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
