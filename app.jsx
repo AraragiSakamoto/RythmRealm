@@ -2633,23 +2633,13 @@ export default function RhythmRealm() {
       if (authUsername.length < 3) {
         throw new Error('Username must be at least 3 characters');
       }
-      const { session, user } = await authService.signUp(authEmail, authPassword, authUsername);
-
-      if (session) {
-        // Verification disabled in Supabase - Logged in immediately!
-        setUser(user);
-        setShowAuthModal(false);
-        setAuthUsername('');
-        setAuthEmail('');
-        setAuthPassword('');
-        // Play success sound if possible
-        AudioEngine.init();
-        // Trigger a simple success sound or just rely on UI update
-      } else {
-        // Verification required
-        setAuthUsername('');
-        setAuthMode('verification');
-      }
+      await authService.signUp(authEmail, authPassword, authUsername);
+      setShowAuthModal(false);
+      setAuthEmail('');
+      setAuthPassword('');
+      setAuthUsername('');
+      setAuthUsername('');
+      setAuthMode('verification');
     } catch (error) {
       if (error.message.toLowerCase().includes('rate limit')) {
         setAuthError('⚠️ Specific Rate Limit Exceeded: Please wait 15 minutes or check your spam folder for previous emails.');
