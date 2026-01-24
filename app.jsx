@@ -2639,10 +2639,13 @@ export default function RhythmRealm() {
       setAuthPassword('');
       setAuthUsername('');
       setAuthUsername('');
-      // Show verification modal
-      setShowVerificationModal(true);
+      setAuthMode('verification');
     } catch (error) {
-      setAuthError(error.message);
+      if (error.message.toLowerCase().includes('rate limit')) {
+        setAuthError('⚠️ Specific Rate Limit Exceeded: Please wait 15 minutes or check your spam folder for previous emails.');
+      } else {
+        setAuthError(error.message);
+      }
     } finally {
       setAuthLoading(false);
     }
@@ -4349,83 +4352,110 @@ export default function RhythmRealm() {
       <div className="bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-purple-500/50 rounded-3xl w-full max-w-md shadow-2xl shadow-purple-500/20 animate-bounce-in" onClick={(e) => e.stopPropagation()}>
         <div className="p-6 border-b border-slate-700 flex items-center justify-between">
           <h2 className="text-2xl font-black text-white flex items-center gap-3">
-            <span className="text-3xl">{authMode === 'login' ? '🔐' : '✨'}</span>
-            {authMode === 'login' ? 'Welcome Back!' : 'Join Rhythm Realm'}
+            <span className="text-3xl">
+              {authMode === 'login' ? '🔐' : authMode === 'verification' ? '📧' : '✨'}
+            </span>
+            {authMode === 'login' ? 'Welcome Back!' : authMode === 'verification' ? 'Check Email' : 'Join Rhythm Realm'}
           </h2>
           <button onClick={() => setShowAuthModal(false)} className="p-2 hover:bg-slate-700 rounded-xl transition-all text-slate-400 hover:text-white">
             <Icons.Close />
           </button>
         </div>
 
-        <form onSubmit={authMode === 'login' ? handleLogin : handleRegister} className="p-6 space-y-4" autoComplete="off">
-          {authError && (
-            <div className="p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-300 text-sm">
-              ⚠️ {authError}
+        {authMode === 'verification' ? (
+          <div className="p-8 text-center animate-fade-in">
+            <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-green-500/50 animate-pulse-slow">
+              <span className="text-4xl">📩</span>
             </div>
-          )}
+            <h3 className="text-xl font-bold text-white mb-2">Verification Link Sent!</h3>
+            <p className="text-slate-400 mb-6 font-medium">
+              We sent a link to <span className="text-green-400 font-bold">{authEmail}</span>.
+              <br /><span className="text-sm opacity-80 mt-2 block">Click it to activate your account. Check Spam if needed!</span>
+            </p>
+            <button
+              onClick={() => setShowAuthModal(false)}
+              className="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 rounded-xl font-bold text-white shadow-lg transition-all hover:scale-[1.02] active:scale-95"
+            >
+              Got it!
+            </button>
+            <button
+              onClick={() => setAuthMode('login')}
+              className="mt-4 text-slate-500 hover:text-slate-300 text-sm font-bold"
+            >
+              Back to Login
+            </button>
+          </div>
+        ) : (
+          <form onSubmit={authMode === 'login' ? handleLogin : handleRegister} className="p-6 space-y-4" autoComplete="off">
+            {authError && (
+              <div className="p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-300 text-sm">
+                ⚠️ {authError}
+              </div>
+            )}
 
-          {authMode === 'register' && (
+            {authMode === 'register' && (
+              <div>
+                <label className="block text-sm font-bold text-slate-400 mb-2">Username</label>
+                <input
+                  type="text"
+                  value={authUsername}
+                  onChange={(e) => setAuthUsername(e.target.value)}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  placeholder="Your display name"
+                  className="w-full p-4 bg-slate-800 border-2 border-slate-700 rounded-xl text-white focus:border-purple-500 focus:outline-none transition-all"
+                  required
+                  minLength={3}
+                  autoComplete="off"
+                />
+              </div>
+            )}
+
             <div>
-              <label className="block text-sm font-bold text-slate-400 mb-2">Username</label>
+              <label className="block text-sm font-bold text-slate-400 mb-2">Email</label>
               <input
-                type="text"
-                value={authUsername}
-                onChange={(e) => setAuthUsername(e.target.value)}
+                type="email"
+                value={authEmail}
+                onChange={(e) => setAuthEmail(e.target.value)}
                 onKeyDown={(e) => e.stopPropagation()}
-                placeholder="Your display name"
+                placeholder="your@email.com"
                 className="w-full p-4 bg-slate-800 border-2 border-slate-700 rounded-xl text-white focus:border-purple-500 focus:outline-none transition-all"
                 required
-                minLength={3}
                 autoComplete="off"
               />
             </div>
-          )}
 
-          <div>
-            <label className="block text-sm font-bold text-slate-400 mb-2">Email</label>
-            <input
-              type="email"
-              value={authEmail}
-              onChange={(e) => setAuthEmail(e.target.value)}
-              onKeyDown={(e) => e.stopPropagation()}
-              placeholder="your@email.com"
-              className="w-full p-4 bg-slate-800 border-2 border-slate-700 rounded-xl text-white focus:border-purple-500 focus:outline-none transition-all"
-              required
-              autoComplete="off"
-            />
-          </div>
+            <div>
+              <label className="block text-sm font-bold text-slate-400 mb-2">Password</label>
+              <input
+                type="password"
+                value={authPassword}
+                onChange={(e) => setAuthPassword(e.target.value)}
+                onKeyDown={(e) => e.stopPropagation()}
+                placeholder="••••••••"
+                className="w-full p-4 bg-slate-800 border-2 border-slate-700 rounded-xl text-white focus:border-purple-500 focus:outline-none transition-all"
+                required
+                minLength={6}
+                autoComplete="new-password"
+              />
+            </div>
 
-          <div>
-            <label className="block text-sm font-bold text-slate-400 mb-2">Password</label>
-            <input
-              type="password"
-              value={authPassword}
-              onChange={(e) => setAuthPassword(e.target.value)}
-              onKeyDown={(e) => e.stopPropagation()}
-              placeholder="••••••••"
-              className="w-full p-4 bg-slate-800 border-2 border-slate-700 rounded-xl text-white focus:border-purple-500 focus:outline-none transition-all"
-              required
-              minLength={6}
-              autoComplete="new-password"
-            />
-          </div>
+            <button
+              type="submit"
+              disabled={authLoading}
+              className="w-full p-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-400 hover:to-pink-400 rounded-xl font-bold text-white text-lg transition-all shadow-lg shadow-purple-500/30 disabled:opacity-50"
+            >
+              {authLoading ? '⏳ Please wait...' : (authMode === 'login' ? '🚀 Login' : '🎉 Create Account')}
+            </button>
 
-          <button
-            type="submit"
-            disabled={authLoading}
-            className="w-full p-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-400 hover:to-pink-400 rounded-xl font-bold text-white text-lg transition-all shadow-lg shadow-purple-500/30 disabled:opacity-50"
-          >
-            {authLoading ? '⏳ Please wait...' : (authMode === 'login' ? '🚀 Login' : '🎉 Create Account')}
-          </button>
-
-          <div className="text-center text-slate-400 text-sm">
-            {authMode === 'login' ? (
-              <>Don't have an account? <button type="button" onClick={() => { setAuthMode('register'); setAuthError(''); }} className="text-purple-400 hover:text-purple-300 font-bold">Sign up</button></>
-            ) : (
-              <>Already have an account? <button type="button" onClick={() => { setAuthMode('login'); setAuthError(''); }} className="text-purple-400 hover:text-purple-300 font-bold">Login</button></>
-            )}
-          </div>
-        </form>
+            <div className="text-center text-slate-400 text-sm">
+              {authMode === 'login' ? (
+                <>Don't have an account? <button type="button" onClick={() => { setAuthMode('register'); setAuthError(''); }} className="text-purple-400 hover:text-purple-300 font-bold">Sign up</button></>
+              ) : (
+                <>Already have an account? <button type="button" onClick={() => { setAuthMode('login'); setAuthError(''); }} className="text-purple-400 hover:text-purple-300 font-bold">Login</button></>
+              )}
+            </div>
+          </form>
+        )}
       </div>
     </div>
   ) : null;
