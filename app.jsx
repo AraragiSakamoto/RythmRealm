@@ -2634,7 +2634,7 @@ export default function RhythmRealm() {
         throw new Error('Username must be at least 3 characters');
       }
       await authService.signUp(authEmail, authPassword, authUsername);
-      setShowAuthModal(false);
+      // setShowAuthModal(false); // Keep open for verification message
       setAuthEmail('');
       setAuthPassword('');
       setAuthUsername('');

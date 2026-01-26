@@ -17,7 +17,7 @@ export const authService = {
       email,
       password,
       options: {
-        emailRedirectTo: typeof window !== 'undefined' ? window.location.origin : undefined,
+        emailRedirectTo: 'https://rythm-realm.vercel.app',
         data: {
           username: username,
           display_name: username
