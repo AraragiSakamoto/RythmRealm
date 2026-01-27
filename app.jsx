@@ -4415,8 +4415,28 @@ export default function RhythmRealm() {
       setActiveGuide(null);
       setLockedInstruments({});
     }
+    // For Challenge Levels defined only by requirements (e.g. Percussion Party)
+    else {
+      const newGrid = {};
+      Object.keys(SOUND_VARIANTS).forEach(key => newGrid[key] = Array(STEPS).fill(false));
+      setGrid(newGrid);
 
-    setView('studio');
+      // Enable instruments from requirements
+      const requiredInstruments = scenario.requirements?.instruments || [];
+      const mustInclude = Object.keys(scenario.requirements?.mustInclude || {});
+      const allInstruments = [...new Set([...requiredInstruments, ...mustInclude])];
+
+      if (allInstruments.length > 0) {
+        setActiveInstrumentIds(allInstruments);
+      } else {
+        // Fallback default
+        setActiveInstrumentIds(['kick', 'snare', 'hihat', 'bass']);
+      }
+
+      setTutorialActive(false);
+      setActiveGuide(null);
+      setLockedInstruments({});
+    }
   };
 
   const handleSoundSettingChange = (instKey, setting, value) => {
@@ -7710,8 +7730,8 @@ export default function RhythmRealm() {
           <div className={`${isMobile ? '' : 'min-w-max'} space-y-1 pb-24`}>
             {/* Step indicators - hidden on mobile, clickable to seek */}
             {!isMobile && (
-              <div className="flex items-center gap-3 mb-1 p-2">
-                <div className="w-[180px] shrink-0 text-xs text-slate-500 text-right pr-2">Click to seek →</div>
+              <div className="flex items-center gap-4 mb-2 p-2 pl-3">
+                <div className="w-[220px] shrink-0 text-xs font-bold text-slate-500 uppercase tracking-widest text-right pr-6">Timeline →</div>
                 <div className="grid gap-0.5 flex-1 p-1" style={{ gridTemplateColumns: 'repeat(32, minmax(24px, 1fr))' }}>
                   {[...Array(STEPS)].map((_, i) => (
                     <div
@@ -7755,9 +7775,9 @@ export default function RhythmRealm() {
                 : [...Array(STEPS)].map((_, i) => i);
 
               return (
-                <div key={instKey} className={`relative flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 group rounded-lg p-1.5 sm:p-2 transition-all ${rowOpacity} ${isTutorialTarget ? 'bg-indigo-500/20 ring-2 ring-indigo-400 shadow-lg z-20' : 'hover:bg-slate-800/30'}`}>
+                <div key={instKey} className={`relative flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4 group rounded-xl p-2 sm:p-3 transition-all ${rowOpacity} ${isTutorialTarget ? 'bg-indigo-500/20 ring-2 ring-indigo-400 shadow-lg z-20' : 'bg-slate-900/40 border border-white/5 hover:bg-slate-800/60 hover:border-white/10'}`}>
                   {isTutorialTarget && !isMobile && <div className="absolute -left-10 top-1/2 -translate-y-1/2 animate-[bounce_1s_infinite] text-3xl z-50 filter drop-shadow-lg">👠</div>}
-                  <div className="flex items-center gap-1 w-full sm:w-[180px] shrink-0 relative">
+                  <div className="flex items-center gap-2 w-full sm:w-[220px] shrink-0 relative pr-4 border-r border-white/5">
                     {/* Remove Button */}
                     <button
                       onClick={() => removeTrack(instKey)}
@@ -7767,7 +7787,7 @@ export default function RhythmRealm() {
                       <Icons.Minus />
                     </button>
 
-                    <button onClick={() => setShowSoundPicker(showSoundPicker === instKey ? null : instKey)} className="flex items-center gap-1.5 bg-slate-800/80 hover:bg-slate-700 p-1 pr-2 rounded-lg transition-all border border-slate-700/50 active:scale-95 relative">
+                    <button onClick={() => setShowSoundPicker(showSoundPicker === instKey ? null : instKey)} className="flex-1 flex items-center gap-2 bg-slate-800/80 hover:bg-slate-700 p-1.5 pr-3 rounded-lg transition-all border border-slate-700/50 active:scale-95 relative group-hover/btn:border-slate-500/50">
                       <div className={`w-6 h-6 rounded-md flex items-center justify-center text-sm shadow-inner ${instrumentInfo.color} text-white`}>{currentVariant.icon}</div>
                       <div className="flex flex-col text-left">
                         <span className="text-[8px] font-black text-slate-500 uppercase leading-tight">{instKey}</span>
@@ -7871,7 +7891,7 @@ export default function RhythmRealm() {
 
             {/* ADD TRACK BUTTON */}
             {activeInstrumentIds.length < 12 && (
-              <div className={`${isMobile ? 'pl-2' : 'ml-[180px] pl-3'} pt-3`}>
+              <div className={`${isMobile ? 'pl-2' : 'ml-[220px] pl-6'} pt-4`}>
                 {!showAddTrackMenu ? (
                   <button
                     onClick={() => setShowAddTrackMenu(true)}
