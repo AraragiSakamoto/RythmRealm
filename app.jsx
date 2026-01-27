@@ -7793,7 +7793,6 @@ export default function RhythmRealm() {
                                  ${isCompletedTarget ? 'ring-2 ring-green-400 shadow-[0_0_10px_rgba(74,222,128,0.6)]' : ''}
                                  ${isPremadeNote && isActive ? 'opacity-80 saturate-50 !border-2 !border-slate-400/50' : ''}
                                `}
-                               `}
                           style={isTargetStep ? { animation: 'pulse 0.5s ease-in-out infinite' } : {}}
                         >
                           {isTargetStep && (
@@ -7815,7 +7814,7 @@ export default function RhythmRealm() {
 
             {/* ADD TRACK BUTTON */}
             {activeInstrumentIds.length < 12 && (
-              <div className={`${ isMobile ? 'pl-2' : 'ml-[180px] pl-3' } pt - 3`}>
+              <div className={`${isMobile ? 'pl-2' : 'ml-[180px] pl-3'} pt-3`}>
                 {!showAddTrackMenu ? (
                   <button
                     onClick={() => setShowAddTrackMenu(true)}
@@ -7839,16 +7838,15 @@ export default function RhythmRealm() {
                             key={inst.id}
                             onClick={() => !isAdded && addTrack(inst.id)}
                             disabled={isAdded}
-                            className={`flex flex - col items - center gap - 1 p - 3 rounded - xl transition - all text - center ${
-                        isAdded
-                          ? 'bg-green-500/20 border-2 border-green-500/50 cursor-default'
-                          : 'bg-slate-800 border border-slate-700 hover:border-slate-500 hover:bg-slate-700 active:scale-95 cursor-pointer'
-                      } `}
+                            className={`flex flex-col items-center gap-1 p-3 rounded-xl transition-all text-center ${isAdded
+                                ? 'bg-green-500/20 border-2 border-green-500/50 cursor-default'
+                                : 'bg-slate-800 border border-slate-700 hover:border-slate-500 hover:bg-slate-700 active:scale-95 cursor-pointer'
+                              }`}
                           >
-                            <div className={`w - 10 h - 10 rounded - xl ${ inst.color } flex items - center justify - center text - xl shadow - lg ${ isAdded ? 'opacity-60' : '' } `}>
+                            <div className={`w-10 h-10 rounded-xl ${inst.color} flex items-center justify-center text-xl shadow-lg ${isAdded ? 'opacity-60' : ''}`}>
                               {variant.icon}
                             </div>
-                            <span className={`text - xs font - bold ${ isAdded ? 'text-green-400' : 'text-slate-300' } `}>{inst.name}</span>
+                            <span className={`text-xs font-bold ${isAdded ? 'text-green-400' : 'text-slate-300'}`}>{inst.name}</span>
                             {isAdded && <span className="text-[8px] text-green-400 font-bold">✔ ADDED</span>}
                           </button>
                         );
@@ -7892,7 +7890,7 @@ export default function RhythmRealm() {
             {/* Beat markers */}
             <div className="absolute inset-0 flex">
               {[...Array(8)].map((_, i) => (
-                <div key={i} className={`flex - 1 border - r border - slate - 700 ${ i % 2 === 0 ? 'bg-slate-800' : 'bg-slate-750' } `}>
+                <div key={i} className={`flex-1 border-r border-slate-700 ${i % 2 === 0 ? 'bg-slate-800' : 'bg-slate-750'}`}>
                   <span className="text-[8px] sm:text-[10px] text-slate-500 ml-1">{i + 1}</span>
                 </div>
               ))}
@@ -7900,12 +7898,12 @@ export default function RhythmRealm() {
             {/* Progress fill */}
             <div
               className="absolute inset-y-0 left-0 bg-gradient-to-r from-cyan-500/40 to-purple-500/40 transition-all duration-75"
-              style={{ width: `${ (currentStep / STEPS) * 100 }% ` }}
+              style={{ width: `${(currentStep / STEPS) * 100}% ` }}
             />
             {/* Playhead */}
             <div
               className="absolute top-0 bottom-0 w-1 bg-cyan-400 shadow-lg shadow-cyan-500/50 transition-all duration-75"
-              style={{ left: `${ (currentStep / STEPS) * 100 }% ` }}
+              style={{ left: `${(currentStep / STEPS) * 100}% ` }}
             >
               <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-cyan-400 rounded-full shadow-lg" />
               <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-cyan-400 rounded-full shadow-lg" />
@@ -7922,7 +7920,7 @@ export default function RhythmRealm() {
       {/* Bottom Control Bar - Mobile Responsive */}
       <div className="h-auto sm:h-24 bg-white border-t-2 border-slate-100 flex flex-wrap sm:flex-nowrap items-center justify-center gap-2 sm:gap-3 shrink-0 z-20 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] px-2 sm:px-4 py-2 sm:py-0 mobile-controls">
         {/* Play/Stop - Always prominent */}
-        <div className={`flex items - center ${ isMobile ? 'order-first w-full justify-center mb-2' : '' } gap - 3 sm: gap - 6 bg - slate - 50 px - 3 sm: px - 6 py - 2 rounded - [2rem] border border - slate - 100`}>
+        <div className={`flex items - center ${isMobile ? 'order-first w-full justify-center mb-2' : ''} gap - 3 sm: gap - 6 bg - slate - 50 px - 3 sm: px - 6 py - 2 rounded - [2rem] border border - slate - 100`}>
           <button onClick={() => {
             AudioEngine.init();
             if (!isPlaying) {
@@ -7930,7 +7928,7 @@ export default function RhythmRealm() {
               setUserStats(prev => ({ ...prev, hasPlayedBeat: true }));
             }
             setIsPlaying(!isPlaying);
-          }} className={`w - 14 h - 14 sm: w - 16 sm: h - 16 rounded - full flex items - center justify - center transition - all duration - 200 transform border - b - 8 active: border - b - 0 active: translate - y - 2 ${ isPlaying ? 'bg-red-500 border-red-700 text-white' : 'bg-green-500 border-green-700 text-white hover:bg-green-400' } `}>{isPlaying ? <Icons.Stop /> : <Icons.Play />}</button>
+          }} className={`w - 14 h - 14 sm: w - 16 sm: h - 16 rounded - full flex items - center justify - center transition - all duration - 200 transform border - b - 8 active: border - b - 0 active: translate - y - 2 ${isPlaying ? 'bg-red-500 border-red-700 text-white' : 'bg-green-500 border-green-700 text-white hover:bg-green-400'} `}>{isPlaying ? <Icons.Stop /> : <Icons.Play />}</button>
         </div>
         <Button onClick={clearGrid} variant="secondary" className="w-10 h-10 sm:w-12 sm:h-12 !px-0 !py-2 sm:!py-3 !rounded-xl sm:!rounded-2xl text-slate-400 hover:text-slate-600 flex justify-center items-center"><Icons.Trash /></Button>
         <button onClick={() => setShowSaveModal(true)} className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl sm:rounded-2xl flex items-center justify-center text-white shadow-lg hover:scale-105 transition-all border-b-4 border-emerald-600 active:border-b-0 active:translate-y-1" title="Save Beat">
@@ -8003,13 +8001,13 @@ export default function RhythmRealm() {
               <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-200">
                 <button
                   onClick={() => setShowFavoritesOnly(false)}
-                  className={`px - 4 py - 2 rounded - xl font - bold text - sm transition - all ${ !showFavoritesOnly ? 'bg-indigo-500 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200' } `}
+                  className={`px-4 py-2 rounded-xl font-bold text-sm transition-all ${!showFavoritesOnly ? 'bg-indigo-500 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
                 >
                   All ({savedBeats.length})
                 </button>
                 <button
                   onClick={() => setShowFavoritesOnly(true)}
-                  className={`px - 4 py - 2 rounded - xl font - bold text - sm transition - all flex items - center gap - 1 ${ showFavoritesOnly ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200' } `}
+                  className={`px-4 py-2 rounded-xl font-bold text-sm transition-all flex items-center gap-1 ${showFavoritesOnly ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
                 >
                   ⭐ Favorites ({savedBeats.filter(b => b.favorite).length})
                 </button>
@@ -8036,11 +8034,11 @@ export default function RhythmRealm() {
                     );
                   }
                   return beatsToShow.map((beat) => (
-                    <div key={beat.id} className={`flex items - center gap - 2 sm: gap - 3 p - 3 sm: p - 4 rounded - 2xl transition - all group ${ beat.favorite ? 'bg-amber-50 border-2 border-amber-200' : 'bg-slate-50 hover:bg-slate-100' } `}>
+                    <div key={beat.id} className={`flex items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-2xl transition-all group ${beat.favorite ? 'bg-amber-50 border-2 border-amber-200' : 'bg-slate-50 hover:bg-slate-100'}`}>
                       {/* Favorite Toggle */}
                       <button
                         onClick={() => toggleFavorite(beat.id)}
-                        className={`p - 2 rounded - xl transition - all ${ beat.favorite ? 'text-amber-500 hover:text-amber-600' : 'text-slate-300 hover:text-amber-400' } `}
+                        className={`p-2 rounded-xl transition-all ${beat.favorite ? 'text-amber-500 hover:text-amber-600' : 'text-slate-300 hover:text-amber-400'}`}
                         title={beat.favorite ? 'Remove from favorites' : 'Add to favorites'}
                       >
                         {beat.favorite ? '⭐' : '☆'}
