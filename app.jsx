@@ -2666,7 +2666,7 @@ export default function RhythmRealm() {
       console.error('Registration error:', error);
       const errorMsg = error.message.toLowerCase();
       if (errorMsg.includes('rate limit') || errorMsg.includes('too many')) {
-        setAuthError('⏳ Too many attempts! Please check your email for a previous link or wait 15 minutes.');
+        setAuthError('⏳ Email rate limit exceeded! Try: 1) Use a different email address, 2) Wait 1 hour, or 3) Contact admin to disable email verification.');
       } else if (errorMsg.includes('already registered') || errorMsg.includes('unique constraint')) {
         setAuthError('📧 This email is already registered. Please login instead.');
       } else {
