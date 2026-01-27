@@ -2427,6 +2427,9 @@ export default function RhythmRealm() {
   // Visual Theme State
   const [currentTheme, setCurrentTheme] = useState(VISUAL_THEMES[4]); // Default to Neon
 
+  // Sound Pack State
+  const [activeSoundPack, setActiveSoundPack] = useState('electronic');
+
   // DJ Mode State
   const [djCrossfader, setDjCrossfader] = useState(50); // 0 = left deck, 100 = right deck
   const [djEffects, setDjEffects] = useState({ filter: 50, echo: 0, flanger: 0, reverb: 0 });
@@ -2841,18 +2844,18 @@ export default function RhythmRealm() {
 
   // Language Translations
   const LANGUAGES = {
-    en: { code: 'en-US', name: 'English', flag: 'US' },
-    es: { code: 'es-ES', name: 'Español', flag: 'ES' },
-    fr: { code: 'fr-FR', name: 'Français', flag: 'FR' },
-    de: { code: 'de-DE', name: 'Deutsch', flag: 'DE' },
-    it: { code: 'it-IT', name: 'Italiano', flag: 'IT' },
-    pt: { code: 'pt-BR', name: 'Português', flag: 'BR' },
-    ja: { code: 'ja-JP', name: '日本語', flag: 'JP' },
-    ko: { code: 'ko-KR', name: '한국어', flag: 'KR' },
-    zh: { code: 'zh-CN', name: '中文', flag: 'CN' },
-    tl: { code: 'fil-PH', name: 'Tagalog', flag: 'PH' },
-    hi: { code: 'hi-IN', name: 'Hindi', flag: 'IN' },
-    ar: { code: 'ar-SA', name: 'Arabic', flag: 'SA' },
+    en: { code: 'en-US', name: 'English', flag: '🇺🇸' },
+    es: { code: 'es-ES', name: 'Español', flag: '🇪🇸' },
+    fr: { code: 'fr-FR', name: 'Français', flag: '🇫🇷' },
+    de: { code: 'de-DE', name: 'Deutsch', flag: '🇩🇪' },
+    it: { code: 'it-IT', name: 'Italiano', flag: '🇮🇹' },
+    pt: { code: 'pt-BR', name: 'Português', flag: '🇧🇷' },
+    ja: { code: 'ja-JP', name: '日本語', flag: '🇯🇵' },
+    ko: { code: 'ko-KR', name: '한국어', flag: '🇰🇷' },
+    zh: { code: 'zh-CN', name: '中文', flag: '🇨🇳' },
+    tl: { code: 'fil-PH', name: 'Tagalog', flag: '🇵🇭' },
+    hi: { code: 'hi-IN', name: 'Hindi', flag: '🇮🇳' },
+    ar: { code: 'ar-SA', name: 'Arabic', flag: '🇸🇦' },
   }
 
   const TRANSLATIONS = {
@@ -3375,7 +3378,9 @@ export default function RhythmRealm() {
   const [isDraggingSeek, setIsDraggingSeek] = useState(false);
   const seekBarRef = useRef(null);
 
-  const [instrumentConfig, setInstrumentConfig] = useState({ kick: 0, snare: 0, hihat: 0, tom: 0, perc: 0, bass: 0, synth: 0, fx: 0, keys: 0, vox: 0, lead: 0, orch: 0 });
+  const [instrumentConfig, setInstrumentConfig] = useState({
+    kick: 0, snare: 3, hihat: 0, tom: 0, perc: 0, bass: 0, synth: 0, fx: 0, keys: 0, vox: 0, lead: 0, orch: 0
+  });
   const [soundSettings, setSoundSettings] = useState({});
   const [activeSoundLab, setActiveSoundLab] = useState(null);
 
@@ -3398,6 +3403,53 @@ export default function RhythmRealm() {
     });
     setSoundSettings(initialSettings);
   }, []);
+
+  // Apply Sound Pack Logic
+  const applySoundPack = (packId) => {
+    setActiveSoundPack(packId);
+    setInstrumentConfig(prev => {
+      const newConfig = { ...prev };
+
+      if (packId === 'electronic') {
+        // Electronic / Trap (Default)
+        newConfig.kick = 0; // 808
+        newConfig.snare = 3; // Trap
+        newConfig.hihat = 0; // Closed
+        newConfig.bass = 0; // Sub
+        newConfig.synth = 0; // Pad
+        newConfig.fx = 0; // Riser
+        newConfig.keys = 1; // Rhodes
+      } else if (packId === 'classic') {
+        // Classic / Acoustic
+        newConfig.kick = 3; // Acoustic
+        newConfig.snare = 0; // Crack (Standard)
+        newConfig.hihat = 2; // Pedal (Accurate for acoustic?) or 0
+        newConfig.tom = 1; // Mid
+        newConfig.perc = 2; // Cowbell
+        newConfig.bass = 2; // Pluck (Bass Guitar)
+        newConfig.keys = 0; // Piano
+        newConfig.lead = 2; // Organ?
+        newConfig.orch = 0; // Strings
+      } else if (packId === 'rock') {
+        // Rock Band
+        newConfig.kick = 1; // Punchy
+        newConfig.snare = 0; // Crack
+        newConfig.hihat = 1; // Open
+        newConfig.bass = 2; // Pluck
+        newConfig.keys = 2; // Organ
+        newConfig.lead = 2; // Organ/Guitarish
+        newConfig.tom = 0; // Floor
+      }
+
+      return newConfig;
+    });
+
+    // Play a confirmation sound
+    if (AudioEngine.ctx) {
+      AudioEngine.init();
+      // Simple beep or chord could go here
+    }
+  };
 
   // Load accessibility settings from localStorage
   useEffect(() => {
@@ -6450,27 +6502,40 @@ export default function RhythmRealm() {
               Sound Packs
             </h3>
             <div className="space-y-2">
-              <button className="w-full p-4 bg-white/10 hover:bg-white/20 rounded-2xl text-left flex items-center gap-4 transition-all border-2 border-cyan-400">
-                <span className="text-2xl">🥁</span>
+              <button
+                onClick={() => applySoundPack('classic')}
+                className={`w-full p-4 rounded-2xl text-left flex items-center gap-4 transition-all ${activeSoundPack === 'classic' ? 'bg-indigo-500/20 border-2 border-indigo-400 shadow-lg shadow-indigo-500/20' : 'bg-white/10 hover:bg-white/20 border border-white/10'}`}
+              >
+                <span className="text-2xl">🥁 </span>
                 <div className="flex-1">
-                  <div className="font-bold">Classic Kit</div>
-                  <div className="text-xs opacity-60">Default drum sounds</div>
+                  <div className={`font-bold ${activeSoundPack === 'classic' ? 'text-white' : 'text-slate-300'}`}>Classic Kit</div>
+                  <div className="text-xs opacity-60">Acoustic drums & piano</div>
                 </div>
-                <span className="text-cyan-400 font-bold">ACTIVE</span>
+                {activeSoundPack === 'classic' && <span className="text-indigo-400 font-bold text-xs bg-indigo-500/20 px-2 py-1 rounded-lg">ACTIVE</span>}
               </button>
-              <button className="w-full p-4 bg-white/10 hover:bg-white/20 rounded-2xl text-left flex items-center gap-4 transition-all border border-white/10">
+
+              <button
+                onClick={() => applySoundPack('electronic')}
+                className={`w-full p-4 rounded-2xl text-left flex items-center gap-4 transition-all ${activeSoundPack === 'electronic' ? 'bg-cyan-500/20 border-2 border-cyan-400 shadow-lg shadow-cyan-500/20' : 'bg-white/10 hover:bg-white/20 border border-white/10'}`}
+              >
                 <span className="text-2xl">🎹</span>
                 <div className="flex-1">
-                  <div className="font-bold">Electronic</div>
-                  <div className="text-xs opacity-60">Synth & EDM sounds</div>
+                  <div className={`font-bold ${activeSoundPack === 'electronic' ? 'text-white' : 'text-slate-300'}`}>Electronic</div>
+                  <div className="text-xs opacity-60">Synth, 808s & Trap</div>
                 </div>
+                {activeSoundPack === 'electronic' && <span className="text-cyan-400 font-bold text-xs bg-cyan-500/20 px-2 py-1 rounded-lg">ACTIVE</span>}
               </button>
-              <button className="w-full p-4 bg-white/10 hover:bg-white/20 rounded-2xl text-left flex items-center gap-4 transition-all border border-white/10">
+
+              <button
+                onClick={() => applySoundPack('rock')}
+                className={`w-full p-4 rounded-2xl text-left flex items-center gap-4 transition-all ${activeSoundPack === 'rock' ? 'bg-red-500/20 border-2 border-red-400 shadow-lg shadow-red-500/20' : 'bg-white/10 hover:bg-white/20 border border-white/10'}`}
+              >
                 <span className="text-2xl">🎸</span>
                 <div className="flex-1">
-                  <div className="font-bold">Rock Band</div>
-                  <div className="text-xs opacity-60">Guitar & drums</div>
+                  <div className={`font-bold ${activeSoundPack === 'rock' ? 'text-white' : 'text-slate-300'}`}>Rock Band</div>
+                  <div className="text-xs opacity-60">Punchy drums & organ</div>
                 </div>
+                {activeSoundPack === 'rock' && <span className="text-red-400 font-bold text-xs bg-red-500/20 px-2 py-1 rounded-lg">ACTIVE</span>}
               </button>
             </div>
           </div>
