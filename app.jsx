@@ -780,7 +780,7 @@ const INSTRUMENTS_DATA = [
   { id: 'bass', name: 'Bass', color: 'bg-purple-400', shadow: 'shadow-purple-400/50' },
   { id: 'synth', name: 'Synth', color: 'bg-pink-400', shadow: 'shadow-pink-400/50' },
   { id: 'tom', name: 'Tom', color: 'bg-indigo-400', shadow: 'shadow-indigo-400/50' },
-  { id: 'perc', name: 'Perc', color: 'bg-orange-400', shadow: 'shadow-orange-400/50' },
+  { id: 'perc', name: 'Percussion', color: 'bg-orange-400', shadow: 'shadow-orange-400/50' },
   { id: 'fx', name: 'FX', color: 'bg-slate-400', shadow: 'shadow-slate-400/50' },
   { id: 'keys', name: 'Keys', color: 'bg-teal-400', shadow: 'shadow-teal-400/50' },
   { id: 'vox', name: 'Vox', color: 'bg-fuchsia-400', shadow: 'shadow-fuchsia-400/50' },
@@ -4357,6 +4357,13 @@ export default function RhythmRealm() {
     }
     if (scenario.requirements?.mustInclude) {
       Object.keys(scenario.requirements.mustInclude).forEach(inst => instrumentsToLoad.add(inst));
+    }
+
+    // FORCE FIX: Ensure 'perc' is present for Percussion Party (Level 6)
+    if (scenario.id === 6 || scenario.name.includes("Percussion")) {
+      instrumentsToLoad.add('perc');
+      instrumentsToLoad.delete('synth'); // Remove typically unwanted instruments for this level
+      instrumentsToLoad.delete('keys');
     }
 
     // 2. Load Grid Pattern
