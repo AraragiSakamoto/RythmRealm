@@ -2850,12 +2850,12 @@ export default function RhythmRealm() {
     de: { code: 'de-DE', name: 'Deutsch', flag: '🇩🇪' },
     it: { code: 'it-IT', name: 'Italiano', flag: '🇮🇹' },
     pt: { code: 'pt-BR', name: 'Português', flag: '🇧🇷' },
-    ja: { code: 'ja-JP', name: '日本語', flag: '🇯🇵' },
-    ko: { code: 'ko-KR', name: '한국어', flag: '🇰🇷' },
-    zh: { code: 'zh-CN', name: '中文', flag: '🇨🇳' },
+    ja: { code: 'ja-JP', name: '\u65e5\u672c\u8a9e', flag: '🇯🇵' }, // Japanese
+    ko: { code: 'ko-KR', name: '\ud55c\uad6d\uc5b4', flag: '🇰🇷' }, // Korean
+    zh: { code: 'zh-CN', name: '\u4e2d\u6587', flag: '🇨🇳' }, // Chinese
     tl: { code: 'fil-PH', name: 'Tagalog', flag: '🇵🇭' },
-    hi: { code: 'hi-IN', name: 'Hindi', flag: '🇮🇳' },
-    ar: { code: 'ar-SA', name: 'Arabic', flag: '🇸🇦' },
+    hi: { code: 'hi-IN', name: '\u0939\u093f\u0928\u094d\u0926\u0940', flag: '🇮🇳' }, // Hindi
+    ar: { code: 'ar-SA', name: '\u0627\u0644\u0639\u0631\u0628\u064a\u0629', flag: '🇸🇦' }, // Arabic
   }
 
   const TRANSLATIONS = {
@@ -3100,169 +3100,166 @@ export default function RhythmRealm() {
       allEnabled: 'Tudo Ativado',
     },
     ja: {
-      appTitle: 'リズム・レルム',
-      createBeat: 'ビートを作ろう',
-      letsPlay: '遊ぼう！',
-      modes: 'モード',
-      settings: '設定',
-      freePlay: 'フリープレイ',
-      freePlayDesc: '制限なしで自由にビートを作成！',
-      tutorial: 'チュートリアル',
-      tutorialDesc: 'ムードやスタイルを学ぼう！',
-      beatLibrary: 'ライブラリ',
-      beatLibraryDesc: '様々なジャンルのビートを探索！',
-      djMode: 'DJモード',
-      djModeDesc: 'ライブパフォーマンス！リアルタイムでミックス。',
-      accessibility: 'アクセシビリティ',
-      textToSpeech: '読み上げ',
-      textToSpeechDesc: 'カーソルを合わせると説明を読み上げ',
-      highContrast: 'ハイコントラスト',
-      highContrastDesc: '色のコントラストを上げる',
-      largeText: '大きな文字',
-      largeTextDesc: 'テキストとボタンを大きくする',
-      keyboardNav: 'キーボード操作',
-      keyboardNavDesc: 'Tabキー操作を強化',
-      voiceControl: '音声操作',
-      voiceControlDesc: 'ハンズフリー！声でアプリを操作',
-      language: '言語',
-      languageDesc: 'アプリの言語を変更',
-      play: '再生',
-      stop: '停止',
-      tempo: 'テンポ',
-      volume: '音量',
-      back: '戻る',
-      home: 'ホーム',
-      masterVolume: 'マスター音量',
+      appTitle: 'RHYTHM REALM',
+      createBeat: '\u30d3\u30fc\u30c8\u3092\u4f5c\u6210',
+      letsPlay: '\u904a\u307c\u3046\uff01',
+      modes: '\u30e2\u30fc\u30c9',
+      settings: '\u8a2d\u5b9a',
+      freePlay: '\u30d5\u30ea\u30fc\u30d7\u30ec\u30a4',
+      freePlayDesc: '\u5236\u9650\u306a\u3057\u3067\u81ea\u7531\u306b\u30d3\u30fc\u30c8\u3092\u4f5c\u60c5\uff01',
+      tutorial: '\u30c1\u30e5\u30fc\u30c8\u30ea\u30a2\u30eb',
+      tutorialDesc: '\u69d8\u3005\u306a\u30b9\u30bf\u30a4\u30eb\u3092\u5b66\u307c\u3046\uff01',
+      beatLibrary: '\u30d3\u30fc\u30c8\u30e9\u30a4\u30d6\u30e9\u30ea',
+      beatLibraryDesc: '\u69d8\u3005\u306a\u30b8\u30e3\u30f3\u30eb\u306e\u4f8b\u3092\u63a2\u7d22\uff01',
+      djMode: 'DJ\u30e2\u30fc\u30c9',
+      djModeDesc: '\u30e9\u30a4\u30d6\u30d1\u30d5\u30a9\u30fc\u30de\u30f3\u30b9\uff01\u30ea\u30a2\u30eb\u30bf\u30a4\u30e0\u3067\u30df\u30c3\u30af\u30b9\u3002',
+      accessibility: '\u30a2\u30af\u30bb\u30b7\u30d3\u30ea\u30c6\u30a3',
+      textToSpeech: '\u8aad\u307f\u4e0a\u3052',
+      textToSpeechDesc: '\u30db\u30d0\u30fc\u307e\u305f\u306f\u30d5\u30a9\u30fc\u30ab\u30b9\u3067\u8aad\u307f\u4e0a\u3052',
+      highContrast: '\u30cf\u30a4\u30b3\u30f3\u30c8\u30e9\u30b9\u30c8',
+      highContrastDesc: '\u8996\u8a8d\u6027\u3092\u9ad8\u3081\u308b',
+      largeText: '\u5927\u304d\u306a\u6587\u5b57',
+      largeTextDesc: '\u30c6\u30ad\u30b9\u30c8\u3068\u30dc\u30bf\u30f3\u3092\u62e1\u5927',
+      keyboardNav: '\u30ad\u30fc\u30dc\u30fc\u30c9\u64cd\u4f5c',
+      keyboardNavDesc: 'Tab\u30ad\u30fc\u64cd\u4f5c\u3092\u5f37\u5316',
+      voiceControl: '\u97f3\u58f0\u64cd\u4f5c',
+      voiceControlDesc: '\u30cf\u30f3\u30ba\u30d5\u30ea\u30fc\uff01\u58f0\u3067\u30a2\u30d7\u30ea\u3092\u64cd\u4f5c',
+      language: '\u8a00\u8a9e',
+      languageDesc: '\u30a2\u30d7\u30ea\u306e\u8a00\u8a9e\u3092\u5909\u66f4',
+      play: '\u518d\u751f',
+      stop: '\u505c\u6b62',
+      tempo: '\u30c6\u30f3\u30dd',
+      volume: '\u97f3\u91cf',
+      back: '\u623b\u308b',
+      home: '\u30db\u30fc\u30e0',
+      masterVolume: '\u30de\u30b9\u30bf\u30fc\u97f3\u91cf',
       backgroundMusic: 'BGM',
-      visualThemes: 'ビジュアルテーマ',
-      about: 'アプリについて',
-      enableAll: 'すべての機能を有効化',
-      allEnabled: 'すべての機能が有効',
+      visualThemes: '\u30c6\u30fc\u30de',
+      about: '\u30a2\u30d7\u30ea\u306b\u3064\u3044\u3066',
+      enableAll: '\u3059\u3079\u3066\u306e\u6a5f\u80fd\u3092\u6709\u52b9\u5316',
+      allEnabled: '\u3059\u3079\u3066\u306e\u6a5f\u80fd\u304c\u6709\u52b9',
     },
     ko: {
-      appTitle: '리듬 렐름',
-      createBeat: '비트 만들기',
-      letsPlay: '시작하기!',
-      modes: '모드',
-      settings: '설정',
-      freePlay: '자유 연주',
-      freePlayDesc: '제한 없이 나만의 비트를 만드세요!',
-      tutorial: '튜토리얼',
-      tutorialDesc: '다양한 스타일 배우기!',
-      beatLibrary: '비트 라이브러리',
-      beatLibraryDesc: '다양한 장르의 비트 탐색!',
-      djMode: 'DJ 모드',
-      djModeDesc: '라이브 공연 모드! 실시간 믹싱.',
-      accessibility: '접근성',
-      textToSpeech: '텍스트 음성 변환',
-      textToSpeechDesc: '마우스를 올리면 설명 듣기',
-      highContrast: '고대비',
-      highContrastDesc: '색상 대비 증가',
-      largeText: '큰 텍스트',
-      largeTextDesc: '텍스트 및 버튼 크기 확대',
-      keyboardNav: '키보드 탐색',
-      keyboardNavDesc: '향상된 Tab 키 탐색',
-      voiceControl: '음성 제어',
-      voiceControlDesc: '핸즈프리! 목소리로 앱 제어',
-      language: '언어',
-      languageDesc: '앱 언어 변경',
-      play: '재생',
-      stop: '정지',
-      tempo: '템포',
-      volume: '볼륨',
-      back: '뒤로',
-      home: '홈',
-      masterVolume: '마스터 볼륨',
-      backgroundMusic: '배경 음악',
-      visualThemes: '비주얼 테마',
-      about: '정보',
-      enableAll: '모두 활성화',
-      allEnabled: '모두 활성화됨',
+      appTitle: 'RHYTHM REALM',
+      createBeat: '\ube44\ud2b8 \ub9cc\ub4e4\uae30',
+      letsPlay: '\uc2dc\uc791\ud558\uae30!',
+      modes: '\ubaa8\ub4dc',
+      settings: '\uc124\uc815',
+      freePlay: '\uc790\uc720 \uc5f0\uc8fc',
+      freePlayDesc: '\ub098\ub9cc\uc758 \ube44\ud2b8\ub97c \ub9cc\ub4e4\uc5b4\ubcf4\uc138\uc694!',
+      tutorial: '\ud29c\ud1a0\ub9ac\uc5bc',
+      tutorialDesc: '\ub2e4\uc591\ud55c \uc2a4\ud0c0\uc77c \ubc30\uc6b0\uae30!',
+      beatLibrary: '\ube44\ud2b8 \ub77c\uc774\ube0c\ub7ec\ub9ac',
+      beatLibraryDesc: '\ub2e4\uc591\ud55c \uc7a5\ub974 \ud0d0\ud5d8!',
+      djMode: 'DJ \ubaa8\ub4dc',
+      djModeDesc: '\ub77c\uc774\ube0c \ud37c\ud3ec\uba3c\uc2a4 \ubaa8\ub4dc! \uc2e4\uc2dc\uac04 \ubbf9\uc2f1.',
+      accessibility: '\uc811\uadfc\uc131',
+      textToSpeech: '\uc74c\uc131 \ub9ac\ub354',
+      textToSpeechDesc: '\ub9c8\uc6b0\uc2a4\ub97c \uc62c\ub9ac\uba74 \uc124\uba85 \ub4e3\uae30',
+      highContrast: '\uace0\ub300\ube44',
+      highContrastDesc: '\uc0c9\uc0c1 \ub300\ube44 \uc99d\uac00',
+      largeText: '\ud070 \ud14d\uc2a4\ud2b8',
+      largeTextDesc: '\ud14d\uc2a4\ud2b8 \ubc0f \ubc84\ud2bc \ud06c\uae30 \ud655\ub300',
+      keyboardNav: '\ud0a4\ubcf4\ub4dc \ud0d0\uc0c9',
+      keyboardNavDesc: '\ud5a5\uc0c1\ub41c Tab \ud0a4 \ud0d0\uc0c9',
+      voiceControl: '\uc74c\uc131 \uc81c\uc5b4',
+      voiceControlDesc: '\ud578\uc988\ud504\ub9ac! \ubaa9\uc18c\ub9ac\ub85c \uc571 \uc81c\uc5b4',
+      language: '\uc5b8\uc5b4',
+      languageDesc: '\uc571 \uc5b8\uc5b4 \ubcc0\uacbd',
+      play: '\uc7ac\uc0dd',
+      stop: '\uc815\uc9c0',
+      tempo: '\ud15c\ud3ec',
+      volume: '\ubcfc\ub968',
+      back: '\ub4fa\ub85c',
+      home: '\ud648',
+      masterVolume: '\ub9c8\uc2a4\ud130 \ubcfc\ub968',
+      backgroundMusic: '\ubc30\uacbd \uc74c\uc545',
+      visualThemes: '\ube44\uc8fc\uc5bc \ud14c\ub9c8',
+      about: '\uc815\ubcf4',
+      enableAll: '\ubaa8\ub4e0 \uae30\ub2a5 \ucf1c\uae30',
+      allEnabled: '\ubaa8\ub4e0 \uae30\ub2a5 \ud65c\uc131\ud654\ub428',
     },
     zh: {
-      appTitle: '节奏王国',
-      createBeat: '创作节拍',
-      letsPlay: '开始吧！',
-      modes: '模式',
-      settings: '设置',
-      freePlay: '自由演奏',
-      freePlayDesc: '无限创作属于你的节拍！',
-      tutorial: '教程',
-      tutorialDesc: '学习不同的风格和氛围！',
-      beatLibrary: '节拍库',
-      beatLibraryDesc: '探索不同流派的节拍！',
-      djMode: 'DJ 模式',
-      djModeDesc: '现场表演模式！实时混音。',
-      accessibility: '无障碍',
-      textToSpeech: '文字转语音',
-      textToSpeechDesc: '悬停或聚焦以收听说明',
-      highContrast: '高对比度',
-      highContrastDesc: '增加颜色对比度以提高可见性',
-      largeText: '大号文本',
-      largeTextDesc: '增大文本和按钮尺寸',
-      keyboardNav: '键盘导航',
-      keyboardNavDesc: '增强的 Tab 键导航',
-      voiceControl: '语音控制',
-      voiceControlDesc: '免提！用声音控制应用',
-      language: '语言',
-      languageDesc: '更改应用语言',
-      play: '播放',
-      stop: '停止',
-      tempo: '速度',
-      volume: '音量',
-      back: '返回',
-      home: '主页',
-      masterVolume: '主音量',
-      backgroundMusic: '背景音乐',
-      visualThemes: '视觉主题',
-      about: '关于',
-      enableAll: '全部启用',
-      allEnabled: '已全部启用',
+      appTitle: 'RHYTHM REALM',
+      createBeat: '\u521b\u5efa\u8282\u594f',
+      letsPlay: '\u5f00\u59cb\uff01',
+      modes: '\u6a21\u5f0f',
+      settings: '\u8bbe\u7f6e',
+      freePlay: '\u81ea\u7531\u6a21\u5f0f',
+      freePlayDesc: '\u81ea\u7531\u521b\u4f5c\u4f60\u7684\u8282\u594f\uff01',
+      tutorial: '\u6559\u7a0b',
+      tutorialDesc: '\u5b66\u4e60\u4e0d\u540c\u98ce\u683c\uff01',
+      beatLibrary: '\u8282\u594f\u5e93',
+      beatLibraryDesc: '\u63a2\u7d22\u5404\u79cd\u793a\u4f8b\uff01',
+      djMode: 'DJ\u6a21\u5f0f',
+      djModeDesc: '\u5373\u5174\u6f14\u594f\u6a21\u5f0f\uff01\u5b9e\u65f6\u6df7\u97f3\u3002',
+      accessibility: '\u65e0\u969c\u788d',
+      textToSpeech: '\u6587\u672c\u8f6c\u8bed\u97f3',
+      textToSpeechDesc: '\u60ac\u505c\u6216\u805a\u7126\u4ee5\u6536\u542c\u8bf4\u660e',
+      highContrast: '\u9ad8\u5bf9\u6bd4\u5ea6',
+      highContrastDesc: '\u589e\u52a0\u989c\u8272\u5bf9\u6bd4\u5ea6\u4ee5\u63d0\u9ad8\u53ef\u89c1\u6027',
+      largeText: '\u5927\u53f7\u6587\u672c',
+      largeTextDesc: '\u589e\u5927\u6587\u672c\u548c\u6309\u94ae\u5c3a\u5bf8',
+      keyboardNav: '\u952e\u76d8\u5bfc\u822a',
+      keyboardNavDesc: '\u589e\u5f3a\u7684 Tab \u952e\u5bfc\u822a',
+      voiceControl: '\u8bed\u97f3\u63a7\u5236',
+      voiceControlDesc: '\u514d\u63d0\uff01\u7528\u58f0\u97f3\u63a7\u5236\u5e94\u7528',
+      language: '\u8bed\u8a00',
+      languageDesc: '\u66f4\u6539\u5e94\u7528\u8bed\u8a00',
+      play: '\u64ad\u653e',
+      stop: '\u505c\u6b62',
+      tempo: '\u901f\u5ea6',
+      volume: '\u97f3\u91cf',
+      back: '\u8fd4\u56de',
+      home: '\u4e3b\u9875',
+      masterVolume: '\u4e3b\u97f3\u91cf',
+      backgroundMusic: '\u80cc\u666f\u97f3\u4e50',
+      visualThemes: '\u89c6\u89c9\u4e3b\u9898',
+      about: '\u5173\u4e8e',
+      enableAll: '\u542f\u7528\u6240\u6709\u529f\u80fd',
+      allEnabled: '\u5df2\u542f\u7528\u6240\u6709\u529f\u80fd',
     },
     tl: {
       appTitle: 'RHYTHM REALM',
       createBeat: 'Gumawa ng Beat',
-      letsPlay: 'Laro Na!',
+      letsPlay: 'Laro Tayo!',
       modes: 'Mga Mode',
       settings: 'Mga Setting',
-      freePlay: 'Free Play',
-      freePlayDesc: 'Gumawa ng sariling beats nang walang limitasyon!',
-      tutorial: 'Tutorial',
-      tutorialDesc: 'Matuto ng iba\'t ibang styles!',
-      beatLibrary: 'Beat Library',
-      beatLibraryDesc: 'Mag-explore ng beats mula sa ibang genres!',
+      freePlay: 'Malayang Paglaro',
+      freePlayDesc: 'Gumawa ng sariling beat nang walang limitasyon!',
+      tutorial: 'Pagsasanay',
+      tutorialDesc: 'Matuto ng iba\'t ibang estilo!',
+      beatLibrary: 'Koleksyon ng Beat',
+      beatLibraryDesc: 'Tuklasin ang iba\'t ibang genre!',
       djMode: 'DJ Mode',
-      djModeDesc: 'Live performance! Mag-mix ng beats.',
+      djModeDesc: 'Live performance! Paghaluin ang mga beat.',
       accessibility: 'Accessibility',
       textToSpeech: 'Text-to-Speech',
-      textToSpeechDesc: 'Pakinggan ang description pag tinutok',
+      textToSpeechDesc: 'Pakinggan ang mga paglalarawan',
       highContrast: 'High Contrast',
       highContrastDesc: 'Taasan ang contrast ng kulay',
-      largeText: 'Malaking Text',
-      largeTextDesc: 'Palakihin ang text at buttons',
-      keyboardNav: 'Keyboard Navigation',
-      keyboardNavDesc: 'Mas magandang Tab navigation',
-      voiceControl: 'Voice Control',
-      voiceControlDesc: 'Hands-free! Kontrolin gamit ang boses',
+      largeText: 'Malaking Teksto',
+      largeTextDesc: 'Lakihan ang teksto at pindutan',
+      keyboardNav: 'Nabigasyon gamit ang Keyboard',
+      keyboardNavDesc: 'Gamitin ang Tab key',
+      voiceControl: 'Boses na Kontrol',
+      voiceControlDesc: 'Kontrolin gamit ang boses',
       language: 'Wika',
-      languageDesc: 'Palitan ang wika ng app',
+      languageDesc: 'Palitan ang wika',
       play: 'I-play',
-      stop: 'Ihinto',
-      tempo: 'Tempo',
-      volume: 'Volume',
+      stop: 'Itigil',
+      tempo: 'Bilis',
+      volume: 'Lakas',
       back: 'Bumalik',
       home: 'Home',
-      masterVolume: 'Master Volume',
-      backgroundMusic: 'Background Music',
-      visualThemes: 'Visual Themes',
-      about: 'Tungkol Sa',
-      enableAll: 'I-enable Lahat',
-      allEnabled: 'Lahat ay Naka-enable',
+      masterVolume: 'Pangunahing Lakas',
+      backgroundMusic: 'Musika sa Background',
+      visualThemes: 'Mga Tema',
+      about: 'Tungkol',
+      enableAll: 'Paganahin Lahat',
+      allEnabled: 'Lahat ay Gumagana',
     },
     hi: {
-      appTitle: 'रिदम रियल्म',
-      createBeat: 'अपनी बीट बनाएं',
-      letsPlay: 'चलो खेलते हैं!',
       modes: 'मोड्स (Modes)',
       settings: 'सेटिंग्स',
       freePlay: 'फ्री प्ले',
@@ -7778,6 +7775,9 @@ export default function RhythmRealm() {
                       const isTargetStep = isTutorialTarget && notesToClick.includes(stepIndex) && !isActive;
                       const isCompletedTarget = isTutorialTarget && notesToClick.includes(stepIndex) && isActive;
 
+                      // Identify premade notes in Game Levels
+                      const isPremadeNote = currentScenario?.premadePattern?.[instKey]?.includes(stepIndex);
+
                       return (
                         <button
                           key={stepIndex}
@@ -7791,6 +7791,8 @@ export default function RhythmRealm() {
                                  ${!isActive && isBeatStart ? 'bg-slate-600/50 border-slate-500/40' : ''} 
                                  ${isTargetStep ? 'bg-yellow-400 border-yellow-500 border-2 shadow-[0_0_15px_rgba(250,204,21,0.8)] z-30' : ''}
                                  ${isCompletedTarget ? 'ring-2 ring-green-400 shadow-[0_0_10px_rgba(74,222,128,0.6)]' : ''}
+                                 ${isPremadeNote && isActive ? 'opacity-80 saturate-50 !border-2 !border-slate-400/50' : ''}
+                               `}
                                `}
                           style={isTargetStep ? { animation: 'pulse 0.5s ease-in-out infinite' } : {}}
                         >
@@ -7813,7 +7815,7 @@ export default function RhythmRealm() {
 
             {/* ADD TRACK BUTTON */}
             {activeInstrumentIds.length < 12 && (
-              <div className={`${isMobile ? 'pl-2' : 'ml-[180px] pl-3'} pt-3`}>
+              <div className={`${ isMobile ? 'pl-2' : 'ml-[180px] pl-3' } pt - 3`}>
                 {!showAddTrackMenu ? (
                   <button
                     onClick={() => setShowAddTrackMenu(true)}
@@ -7837,15 +7839,16 @@ export default function RhythmRealm() {
                             key={inst.id}
                             onClick={() => !isAdded && addTrack(inst.id)}
                             disabled={isAdded}
-                            className={`flex flex-col items-center gap-1 p-3 rounded-xl transition-all text-center ${isAdded
-                              ? 'bg-green-500/20 border-2 border-green-500/50 cursor-default'
-                              : 'bg-slate-800 border border-slate-700 hover:border-slate-500 hover:bg-slate-700 active:scale-95 cursor-pointer'
-                              }`}
+                            className={`flex flex - col items - center gap - 1 p - 3 rounded - xl transition - all text - center ${
+                        isAdded
+                          ? 'bg-green-500/20 border-2 border-green-500/50 cursor-default'
+                          : 'bg-slate-800 border border-slate-700 hover:border-slate-500 hover:bg-slate-700 active:scale-95 cursor-pointer'
+                      } `}
                           >
-                            <div className={`w-10 h-10 rounded-xl ${inst.color} flex items-center justify-center text-xl shadow-lg ${isAdded ? 'opacity-60' : ''}`}>
+                            <div className={`w - 10 h - 10 rounded - xl ${ inst.color } flex items - center justify - center text - xl shadow - lg ${ isAdded ? 'opacity-60' : '' } `}>
                               {variant.icon}
                             </div>
-                            <span className={`text-xs font-bold ${isAdded ? 'text-green-400' : 'text-slate-300'}`}>{inst.name}</span>
+                            <span className={`text - xs font - bold ${ isAdded ? 'text-green-400' : 'text-slate-300' } `}>{inst.name}</span>
                             {isAdded && <span className="text-[8px] text-green-400 font-bold">✔ ADDED</span>}
                           </button>
                         );
@@ -7889,7 +7892,7 @@ export default function RhythmRealm() {
             {/* Beat markers */}
             <div className="absolute inset-0 flex">
               {[...Array(8)].map((_, i) => (
-                <div key={i} className={`flex-1 border-r border-slate-700 ${i % 2 === 0 ? 'bg-slate-800' : 'bg-slate-750'}`}>
+                <div key={i} className={`flex - 1 border - r border - slate - 700 ${ i % 2 === 0 ? 'bg-slate-800' : 'bg-slate-750' } `}>
                   <span className="text-[8px] sm:text-[10px] text-slate-500 ml-1">{i + 1}</span>
                 </div>
               ))}
@@ -7897,12 +7900,12 @@ export default function RhythmRealm() {
             {/* Progress fill */}
             <div
               className="absolute inset-y-0 left-0 bg-gradient-to-r from-cyan-500/40 to-purple-500/40 transition-all duration-75"
-              style={{ width: `${(currentStep / STEPS) * 100}%` }}
+              style={{ width: `${ (currentStep / STEPS) * 100 }% ` }}
             />
             {/* Playhead */}
             <div
               className="absolute top-0 bottom-0 w-1 bg-cyan-400 shadow-lg shadow-cyan-500/50 transition-all duration-75"
-              style={{ left: `${(currentStep / STEPS) * 100}%` }}
+              style={{ left: `${ (currentStep / STEPS) * 100 }% ` }}
             >
               <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-cyan-400 rounded-full shadow-lg" />
               <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-cyan-400 rounded-full shadow-lg" />
@@ -7919,7 +7922,7 @@ export default function RhythmRealm() {
       {/* Bottom Control Bar - Mobile Responsive */}
       <div className="h-auto sm:h-24 bg-white border-t-2 border-slate-100 flex flex-wrap sm:flex-nowrap items-center justify-center gap-2 sm:gap-3 shrink-0 z-20 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] px-2 sm:px-4 py-2 sm:py-0 mobile-controls">
         {/* Play/Stop - Always prominent */}
-        <div className={`flex items-center ${isMobile ? 'order-first w-full justify-center mb-2' : ''} gap-3 sm:gap-6 bg-slate-50 px-3 sm:px-6 py-2 rounded-[2rem] border border-slate-100`}>
+        <div className={`flex items - center ${ isMobile ? 'order-first w-full justify-center mb-2' : '' } gap - 3 sm: gap - 6 bg - slate - 50 px - 3 sm: px - 6 py - 2 rounded - [2rem] border border - slate - 100`}>
           <button onClick={() => {
             AudioEngine.init();
             if (!isPlaying) {
@@ -7927,7 +7930,7 @@ export default function RhythmRealm() {
               setUserStats(prev => ({ ...prev, hasPlayedBeat: true }));
             }
             setIsPlaying(!isPlaying);
-          }} className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all duration-200 transform border-b-8 active:border-b-0 active:translate-y-2 ${isPlaying ? 'bg-red-500 border-red-700 text-white' : 'bg-green-500 border-green-700 text-white hover:bg-green-400'}`}>{isPlaying ? <Icons.Stop /> : <Icons.Play />}</button>
+          }} className={`w - 14 h - 14 sm: w - 16 sm: h - 16 rounded - full flex items - center justify - center transition - all duration - 200 transform border - b - 8 active: border - b - 0 active: translate - y - 2 ${ isPlaying ? 'bg-red-500 border-red-700 text-white' : 'bg-green-500 border-green-700 text-white hover:bg-green-400' } `}>{isPlaying ? <Icons.Stop /> : <Icons.Play />}</button>
         </div>
         <Button onClick={clearGrid} variant="secondary" className="w-10 h-10 sm:w-12 sm:h-12 !px-0 !py-2 sm:!py-3 !rounded-xl sm:!rounded-2xl text-slate-400 hover:text-slate-600 flex justify-center items-center"><Icons.Trash /></Button>
         <button onClick={() => setShowSaveModal(true)} className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl sm:rounded-2xl flex items-center justify-center text-white shadow-lg hover:scale-105 transition-all border-b-4 border-emerald-600 active:border-b-0 active:translate-y-1" title="Save Beat">
@@ -8000,13 +8003,13 @@ export default function RhythmRealm() {
               <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-200">
                 <button
                   onClick={() => setShowFavoritesOnly(false)}
-                  className={`px-4 py-2 rounded-xl font-bold text-sm transition-all ${!showFavoritesOnly ? 'bg-indigo-500 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                  className={`px - 4 py - 2 rounded - xl font - bold text - sm transition - all ${ !showFavoritesOnly ? 'bg-indigo-500 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200' } `}
                 >
                   All ({savedBeats.length})
                 </button>
                 <button
                   onClick={() => setShowFavoritesOnly(true)}
-                  className={`px-4 py-2 rounded-xl font-bold text-sm transition-all flex items-center gap-1 ${showFavoritesOnly ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                  className={`px - 4 py - 2 rounded - xl font - bold text - sm transition - all flex items - center gap - 1 ${ showFavoritesOnly ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200' } `}
                 >
                   ⭐ Favorites ({savedBeats.filter(b => b.favorite).length})
                 </button>
@@ -8033,11 +8036,11 @@ export default function RhythmRealm() {
                     );
                   }
                   return beatsToShow.map((beat) => (
-                    <div key={beat.id} className={`flex items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-2xl transition-all group ${beat.favorite ? 'bg-amber-50 border-2 border-amber-200' : 'bg-slate-50 hover:bg-slate-100'}`}>
+                    <div key={beat.id} className={`flex items - center gap - 2 sm: gap - 3 p - 3 sm: p - 4 rounded - 2xl transition - all group ${ beat.favorite ? 'bg-amber-50 border-2 border-amber-200' : 'bg-slate-50 hover:bg-slate-100' } `}>
                       {/* Favorite Toggle */}
                       <button
                         onClick={() => toggleFavorite(beat.id)}
-                        className={`p-2 rounded-xl transition-all ${beat.favorite ? 'text-amber-500 hover:text-amber-600' : 'text-slate-300 hover:text-amber-400'}`}
+                        className={`p - 2 rounded - xl transition - all ${ beat.favorite ? 'text-amber-500 hover:text-amber-600' : 'text-slate-300 hover:text-amber-400' } `}
                         title={beat.favorite ? 'Remove from favorites' : 'Add to favorites'}
                       >
                         {beat.favorite ? '⭐' : '☆'}
