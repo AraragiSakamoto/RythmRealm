@@ -2359,13 +2359,7 @@ export default function RhythmRealm() {
   // LEVEL SYSTEM STATE
   // ==========================================
   const [currentLevel, setCurrentLevel] = useState(null);
-  const [levelProgress, setLevelProgress] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('rhythmRealm_levelProgress');
-      return saved ? JSON.parse(saved) : {};
-    }
-    return {};
-  });
+  const [levelProgress, setLevelProgress] = useState({});
   const [currentHintIndex, setCurrentHintIndex] = useState(0);
   const [showHint, setShowHint] = useState(false);
   const [levelComplete, setLevelComplete] = useState(false);
@@ -2376,17 +2370,7 @@ export default function RhythmRealm() {
   // USER STATS FOR ACHIEVEMENTS
   // ==========================================
   const [userStats, setUserStats] = useState(() => {
-    // Initialize level stats from localStorage
-    let levelsCompleted = 0;
-    let threeStarLevels = 0;
-    if (typeof window !== 'undefined') {
-      const savedProgress = localStorage.getItem('rhythmRealm_levelProgress');
-      if (savedProgress) {
-        const progress = JSON.parse(savedProgress);
-        levelsCompleted = Object.values(progress).filter(p => p?.completed).length;
-        threeStarLevels = Object.values(progress).filter(p => p?.stars >= 3).length;
-      }
-    }
+    // Level stats will be loaded from user profile, not localStorage
     return {
       totalBeatsCreated: 0,
       tutorialsCompleted: 0,
@@ -2398,8 +2382,8 @@ export default function RhythmRealm() {
       usedDJMode: false,
       currentStreak: 0,
       leaderboardRank: null,
-      levelsCompleted,
-      threeStarLevels
+      levelsCompleted: 0,
+      threeStarLevels: 0
     };
   });
 
@@ -2538,9 +2522,22 @@ export default function RhythmRealm() {
       if (event === 'SIGNED_IN' && session?.user) {
         // Only update if not already set (handleLogin already sets these)
         setUser(prev => prev?.id === session.user.id ? prev : session.user);
+
+        // Clear localStorage level progress to prevent cross-account contamination
+        localStorage.removeItem('rhythmRealm_levelProgress');
+        console.log('🔄 Cleared localStorage level progress for new user');
+
+        // Load user-specific level progress from database (if implemented)
+        // For now, reset to empty
+        setLevelProgress({});
       } else if (event === 'SIGNED_OUT') {
         setUser(null);
         setUserProfile(null);
+
+        // Clear level progress on logout
+        localStorage.removeItem('rhythmRealm_levelProgress');
+        setLevelProgress({});
+        console.log('🔄 Cleared level progress on logout');
       }
     });
 
@@ -4908,7 +4905,8 @@ export default function RhythmRealm() {
         }
       };
       setLevelProgress(newProgress);
-      localStorage.setItem('rhythmRealm_levelProgress', JSON.stringify(newProgress));
+      // Note: Level progress is now managed per-user session, not in localStorage
+
 
       // Count completed levels and three star levels for achievements
       const completedCount = Object.values(newProgress).filter(p => p?.completed).length;
