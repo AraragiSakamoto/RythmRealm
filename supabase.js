@@ -21,7 +21,9 @@ export const authService = {
         data: {
           username: username,
           display_name: username
-        }
+        },
+        // Disable email confirmation to avoid rate limit issues
+        emailRedirectTo: undefined
       }
     });
 
