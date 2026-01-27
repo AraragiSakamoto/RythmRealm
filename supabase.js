@@ -286,6 +286,44 @@ export const scoreService = {
         })
         .eq('id', userId);
     }
+  },
+
+  // Get user's level progress (from scores table)
+  async getUserLevelProgress(userId) {
+    const { data, error } = await supabase
+      .from('scores')
+      .select('scenario_id, score, accuracy')
+      .eq('user_id', userId);
+
+    if (error) throw error;
+
+    // Convert scores to level progress format
+    const progress = {};
+    if (data) {
+      data.forEach(score => {
+        const levelId = score.scenario_id;
+        const stars = score.score >= 100 ? 3 : score.score >= 75 ? 2 : score.score >= 50 ? 1 : 0;
+
+        // Keep the best score for each level
+        if (!progress[levelId] || progress[levelId].bestScore < score.score) {
+          progress[levelId] = {
+            completed: score.score >= 100,
+            stars: stars,
+            bestScore: score.score
+          };
+        }
+      });
+    }
+
+    return progress;
+  },
+
+  // Save level completion to database
+  async saveLevelCompletion(userId, levelId, levelName, score, stars) {
+    // Save to scores table
+    await this.saveScore(userId, levelId, levelName, score, 100, 100, []);
+
+    return { levelId, score, stars };
   }
 };
 

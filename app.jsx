@@ -2478,6 +2478,15 @@ export default function RhythmRealm() {
                 totalScore: profile.total_score || 0,
                 currentStreak: profile.current_streak || 0
               }));
+
+              // Load level progress from database
+              try {
+                const progress = await scoreService.getUserLevelProgress(session.user.id);
+                setLevelProgress(progress);
+                console.log('✅ Loaded initial level progress:', progress);
+              } catch (progError) {
+                console.error('Failed to load level progress:', progError);
+              }
             } else {
               // Create profile from user metadata if not found
               const username = session.user.user_metadata?.username || session.user.email?.split('@')[0] || 'Player';
@@ -2527,17 +2536,23 @@ export default function RhythmRealm() {
         localStorage.removeItem('rhythmRealm_levelProgress');
         console.log('🔄 Cleared localStorage level progress for new user');
 
-        // Load user-specific level progress from database (if implemented)
-        // For now, reset to empty
-        setLevelProgress({});
+        // Load user-specific level progress from database
+        try {
+          const progress = await scoreService.getUserLevelProgress(session.user.id);
+          setLevelProgress(progress);
+          console.log('✅ Loaded level progress from database:', progress);
+        } catch (error) {
+          console.error('Failed to load level progress:', error);
+          setLevelProgress({});
+        }
       } else if (event === 'SIGNED_OUT') {
         setUser(null);
         setUserProfile(null);
 
-        // Clear level progress on logout
+        // Clear level progress on logout - guest users start fresh
         localStorage.removeItem('rhythmRealm_levelProgress');
         setLevelProgress({});
-        console.log('🔄 Cleared level progress on logout');
+        console.log('🔄 Cleared level progress on logout - guest mode');
       }
     });
 
@@ -4940,9 +4955,18 @@ export default function RhythmRealm() {
       // Sync with backend if logged in
       if (user) {
         try {
-          // We can optimistically update, actual sync happens via service elsewhere or we can force it here
-          // For now, local state update ensures UI is responsive
-        } catch (e) { console.error("XP sync failed", e); }
+          // Save level completion to database
+          await scoreService.saveLevelCompletion(
+            user.id,
+            currentLevel.id,
+            currentLevel.name,
+            result.score,
+            result.stars
+          );
+          console.log('✅ Saved level progress to database');
+        } catch (e) {
+          console.error("Level progress sync failed", e);
+        }
 
         setTimeout(() => checkForAchievements(), 500);
       }
