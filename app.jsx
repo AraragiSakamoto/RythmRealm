@@ -4348,98 +4348,83 @@ export default function RhythmRealm() {
     setTempo(scenario.bpm);
     setIsPlaying(false);
 
-    // For tutorials: start with empty grid so user learns step by step
+    // 1. Determine active instruments from all sources
+    let instrumentsToLoad = new Set();
+
+    // A. From Requirements (CRITICAL for levels like Percussion Party)
+    if (scenario.requirements?.instruments) {
+      scenario.requirements.instruments.forEach(inst => instrumentsToLoad.add(inst));
+    }
+    if (scenario.requirements?.mustInclude) {
+      Object.keys(scenario.requirements.mustInclude).forEach(inst => instrumentsToLoad.add(inst));
+    }
+
+    // 2. Load Grid Pattern
+    const newGrid = {};
+    Object.keys(SOUND_VARIANTS).forEach(key => newGrid[key] = Array(STEPS).fill(false));
+
+    // Case A: Tutorial (Interactive Guide)
     if (scenario.tutorial) {
-      // Clear the grid
-      const newGrid = {};
-      Object.keys(SOUND_VARIANTS).forEach(key => newGrid[key] = Array(STEPS).fill(false));
-      setGrid(newGrid);
-
-      // Get all instruments used in the tutorial
-      const tutorialInstruments = scenario.tutorial
-        .filter(step => step.targetInstrument)
-        .map(step => step.targetInstrument);
-      const uniqueInstruments = [...new Set(tutorialInstruments)];
-
-      // Set active instruments to only the ones needed for tutorial
-      setActiveInstrumentIds(uniqueInstruments);
-
-      // Enable tutorial mode
+      scenario.tutorial.forEach(step => {
+        if (step.targetInstrument) instrumentsToLoad.add(step.targetInstrument);
+      });
       setTutorialActive(true);
       setTutorialStep(0);
       setActiveGuide(null);
       setLockedInstruments({});
     }
-    // For non-tutorial scenarios (map vibes): load the beat
+    // Case B: Map/Vibe (has 'beat')
     else if (scenario.beat) {
-      const newGrid = {};
-      Object.keys(SOUND_VARIANTS).forEach(key => newGrid[key] = Array(STEPS).fill(false));
       Object.entries(scenario.beat).forEach(([inst, steps]) => {
         if (newGrid[inst]) {
-          steps.forEach(step => {
-            if (step < STEPS) newGrid[inst][step] = true;
-          });
+          instrumentsToLoad.add(inst); // Add instrument if used in beat
+          steps.forEach(step => { if (step < STEPS) newGrid[inst][step] = true; });
         }
       });
-      setGrid(newGrid);
-
-      // Enable the instruments used in this beat
-      const usedInstruments = Object.keys(scenario.beat);
-      setActiveInstrumentIds(usedInstruments);
       setTutorialActive(false);
       setActiveGuide(null);
       setLockedInstruments({});
     }
-    // For GAME LEVELS: load premade pattern if it exists
+    // Case C: Game Level with Premade Pattern
     else if (scenario.premadePattern) {
-      const newGrid = {};
-      Object.keys(SOUND_VARIANTS).forEach(key => newGrid[key] = Array(STEPS).fill(false));
-
-      // Load the premade pattern
       Object.entries(scenario.premadePattern).forEach(([inst, steps]) => {
         if (newGrid[inst]) {
-          steps.forEach(step => {
-            if (step < STEPS) newGrid[inst][step] = true;
-          });
+          instrumentsToLoad.add(inst); // Add instrument if used in pattern
+          steps.forEach(step => { if (step < STEPS) newGrid[inst][step] = true; });
         }
       });
-      setGrid(newGrid);
-
-      // Enable the instruments used in this level
-      const requiredInstruments = scenario.requirements?.instruments || [];
-      const premadeInstruments = Object.keys(scenario.premadePattern);
-      const allInstruments = [...new Set([...requiredInstruments, ...premadeInstruments])];
-
-      setActiveInstrumentIds(allInstruments);
       setTutorialActive(false);
       setActiveGuide(null);
       setLockedInstruments({});
     }
-    // For Challenge Levels defined only by requirements (e.g. Percussion Party)
+    // Case D: Clean Slate Game Level
     else {
-      const newGrid = {};
-      Object.keys(SOUND_VARIANTS).forEach(key => newGrid[key] = Array(STEPS).fill(false));
-      setGrid(newGrid);
-
-      // Enable instruments from requirements
-      const requiredInstruments = scenario.requirements?.instruments || [];
-      const mustInclude = Object.keys(scenario.requirements?.mustInclude || {});
-      const allInstruments = [...new Set([...requiredInstruments, ...mustInclude])];
-
-      if (allInstruments.length > 0) {
-        setActiveInstrumentIds(allInstruments);
-      } else {
-        // Fallback default
-        setActiveInstrumentIds(['kick', 'snare', 'hihat', 'bass']);
-      }
-
       setTutorialActive(false);
       setActiveGuide(null);
       setLockedInstruments({});
     }
-  };
 
-  const handleSoundSettingChange = (instKey, setting, value) => {
+    // Apply grid
+    setGrid(newGrid);
+
+    // Apply instruments (Fallback to basic kit if empty)
+    if (instrumentsToLoad.size === 0) {
+      ['kick', 'snare', 'hihat', 'bass'].forEach(i => instrumentsToLoad.add(i));
+    }
+
+    // Sort instruments to keep a consistent order (Drums first, then bass, then others)
+    const instrumentOrder = ['kick', 'snare', 'hihat', 'tom', 'perc', 'bass', 'synth', 'keys', 'lead', 'orch', 'vox', 'fx'];
+    const sortedInstruments = [...instrumentsToLoad].sort((a, b) => {
+      const idxA = instrumentOrder.indexOf(a);
+      const idxB = instrumentOrder.indexOf(b);
+      if (idxA === -1) return 1;
+      if (idxB === -1) return -1;
+      return idxA - idxB;
+    });
+
+    setActiveInstrumentIds(sortedInstruments);
+    setView('studio');
+  }; const handleSoundSettingChange = (instKey, setting, value) => {
     setSoundSettings(prev => ({
       ...prev,
       [instKey]: { ...prev[instKey], [setting]: value }
@@ -7731,7 +7716,7 @@ export default function RhythmRealm() {
             {/* Step indicators - hidden on mobile, clickable to seek */}
             {!isMobile && (
               <div className="flex items-center gap-4 mb-2 p-2 pl-3">
-                <div className="w-[220px] shrink-0 text-xs font-bold text-slate-500 uppercase tracking-widest text-right pr-6">Timeline →</div>
+                <div className="w-[190px] shrink-0 text-xs font-bold text-slate-500 uppercase tracking-widest text-right pr-6">Timeline →</div>
                 <div className="grid gap-0.5 flex-1 p-1" style={{ gridTemplateColumns: 'repeat(32, minmax(24px, 1fr))' }}>
                   {[...Array(STEPS)].map((_, i) => (
                     <div
@@ -7777,7 +7762,7 @@ export default function RhythmRealm() {
               return (
                 <div key={instKey} className={`relative flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4 group rounded-xl p-2 sm:p-3 transition-all ${rowOpacity} ${isTutorialTarget ? 'bg-indigo-500/20 ring-2 ring-indigo-400 shadow-lg z-20' : 'bg-slate-900/40 border border-white/5 hover:bg-slate-800/60 hover:border-white/10'}`}>
                   {isTutorialTarget && !isMobile && <div className="absolute -left-10 top-1/2 -translate-y-1/2 animate-[bounce_1s_infinite] text-3xl z-50 filter drop-shadow-lg">👠</div>}
-                  <div className="flex items-center gap-2 w-full sm:w-[220px] shrink-0 relative pr-4 border-r border-white/5">
+                  <div className="flex items-center gap-2 w-full sm:w-[190px] shrink-0 relative pr-4 border-r border-white/5">
                     {/* Remove Button */}
                     <button
                       onClick={() => removeTrack(instKey)}
@@ -7891,7 +7876,7 @@ export default function RhythmRealm() {
 
             {/* ADD TRACK BUTTON */}
             {activeInstrumentIds.length < 12 && (
-              <div className={`${isMobile ? 'pl-2' : 'ml-[220px] pl-6'} pt-4`}>
+              <div className={`${isMobile ? 'pl-2' : 'ml-[190px] pl-6'} pt-4`}>
                 {!showAddTrackMenu ? (
                   <button
                     onClick={() => setShowAddTrackMenu(true)}
