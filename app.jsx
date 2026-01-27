@@ -2489,59 +2489,33 @@ export default function RhythmRealm() {
                 tutorialsCompleted: profile.total_tutorials_completed || 0,
                 totalScore: profile.total_score || 0,
                 currentStreak: profile.current_streak || 0
-              }));
-            } else {
-              // Create profile from user metadata if not found
-              const username = session.user.user_metadata?.username || session.user.email?.split('@')[0] || 'Player';
-              const newProfile = {
-                id: session.user.id,
-                username: username,
-                email: session.user.email,
-                total_score: 0,
-                total_beats_created: 0,
-                level: 1,
+              level: 1,
                 rank_title: 'Beginner',
                 experience_points: 0
-              };
-              setUserProfile(newProfile);
+              });
             }
-          } catch (profileError) {
-            console.error('Profile fetch error on mount:', profileError);
-            // Create a fallback profile
-            const username = session.user.user_metadata?.username || session.user.email?.split('@')[0] || 'Player';
-            setUserProfile({
-              id: session.user.id,
-              username: username,
-              email: session.user.email,
-              total_score: 0,
-              total_beats_created: 0,
-              level: 1,
-              rank_title: 'Beginner',
-              experience_points: 0
-            });
           }
-        }
       } catch (error) {
-        console.error('Auth check error:', error);
-      } finally {
-        setIsAuthLoading(false);
-      }
-    };
-    checkAuth();
+          console.error('Auth check error:', error);
+        } finally {
+          setIsAuthLoading(false);
+        }
+      };
+      checkAuth();
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' && session?.user) {
-        // Only update if not already set (handleLogin already sets these)
-        setUser(prev => prev?.id === session.user.id ? prev : session.user);
-      } else if (event === 'SIGNED_OUT') {
-        setUser(null);
-        setUserProfile(null);
-      }
-    });
+      // Listen for auth changes
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+        if (event === 'SIGNED_IN' && session?.user) {
+          // Only update if not already set (handleLogin already sets these)
+          setUser(prev => prev?.id === session.user.id ? prev : session.user);
+        } else if (event === 'SIGNED_OUT') {
+          setUser(null);
+          setUserProfile(null);
+        }
+      });
 
-    return () => subscription.unsubscribe();
-  }, []);
+      return () => subscription.unsubscribe();
+    }, []);
 
   // Handle login
   const handleLogin = async (e) => {
