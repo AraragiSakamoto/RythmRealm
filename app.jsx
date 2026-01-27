@@ -4352,6 +4352,31 @@ export default function RhythmRealm() {
       setActiveGuide(null);
       setLockedInstruments({});
     }
+    // For GAME LEVELS: load premade pattern if it exists
+    else if (scenario.premadePattern) {
+      const newGrid = {};
+      Object.keys(SOUND_VARIANTS).forEach(key => newGrid[key] = Array(STEPS).fill(false));
+
+      // Load the premade pattern
+      Object.entries(scenario.premadePattern).forEach(([inst, steps]) => {
+        if (newGrid[inst]) {
+          steps.forEach(step => {
+            if (step < STEPS) newGrid[inst][step] = true;
+          });
+        }
+      });
+      setGrid(newGrid);
+
+      // Enable the instruments used in this level
+      const requiredInstruments = scenario.requirements?.instruments || [];
+      const premadeInstruments = Object.keys(scenario.premadePattern);
+      const allInstruments = [...new Set([...requiredInstruments, ...premadeInstruments])];
+
+      setActiveInstrumentIds(allInstruments);
+      setTutorialActive(false);
+      setActiveGuide(null);
+      setLockedInstruments({});
+    }
 
     setView('studio');
   };
