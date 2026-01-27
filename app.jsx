@@ -7747,7 +7747,7 @@ export default function RhythmRealm() {
 
         {/* --- COMPOSER GRID --- */}
         <div className="flex-1 overflow-x-auto overflow-y-auto p-2 sm:p-4">
-          <div className={`${isMobile ? '' : 'min-w-max'} space-y-1 pb-24`}>
+          <div className={`${isMobile ? '' : 'min-w-max'} space-y-3 pb-24`}>
             {/* Step indicators - hidden on mobile, clickable to seek */}
             {!isMobile && (
               <div className="flex items-center gap-4 mb-2 p-2 pl-3">
@@ -7812,9 +7812,9 @@ export default function RhythmRealm() {
                 : [...Array(STEPS)].map((_, i) => i);
 
               return (
-                <div key={instKey} className={`relative flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4 group rounded-xl p-2 sm:p-3 transition-all ${rowOpacity} ${isTutorialTarget ? 'bg-indigo-500/20 ring-2 ring-indigo-400 shadow-lg z-20' : 'bg-slate-900/40 border border-white/5 hover:bg-slate-800/60 hover:border-white/10'}`}>
-                  {isTutorialTarget && !isMobile && <div className="absolute -left-10 top-1/2 -translate-y-1/2 animate-[bounce_1s_infinite] text-3xl z-50 filter drop-shadow-lg">👠</div>}
-                  <div className="flex items-center gap-2 w-full sm:w-[280px] shrink-0 relative pr-3 border-r border-white/5">
+                <div key={instKey} className={`relative flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-6 group rounded-xl p-2 sm:p-3 transition-all ${rowOpacity} ${isTutorialTarget ? 'bg-indigo-500/20 ring-2 ring-indigo-400 shadow-lg z-20' : 'bg-slate-900/40 border border-white/5 hover:bg-slate-800/60 hover:border-white/10'}`}>
+                  {isTutorialTarget && !isMobile && <div className="absolute -left-10 top-1/2 -translate-y-1/2 animate-[bounce_1s_infinite] text-3xl z-50 filter drop-shadow-lg">👉</div>}
+                  <div className="flex items-center gap-2 w-full sm:w-[280px] shrink-0 relative pr-6 border-r border-white/5">
                     {/* Remove Button */}
                     <button
                       onClick={() => removeTrack(instKey)}
@@ -7824,13 +7824,13 @@ export default function RhythmRealm() {
                       <Icons.Minus />
                     </button>
 
-                    <button onClick={() => setShowSoundPicker(showSoundPicker === instKey ? null : instKey)} className="flex-1 flex items-center gap-2 bg-slate-800/80 hover:bg-slate-700 p-2 pr-3 rounded-lg transition-all border border-slate-700/50 active:scale-95 relative group-hover/btn:border-slate-500/50">
-                      <div className={`w-7 h-7 rounded-md flex items-center justify-center text-sm shadow-inner ${instrumentInfo.color} text-white`}>{currentVariant.icon}</div>
-                      <div className="flex flex-col text-left">
-                        <span className="text-[9px] font-black text-slate-500 uppercase leading-tight">{instKey}</span>
-                        <span className="text-[10px] font-bold text-slate-300 truncate max-w-[60px]">{currentVariant.name}</span>
+                    <button onClick={() => setShowSoundPicker(showSoundPicker === instKey ? null : instKey)} className="flex-1 flex items-center gap-2 bg-slate-800/80 hover:bg-slate-700 p-2 pr-3 rounded-lg transition-all border border-slate-700/50 active:scale-95 relative group-hover/btn:border-slate-500/50 min-w-0">
+                      <div className={`w-8 h-8 rounded-md flex items-center justify-center text-base shadow-inner ${instrumentInfo.color} text-white shrink-0`}>{currentVariant.icon}</div>
+                      <div className="flex flex-col text-left min-w-0 flex-1">
+                        <span className="text-[10px] font-black text-slate-500 uppercase leading-tight">{instKey}</span>
+                        <span className="text-[11px] font-bold text-slate-300 truncate">{currentVariant.name}</span>
                       </div>
-                      <span className="text-[8px] text-slate-500">▼</span>
+                      <span className="text-[10px] text-slate-500 shrink-0">▼</span>
                     </button>
 
                     {/* Sound Variant Picker Popup */}
