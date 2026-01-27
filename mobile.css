@@ -73,6 +73,8 @@ button,
     flex: 1;
     overflow-x: auto;
     overflow-y: hidden;
+    padding-bottom: 80px;
+    /* Prevent overlap with controls */
   }
 
   /* Smaller controls at bottom */
@@ -88,12 +90,14 @@ button,
     padding: 0.5rem;
     background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(10px);
+    z-index: 50;
   }
 
   /* Compact grid cells */
   .grid-cell {
-    min-width: 24px !important;
-    min-height: 24px !important;
+    min-width: 32px !important;
+    /* Slightly larger for easier touch */
+    min-height: 32px !important;
   }
 
   /* Hide or minimize non-essential UI */
@@ -114,23 +118,30 @@ button,
   .text-lg {
     font-size: 0.875rem !important;
   }
+
+  /* Hide landscape hint if visible */
+  .landscape-hint {
+    display: none !important;
+  }
 }
 
 /* Portrait warning for gameplay */
 @media (max-width: 768px) and (orientation: portrait) {
   .landscape-hint {
-    display: block !important;
+    display: flex !important;
+    /* Use flex to center content */
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background: rgba(0, 0, 0, 0.95);
     color: white;
     padding: 2rem;
-    border-radius: 1rem;
-    text-align: center;
     z-index: 9999;
-    max-width: 80%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
 }
 

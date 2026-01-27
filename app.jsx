@@ -1259,8 +1259,8 @@ const GAME_LEVELS = [
     },
     requirements: {
       instruments: ['kick', 'snare'],
-      minNotes: 8,
-      mustInclude: { kick: 4, snare: 4 }
+      minNotes: 4,
+      mustInclude: { kick: 2, snare: 2 }
     },
     hints: [
       "💡 Start with the KICK drum - it's the heartbeat of your music!",
@@ -1286,7 +1286,7 @@ const GAME_LEVELS = [
     xpReward: 75,
     icon: "🎩",
     description: "Time to add some rhythm! The drums are ready - you add the Hi-Hats.",
-    objective: "Add HI-HATS to the existing beat",
+    objective: "Add 4 HI-HATS to the existing beat",
     premadePattern: {
       kick: [0, 8, 16, 24],
       snare: [4, 12, 20, 28]
@@ -6998,6 +6998,13 @@ export default function RhythmRealm() {
 
     return (
       <div className={`h-screen w-full text-white flex flex-col overflow-hidden font-sans relative bg-gradient-to-b from-gray-900 via-slate-900 to-black ${highContrastMode ? 'high-contrast' : ''} ${largeTextMode ? 'large-text' : ''}`} role="main" aria-label="DJ Mode - Live Performance Studio">
+        {/* Landscape Mode Hint Overlay */}
+        <div className="landscape-hint hidden fixed inset-0 z-[9999] bg-black/95 flex flex-col items-center justify-center p-8 text-center backdrop-blur-xl">
+          <div className="text-6xl mb-6 animate-bounce">📱</div>
+          <h2 className="text-3xl font-black text-white mb-4">Please Rotate Your Device</h2>
+          <p className="text-xl text-slate-400">Rhythm Realm is best experienced in landscape mode for the full studio experience.</p>
+          <div className="mt-8 w-16 h-16 border-4 border-slate-600 rounded-xl animate-spin-slow"></div>
+        </div>
         <style>{cssStyles}</style>
         <a href="#dj-decks" className="skip-link" onFocus={() => speak('Skip to DJ decks')}>Skip to DJ controls</a>
         <VoiceControlIndicator />
