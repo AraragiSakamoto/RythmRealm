@@ -7751,7 +7751,7 @@ export default function RhythmRealm() {
             {/* Step indicators - hidden on mobile, clickable to seek */}
             {!isMobile && (
               <div className="flex items-center gap-4 mb-2 p-2 pl-3">
-                <div className="w-[190px] shrink-0 flex items-center justify-end gap-2 pr-6">
+                <div className="w-[280px] shrink-0 flex items-center justify-end gap-2 pr-6">
                   <button
                     onClick={() => {
                       if (window.confirm("Reset tracks to level defaults?")) {
@@ -7814,7 +7814,7 @@ export default function RhythmRealm() {
               return (
                 <div key={instKey} className={`relative flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4 group rounded-xl p-2 sm:p-3 transition-all ${rowOpacity} ${isTutorialTarget ? 'bg-indigo-500/20 ring-2 ring-indigo-400 shadow-lg z-20' : 'bg-slate-900/40 border border-white/5 hover:bg-slate-800/60 hover:border-white/10'}`}>
                   {isTutorialTarget && !isMobile && <div className="absolute -left-10 top-1/2 -translate-y-1/2 animate-[bounce_1s_infinite] text-3xl z-50 filter drop-shadow-lg">👠</div>}
-                  <div className="flex items-center gap-2 w-full sm:w-[190px] shrink-0 relative pr-4 border-r border-white/5">
+                  <div className="flex items-center gap-2 w-full sm:w-[280px] shrink-0 relative pr-3 border-r border-white/5">
                     {/* Remove Button */}
                     <button
                       onClick={() => removeTrack(instKey)}
@@ -7824,13 +7824,13 @@ export default function RhythmRealm() {
                       <Icons.Minus />
                     </button>
 
-                    <button onClick={() => setShowSoundPicker(showSoundPicker === instKey ? null : instKey)} className="flex-1 flex items-center gap-2 bg-slate-800/80 hover:bg-slate-700 p-1.5 pr-3 rounded-lg transition-all border border-slate-700/50 active:scale-95 relative group-hover/btn:border-slate-500/50">
-                      <div className={`w-6 h-6 rounded-md flex items-center justify-center text-sm shadow-inner ${instrumentInfo.color} text-white`}>{currentVariant.icon}</div>
+                    <button onClick={() => setShowSoundPicker(showSoundPicker === instKey ? null : instKey)} className="flex-1 flex items-center gap-2 bg-slate-800/80 hover:bg-slate-700 p-2 pr-3 rounded-lg transition-all border border-slate-700/50 active:scale-95 relative group-hover/btn:border-slate-500/50">
+                      <div className={`w-7 h-7 rounded-md flex items-center justify-center text-sm shadow-inner ${instrumentInfo.color} text-white`}>{currentVariant.icon}</div>
                       <div className="flex flex-col text-left">
-                        <span className="text-[8px] font-black text-slate-500 uppercase leading-tight">{instKey}</span>
-                        <span className="text-[9px] font-bold text-slate-300 truncate w-10">{currentVariant.name}</span>
+                        <span className="text-[9px] font-black text-slate-500 uppercase leading-tight">{instKey}</span>
+                        <span className="text-[10px] font-bold text-slate-300 truncate max-w-[60px]">{currentVariant.name}</span>
                       </div>
-                      <span className="text-[8px] text-slate-500">—¼</span>
+                      <span className="text-[8px] text-slate-500">▼</span>
                     </button>
 
                     {/* Sound Variant Picker Popup */}
@@ -7869,13 +7869,13 @@ export default function RhythmRealm() {
                     {/* Mute Toggle */}
                     <button
                       onClick={() => handleSoundSettingChange(instKey, 'muted', !soundSettings[instKey]?.muted)}
-                      className={`w-6 h-6 rounded-md flex items-center justify-center transition-all text-xs ${soundSettings[instKey]?.muted ? 'bg-red-500/90 text-white' : 'bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-700 border border-slate-700/50'}`}
+                      className={`w-7 h-7 rounded-md flex items-center justify-center transition-all text-xs shrink-0 ${soundSettings[instKey]?.muted ? 'bg-red-500/90 text-white' : 'bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-700 border border-slate-700/50'}`}
                       title={soundSettings[instKey]?.muted ? 'Unmute' : 'Mute'}
                     >
                       {soundSettings[instKey]?.muted ? '🔇' : '🔊'}
                     </button>
-                    <button onClick={() => setActiveSoundLab(activeSoundLab === instKey ? null : instKey)} className={`w-6 h-6 rounded-md flex items-center justify-center transition-all text-xs ${activeSoundLab === instKey ? 'bg-indigo-500 text-white' : 'bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-700 border border-slate-700/50'}`}><Icons.Sliders /></button>
-                    <button onClick={() => smartFill(instKey)} className="w-6 h-6 rounded-md bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center hover:from-indigo-400 hover:to-purple-500 shadow-sm text-xs"><Icons.Wand /></button>
+                    <button onClick={() => setActiveSoundLab(activeSoundLab === instKey ? null : instKey)} className={`w-7 h-7 rounded-md flex items-center justify-center transition-all text-xs shrink-0 ${activeSoundLab === instKey ? 'bg-indigo-500 text-white' : 'bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-700 border border-slate-700/50'}`}><Icons.Sliders /></button>
+                    <button onClick={() => smartFill(instKey)} className="w-7 h-7 rounded-md bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center hover:from-indigo-400 hover:to-purple-500 shadow-sm text-xs shrink-0"><Icons.Wand /></button>
                   </div>
 
                   {activeSoundLab === instKey && soundSettings[instKey] && (<SoundLab instKey={instKey} config={soundSettings[instKey]} onChange={(k, v) => handleSoundSettingChange(instKey, k, v)} onClose={() => setActiveSoundLab(null)} />)}
@@ -7928,7 +7928,7 @@ export default function RhythmRealm() {
 
             {/* ADD TRACK BUTTON */}
             {activeInstrumentIds.length < 12 && (
-              <div className={`${isMobile ? 'pl-2' : 'ml-[190px] pl-6'} pt-4`}>
+              <div className={`${isMobile ? 'pl-2' : 'ml-[280px] pl-6'} pt-4`}>
                 {!showAddTrackMenu ? (
                   <button
                     onClick={() => setShowAddTrackMenu(true)}
