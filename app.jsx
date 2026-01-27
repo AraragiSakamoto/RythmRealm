@@ -2461,6 +2461,7 @@ export default function RhythmRealm() {
   const [currentLanguage, setCurrentLanguage] = useState('en');
   const speechSynthRef = useRef(null);
   const recognitionRef = useRef(null);
+  const processedAchievementsRef = useRef(new Set());
 
   // ==========================================
   // AUTHENTICATION EFFECTS & FUNCTIONS
@@ -2752,26 +2753,38 @@ export default function RhythmRealm() {
   };
 
   // Check for new achievements
+  // Check for new achievements
   const checkForAchievements = async () => {
     if (!user) return;
     try {
-      console.log('Checking achievements with stats:', userStats);
+      // Use local check first to avoid UI spam
+      const previouslyProcessed = processedAchievementsRef.current;
+
       const unlocked = await achievementService.checkAchievements(user.id, userStats);
-      console.log('Unlocked achievements:', unlocked);
+
       if (unlocked && unlocked.length > 0) {
-        // Show each unlocked achievement with delay
-        for (let i = 0; i < unlocked.length; i++) {
-          setTimeout(() => {
-            playAchievementSound();
-            setNewAchievementUnlocked(unlocked[i]);
-            setTimeout(() => setNewAchievementUnlocked(null), 4000);
-          }, i * 4500);
+        // Filter out any that might have been processed in this session already
+        const newUnlocks = unlocked.filter(a => !previouslyProcessed.has(a.id));
+
+        if (newUnlocks.length > 0) {
+          // Add to processed set
+          newUnlocks.forEach(a => previouslyProcessed.add(a.id));
+
+          // Show each unlocked achievement with delay
+          for (let i = 0; i < newUnlocks.length; i++) {
+            setTimeout(() => {
+              playAchievementSound();
+              setNewAchievementUnlocked(newUnlocks[i]);
+              setTimeout(() => setNewAchievementUnlocked(null), 4000);
+            }, i * 4500);
+          }
+
+          // Refresh profile after all achievements shown
+          setTimeout(async () => {
+            const profile = await authService.getUserProfile(user.id);
+            setUserProfile(profile);
+          }, newUnlocks.length * 4500);
         }
-        // Refresh profile after all achievements shown
-        setTimeout(async () => {
-          const profile = await authService.getUserProfile(user.id);
-          setUserProfile(profile);
-        }, unlocked.length * 4500);
       }
     } catch (error) {
       console.error('Achievement check error:', error);
@@ -7839,8 +7852,8 @@ export default function RhythmRealm() {
                             onClick={() => !isAdded && addTrack(inst.id)}
                             disabled={isAdded}
                             className={`flex flex-col items-center gap-1 p-3 rounded-xl transition-all text-center ${isAdded
-                                ? 'bg-green-500/20 border-2 border-green-500/50 cursor-default'
-                                : 'bg-slate-800 border border-slate-700 hover:border-slate-500 hover:bg-slate-700 active:scale-95 cursor-pointer'
+                              ? 'bg-green-500/20 border-2 border-green-500/50 cursor-default'
+                              : 'bg-slate-800 border border-slate-700 hover:border-slate-500 hover:bg-slate-700 active:scale-95 cursor-pointer'
                               }`}
                           >
                             <div className={`w-10 h-10 rounded-xl ${inst.color} flex items-center justify-center text-xl shadow-lg ${isAdded ? 'opacity-60' : ''}`}>
@@ -7877,7 +7890,8 @@ export default function RhythmRealm() {
           </span>
           <div
             ref={seekBarRef}
-            className="flex-1 h-8 sm:h-10 bg-slate-800 rounded-xl cursor-pointer relative overflow-hidden group touch-none"
+            className="flex-1 grid gap-0.5 bg-slate-900 rounded-xl cursor-col-resize touch-none select-none relative h-10 overflow-hidden border border-slate-700/50"
+            style={{ gridTemplateColumns: `repeat(${isMobile ? mobileStepsVisible : 32}, minmax(24px, 1fr))` }}
             onClick={handleSeekBarInteraction}
             onMouseDown={(e) => { setIsDraggingSeek(true); handleSeekBarInteraction(e); }}
             onMouseMove={(e) => isDraggingSeek && handleSeekBarInteraction(e)}
@@ -7886,31 +7900,46 @@ export default function RhythmRealm() {
             onTouchStart={(e) => { setIsDraggingSeek(true); handleSeekBarInteraction(e); }}
             onTouchMove={(e) => isDraggingSeek && handleSeekBarInteraction(e)}
             onTouchEnd={() => setIsDraggingSeek(false)}
+            role="slider"
+            aria-label="Seek Bar"
+            aria-valuenow={currentStep}
+            aria-valuemin="0"
+            aria-valuemax={(isMobile ? mobileStepsVisible : 32) - 1}
           >
-            {/* Beat markers */}
-            <div className="absolute inset-0 flex">
-              {[...Array(8)].map((_, i) => (
-                <div key={i} className={`flex-1 border-r border-slate-700 ${i % 2 === 0 ? 'bg-slate-800' : 'bg-slate-750'}`}>
-                  <span className="text-[8px] sm:text-[10px] text-slate-500 ml-1">{i + 1}</span>
+            {[...Array(isMobile ? mobileStepsVisible : 32)].map((_, i) => {
+              const isBeatStart = i % 4 === 0;
+              const beatNumber = Math.floor((isMobile ? i + mobileStepOffset : i) / 4) + 1;
+              const isCurrent = currentStep === i;
+
+              return (
+                <div
+                  key={i}
+                  className={`relative flex items-center justify-center transition-colors
+                    ${isCurrent ? 'bg-cyan-500/20' : 'hover:bg-white/5'}
+                    ${isBeatStart ? 'border-l border-slate-600' : ''}
+                  `}
+                >
+                  {/* Highlight bar for current step */}
+                  {isCurrent && (
+                    <div className="absolute inset-0 border-2 border-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.5)] z-10"></div>
+                  )}
+
+                  {/* Beat Number Marker */}
+                  {isBeatStart && (
+                    <span className="absolute top-0.5 left-1 text-[9px] font-mono font-bold text-slate-500 pointer-events-none">
+                      {beatNumber}
+                    </span>
+                  )}
+
+                  {/* Subtle tick for non-beats */}
+                  {!isBeatStart && (
+                    <div className="w-0.5 h-1 bg-slate-800 rounded-full"></div>
+                  )}
                 </div>
-              ))}
-            </div>
-            {/* Progress fill */}
-            <div
-              className="absolute inset-y-0 left-0 bg-gradient-to-r from-cyan-500/40 to-purple-500/40 transition-all duration-75"
-              style={{ width: `${(currentStep / STEPS) * 100}% ` }}
-            />
-            {/* Playhead */}
-            <div
-              className="absolute top-0 bottom-0 w-1 bg-cyan-400 shadow-lg shadow-cyan-500/50 transition-all duration-75"
-              style={{ left: `${(currentStep / STEPS) * 100}% ` }}
-            >
-              <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-cyan-400 rounded-full shadow-lg" />
-              <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-cyan-400 rounded-full shadow-lg" />
-            </div>
-            {/* Hover indicator */}
-            <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+              );
+            })}
           </div>
+
           <span className="text-xs font-mono text-slate-400 w-10 sm:w-12">
             {STEPS / 4}:4
           </span>
@@ -7920,7 +7949,7 @@ export default function RhythmRealm() {
       {/* Bottom Control Bar - Mobile Responsive */}
       <div className="h-auto sm:h-24 bg-white border-t-2 border-slate-100 flex flex-wrap sm:flex-nowrap items-center justify-center gap-2 sm:gap-3 shrink-0 z-20 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] px-2 sm:px-4 py-2 sm:py-0 mobile-controls">
         {/* Play/Stop - Always prominent */}
-        <div className={`flex items - center ${isMobile ? 'order-first w-full justify-center mb-2' : ''} gap - 3 sm: gap - 6 bg - slate - 50 px - 3 sm: px - 6 py - 2 rounded - [2rem] border border - slate - 100`}>
+        <div className={`flex items-center ${isMobile ? 'order-first w-full justify-center mb-2' : ''} gap-3 sm:gap-6 bg-slate-50 px-3 sm:px-6 py-2 rounded-[2rem] border border-slate-100`}>
           <button onClick={() => {
             AudioEngine.init();
             if (!isPlaying) {
@@ -7928,7 +7957,7 @@ export default function RhythmRealm() {
               setUserStats(prev => ({ ...prev, hasPlayedBeat: true }));
             }
             setIsPlaying(!isPlaying);
-          }} className={`w - 14 h - 14 sm: w - 16 sm: h - 16 rounded - full flex items - center justify - center transition - all duration - 200 transform border - b - 8 active: border - b - 0 active: translate - y - 2 ${isPlaying ? 'bg-red-500 border-red-700 text-white' : 'bg-green-500 border-green-700 text-white hover:bg-green-400'} `}>{isPlaying ? <Icons.Stop /> : <Icons.Play />}</button>
+          }} className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all duration-200 transform border-b-8 active:border-b-0 active:translate-y-2 ${isPlaying ? 'bg-red-500 border-red-700 text-white' : 'bg-green-500 border-green-700 text-white hover:bg-green-400'}`}>{isPlaying ? <Icons.Stop /> : <Icons.Play />}</button>
         </div>
         <Button onClick={clearGrid} variant="secondary" className="w-10 h-10 sm:w-12 sm:h-12 !px-0 !py-2 sm:!py-3 !rounded-xl sm:!rounded-2xl text-slate-400 hover:text-slate-600 flex justify-center items-center"><Icons.Trash /></Button>
         <button onClick={() => setShowSaveModal(true)} className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl sm:rounded-2xl flex items-center justify-center text-white shadow-lg hover:scale-105 transition-all border-b-4 border-emerald-600 active:border-b-0 active:translate-y-1" title="Save Beat">
@@ -7950,273 +7979,285 @@ export default function RhythmRealm() {
       </div>
 
       {/* Save Beat Modal */}
-      {showSaveModal && (
-        <div className="absolute inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl animate-bounce-in">
-            <h2 className="text-2xl font-black text-slate-800 mb-4 flex items-center gap-3">
-              <span className="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center text-white">
-                <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" /><polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" /></svg>
-              </span>
-              Save Your Beat
-            </h2>
-            <input
-              type="text"
-              placeholder="Enter beat name..."
-              value={saveBeatName}
-              onChange={(e) => setSaveBeatName(e.target.value)}
-              className="w-full p-4 border-2 border-slate-200 rounded-2xl text-lg font-bold text-slate-700 focus:outline-none focus:border-green-400 mb-4"
-              autoFocus
-            />
-            <div className="flex gap-3">
-              <button
-                onClick={() => { setShowSaveModal(false); setSaveBeatName(''); }}
-                className="flex-1 p-4 bg-slate-100 hover:bg-slate-200 rounded-2xl font-bold text-slate-600 transition-all"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => saveBeat(saveBeatName)}
-                className="flex-1 p-4 bg-gradient-to-r from-green-400 to-emerald-500 rounded-2xl font-bold text-white hover:scale-[1.02] transition-all shadow-lg"
-              >
-                💾 Save Beat
-              </button>
+      {
+        showSaveModal && (
+          <div className="absolute inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+            <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl animate-bounce-in">
+              <h2 className="text-2xl font-black text-slate-800 mb-4 flex items-center gap-3">
+                <span className="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center text-white">
+                  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" /><polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" /></svg>
+                </span>
+                Save Your Beat
+              </h2>
+              <input
+                type="text"
+                placeholder="Enter beat name..."
+                value={saveBeatName}
+                onChange={(e) => setSaveBeatName(e.target.value)}
+                className="w-full p-4 border-2 border-slate-200 rounded-2xl text-lg font-bold text-slate-700 focus:outline-none focus:border-green-400 mb-4"
+                autoFocus
+              />
+              <div className="flex gap-3">
+                <button
+                  onClick={() => { setShowSaveModal(false); setSaveBeatName(''); }}
+                  className="flex-1 p-4 bg-slate-100 hover:bg-slate-200 rounded-2xl font-bold text-slate-600 transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => saveBeat(saveBeatName)}
+                  className="flex-1 p-4 bg-gradient-to-r from-green-400 to-emerald-500 rounded-2xl font-bold text-white hover:scale-[1.02] transition-all shadow-lg"
+                >
+                  💾 Save Beat
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* Load Beat Modal */}
-      {showLoadModal && (
-        <div className="absolute inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl animate-bounce-in max-h-[80vh] flex flex-col">
-            <h2 className="text-xl sm:text-2xl font-black text-slate-800 mb-4 flex items-center gap-3">
-              <span className="w-10 h-10 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-xl flex items-center justify-center text-white">
-                <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 002-2v-4M17 8l-5-5-5 5M12 3v12" /></svg>
-              </span>
-              Load a Beat
-            </h2>
+      {
+        showLoadModal && (
+          <div className="absolute inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+            <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl animate-bounce-in max-h-[80vh] flex flex-col">
+              <h2 className="text-xl sm:text-2xl font-black text-slate-800 mb-4 flex items-center gap-3">
+                <span className="w-10 h-10 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-xl flex items-center justify-center text-white">
+                  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 002-2v-4M17 8l-5-5-5 5M12 3v12" /></svg>
+                </span>
+                Load a Beat
+              </h2>
 
-            {/* Favorites Filter Toggle */}
-            {savedBeats.length > 0 && (
-              <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-200">
-                <button
-                  onClick={() => setShowFavoritesOnly(false)}
-                  className={`px-4 py-2 rounded-xl font-bold text-sm transition-all ${!showFavoritesOnly ? 'bg-indigo-500 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
-                >
-                  All ({savedBeats.length})
-                </button>
-                <button
-                  onClick={() => setShowFavoritesOnly(true)}
-                  className={`px-4 py-2 rounded-xl font-bold text-sm transition-all flex items-center gap-1 ${showFavoritesOnly ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
-                >
-                  ⭐ Favorites ({savedBeats.filter(b => b.favorite).length})
-                </button>
-              </div>
-            )}
-
-            <div className="flex-1 overflow-y-auto space-y-3 mb-4">
-              {savedBeats.length === 0 ? (
-                <div className="text-center py-12 text-slate-400">
-                  <div className="text-5xl mb-4">🎵</div>
-                  <p className="font-bold">No saved beats yet!</p>
-                  <p className="text-sm">Create a beat and save it to see it here.</p>
+              {/* Favorites Filter Toggle */}
+              {savedBeats.length > 0 && (
+                <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-200">
+                  <button
+                    onClick={() => setShowFavoritesOnly(false)}
+                    className={`px-4 py-2 rounded-xl font-bold text-sm transition-all ${!showFavoritesOnly ? 'bg-indigo-500 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                  >
+                    All ({savedBeats.length})
+                  </button>
+                  <button
+                    onClick={() => setShowFavoritesOnly(true)}
+                    className={`px-4 py-2 rounded-xl font-bold text-sm transition-all flex items-center gap-1 ${showFavoritesOnly ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                  >
+                    ⭐ Favorites ({savedBeats.filter(b => b.favorite).length})
+                  </button>
                 </div>
-              ) : (
-                (() => {
-                  const beatsToShow = showFavoritesOnly ? savedBeats.filter(b => b.favorite) : savedBeats;
-                  if (beatsToShow.length === 0) {
-                    return (
-                      <div className="text-center py-12 text-slate-400">
-                        <div className="text-5xl mb-4">⭐</div>
-                        <p className="font-bold">No favorites yet!</p>
-                        <p className="text-sm">Tap the star icon on a beat to add it to favorites.</p>
-                      </div>
-                    );
-                  }
-                  return beatsToShow.map((beat) => (
-                    <div key={beat.id} className={`flex items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-2xl transition-all group ${beat.favorite ? 'bg-amber-50 border-2 border-amber-200' : 'bg-slate-50 hover:bg-slate-100'}`}>
-                      {/* Favorite Toggle */}
-                      <button
-                        onClick={() => toggleFavorite(beat.id)}
-                        className={`p-2 rounded-xl transition-all ${beat.favorite ? 'text-amber-500 hover:text-amber-600' : 'text-slate-300 hover:text-amber-400'}`}
-                        title={beat.favorite ? 'Remove from favorites' : 'Add to favorites'}
-                      >
-                        {beat.favorite ? '⭐' : '☆'}
-                      </button>
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-lg sm:text-xl shrink-0">🎶</div>
-                      <div className="flex-1 min-w-0">
-                        <div className="font-bold text-slate-800 truncate">{beat.name}</div>
-                        <div className="text-xs text-slate-400">{beat.date} • {beat.tempo} BPM • {beat.activeInstrumentIds.length} tracks</div>
-                      </div>
-                      <button
-                        onClick={() => loadBeat(beat)}
-                        className="px-3 sm:px-4 py-2 bg-gradient-to-r from-blue-400 to-indigo-500 text-white rounded-xl font-bold hover:scale-105 transition-all shadow-md text-sm"
-                      >
-                        Load
-                      </button>
-                      <button
-                        onClick={() => setDeleteConfirm(beat)}
-                        className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
-                        title="Delete beat"
-                      >
-                        <Icons.Trash />
-                      </button>
-                    </div>
-                  ));
-                })()
               )}
+
+              <div className="flex-1 overflow-y-auto space-y-3 mb-4">
+                {savedBeats.length === 0 ? (
+                  <div className="text-center py-12 text-slate-400">
+                    <div className="text-5xl mb-4">🎵</div>
+                    <p className="font-bold">No saved beats yet!</p>
+                    <p className="text-sm">Create a beat and save it to see it here.</p>
+                  </div>
+                ) : (
+                  (() => {
+                    const beatsToShow = showFavoritesOnly ? savedBeats.filter(b => b.favorite) : savedBeats;
+                    if (beatsToShow.length === 0) {
+                      return (
+                        <div className="text-center py-12 text-slate-400">
+                          <div className="text-5xl mb-4">⭐</div>
+                          <p className="font-bold">No favorites yet!</p>
+                          <p className="text-sm">Tap the star icon on a beat to add it to favorites.</p>
+                        </div>
+                      );
+                    }
+                    return beatsToShow.map((beat) => (
+                      <div key={beat.id} className={`flex items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-2xl transition-all group ${beat.favorite ? 'bg-amber-50 border-2 border-amber-200' : 'bg-slate-50 hover:bg-slate-100'}`}>
+                        {/* Favorite Toggle */}
+                        <button
+                          onClick={() => toggleFavorite(beat.id)}
+                          className={`p-2 rounded-xl transition-all ${beat.favorite ? 'text-amber-500 hover:text-amber-600' : 'text-slate-300 hover:text-amber-400'}`}
+                          title={beat.favorite ? 'Remove from favorites' : 'Add to favorites'}
+                        >
+                          {beat.favorite ? '⭐' : '☆'}
+                        </button>
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-lg sm:text-xl shrink-0">🎶</div>
+                        <div className="flex-1 min-w-0">
+                          <div className="font-bold text-slate-800 truncate">{beat.name}</div>
+                          <div className="text-xs text-slate-400">{beat.date} • {beat.tempo} BPM • {beat.activeInstrumentIds.length} tracks</div>
+                        </div>
+                        <button
+                          onClick={() => loadBeat(beat)}
+                          className="px-3 sm:px-4 py-2 bg-gradient-to-r from-blue-400 to-indigo-500 text-white rounded-xl font-bold hover:scale-105 transition-all shadow-md text-sm"
+                        >
+                          Load
+                        </button>
+                        <button
+                          onClick={() => setDeleteConfirm(beat)}
+                          className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                          title="Delete beat"
+                        >
+                          <Icons.Trash />
+                        </button>
+                      </div>
+                    ));
+                  })()
+                )}
+              </div>
+              <button
+                onClick={() => { setShowLoadModal(false); setShowFavoritesOnly(false); }}
+                className="w-full p-4 bg-slate-100 hover:bg-slate-200 rounded-2xl font-bold text-slate-600 transition-all"
+              >
+                Close
+              </button>
             </div>
-            <button
-              onClick={() => { setShowLoadModal(false); setShowFavoritesOnly(false); }}
-              className="w-full p-4 bg-slate-100 hover:bg-slate-200 rounded-2xl font-bold text-slate-600 transition-all"
-            >
-              Close
-            </button>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* Delete Confirmation Modal */}
-      {deleteConfirm && (
-        <div className="absolute inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl animate-bounce-in text-center">
-            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-3xl">��️</span>
-            </div>
-            <h3 className="text-xl font-black text-slate-800 mb-2">Delete Beat?</h3>
-            <p className="text-slate-500 mb-1">Are you sure you want to delete</p>
-            <p className="text-lg font-bold text-slate-800 mb-4">"{deleteConfirm.name}"</p>
-            <p className="text-xs text-red-500 mb-6">âš ️ This action cannot be undone!</p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setDeleteConfirm(null)}
-                className="flex-1 p-3 bg-slate-100 hover:bg-slate-200 rounded-xl font-bold text-slate-600 transition-all"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  deleteBeat(deleteConfirm.id);
-                  setDeleteConfirm(null);
-                }}
-                className="flex-1 p-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 rounded-xl font-bold text-white transition-all shadow-lg"
-              >
-                ��️ Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Interactive Onboarding Tutorial */}
-      {showOnboarding && (
-        <OnboardingTutorial
-          step={onboardingStep}
-          onNext={() => {
-            // Special handling for click-grid step
-            if (ONBOARDING_STEPS[onboardingStep]?.action === 'click-grid') {
-              // Check if user clicked any cell
-              const hasAnyCell = Object.values(grid).some(row => row.some(cell => cell));
-              if (hasAnyCell) {
-                setOnboardingStep(prev => prev + 1);
-              }
-            } else {
-              setOnboardingStep(prev => prev + 1);
-            }
-          }}
-          onSkip={() => {
-            setShowOnboarding(false);
-            setOnboardingStep(0);
-          }}
-          onFinish={() => {
-            setShowOnboarding(false);
-            setOnboardingStep(0);
-          }}
-        />
-      )}
-
-      {showVictory && (
-        <div className="absolute inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white border-8 border-yellow-400 rounded-[3rem] p-12 max-w-md w-full text-center shadow-2xl transform scale-100">
-            <div className="text-yellow-400 mx-auto mb-6 flex justify-center drop-shadow-lg animate-bounce"><Icons.Trophy /></div>
-            <h2 className="text-5xl font-black text-slate-800 mb-2 tracking-tight">YOU DID IT!</h2>
-            <p className="text-slate-500 mb-4 font-bold text-xl">
-              {currentScore >= 90 ? "PERFECT RHYTHM! 🏆" : currentScore >= 70 ? "GREAT BEAT! 🎵" : "GOOD START! 👍"}
-            </p>
-            <div className="flex justify-center gap-3 mb-8 text-yellow-400">
-              <Icons.Star />
-              {currentScore >= 70 && <Icons.Star />}
-              {currentScore >= 90 && <Icons.Star />}
-            </div>
-            {/* Score Details for logged in users */}
-            {user && (
-              <div className="mb-6 p-4 bg-slate-100 rounded-2xl text-left">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-slate-600 font-bold">Score:</span>
-                  <span className="text-2xl font-black text-purple-600">+{Math.round(currentScore * 10)}</span>
-                </div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-slate-600 font-bold">Accuracy:</span>
-                  <span className="text-lg font-bold text-green-600">{Math.round(currentScore)}%</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-slate-600 font-bold">XP Earned:</span>
-                  <span className="text-lg font-bold text-amber-600">+{Math.round(currentScore)} XP</span>
-                </div>
+      {
+        deleteConfirm && (
+          <div className="absolute inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+            <div className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl animate-bounce-in text-center">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-3xl">��️</span>
               </div>
-            )}
-            {!user && (
-              <div className="mb-6 p-4 bg-purple-100 rounded-2xl">
-                <p className="text-purple-700 font-bold text-sm mb-2">🔐 Login to save your scores!</p>
+              <h3 className="text-xl font-black text-slate-800 mb-2">Delete Beat?</h3>
+              <p className="text-slate-500 mb-1">Are you sure you want to delete</p>
+              <p className="text-lg font-bold text-slate-800 mb-4">"{deleteConfirm.name}"</p>
+              <p className="text-xs text-red-500 mb-6">âš ️ This action cannot be undone!</p>
+              <div className="flex gap-3">
                 <button
-                  onClick={() => { setShowVictory(false); setShowAuthModal(true); }}
-                  className="px-4 py-2 bg-purple-500 text-white rounded-xl font-bold text-sm hover:bg-purple-400 transition-all"
+                  onClick={() => setDeleteConfirm(null)}
+                  className="flex-1 p-3 bg-slate-100 hover:bg-slate-200 rounded-xl font-bold text-slate-600 transition-all"
                 >
-                  Login Now
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    deleteBeat(deleteConfirm.id);
+                    setDeleteConfirm(null);
+                  }}
+                  className="flex-1 p-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 rounded-xl font-bold text-white transition-all shadow-lg"
+                >
+                  ��️ Delete
                 </button>
               </div>
-            )}
-            <Button onClick={() => {
-              // Save score if logged in and tutorial
-              if (user && currentScenario && tutorialActive) {
-                saveTutorialScore(currentScenario.id, currentScenario.name, currentScore);
-              }
-              setShowVictory(false);
-              setView('splash');
-            }} size="lg" className="w-full">Back to Menu</Button>
+            </div>
           </div>
-        </div>
-      )}
+        )
+      }
+
+      {/* Interactive Onboarding Tutorial */}
+      {
+        showOnboarding && (
+          <OnboardingTutorial
+            step={onboardingStep}
+            onNext={() => {
+              // Special handling for click-grid step
+              if (ONBOARDING_STEPS[onboardingStep]?.action === 'click-grid') {
+                // Check if user clicked any cell
+                const hasAnyCell = Object.values(grid).some(row => row.some(cell => cell));
+                if (hasAnyCell) {
+                  setOnboardingStep(prev => prev + 1);
+                }
+              } else {
+                setOnboardingStep(prev => prev + 1);
+              }
+            }}
+            onSkip={() => {
+              setShowOnboarding(false);
+              setOnboardingStep(0);
+            }}
+            onFinish={() => {
+              setShowOnboarding(false);
+              setOnboardingStep(0);
+            }}
+          />
+        )
+      }
+
+      {
+        showVictory && (
+          <div className="absolute inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+            <div className="bg-white border-8 border-yellow-400 rounded-[3rem] p-12 max-w-md w-full text-center shadow-2xl transform scale-100">
+              <div className="text-yellow-400 mx-auto mb-6 flex justify-center drop-shadow-lg animate-bounce"><Icons.Trophy /></div>
+              <h2 className="text-5xl font-black text-slate-800 mb-2 tracking-tight">YOU DID IT!</h2>
+              <p className="text-slate-500 mb-4 font-bold text-xl">
+                {currentScore >= 90 ? "PERFECT RHYTHM! 🏆" : currentScore >= 70 ? "GREAT BEAT! 🎵" : "GOOD START! 👍"}
+              </p>
+              <div className="flex justify-center gap-3 mb-8 text-yellow-400">
+                <Icons.Star />
+                {currentScore >= 70 && <Icons.Star />}
+                {currentScore >= 90 && <Icons.Star />}
+              </div>
+              {/* Score Details for logged in users */}
+              {user && (
+                <div className="mb-6 p-4 bg-slate-100 rounded-2xl text-left">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-slate-600 font-bold">Score:</span>
+                    <span className="text-2xl font-black text-purple-600">+{Math.round(currentScore * 10)}</span>
+                  </div>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-slate-600 font-bold">Accuracy:</span>
+                    <span className="text-lg font-bold text-green-600">{Math.round(currentScore)}%</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-600 font-bold">XP Earned:</span>
+                    <span className="text-lg font-bold text-amber-600">+{Math.round(currentScore)} XP</span>
+                  </div>
+                </div>
+              )}
+              {!user && (
+                <div className="mb-6 p-4 bg-purple-100 rounded-2xl">
+                  <p className="text-purple-700 font-bold text-sm mb-2">🔐 Login to save your scores!</p>
+                  <button
+                    onClick={() => { setShowVictory(false); setShowAuthModal(true); }}
+                    className="px-4 py-2 bg-purple-500 text-white rounded-xl font-bold text-sm hover:bg-purple-400 transition-all"
+                  >
+                    Login Now
+                  </button>
+                </div>
+              )}
+              <Button onClick={() => {
+                // Save score if logged in and tutorial
+                if (user && currentScenario && tutorialActive) {
+                  saveTutorialScore(currentScenario.id, currentScenario.name, currentScore);
+                }
+                setShowVictory(false);
+                setView('splash');
+              }} size="lg" className="w-full">Back to Menu</Button>
+            </div>
+          </div>
+        )
+      }
 
       {/* Verification Success Modal */}
-      {showVerificationModal && (
-        <div className="absolute inset-0 z-[70] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-slate-900 border-2 border-green-500/50 rounded-3xl p-8 max-w-sm w-full shadow-2xl animate-bounce-in text-center relative overflow-hidden">
-            {/* Glow effect */}
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-400 to-emerald-500"></div>
+      {
+        showVerificationModal && (
+          <div className="absolute inset-0 z-[70] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+            <div className="bg-slate-900 border-2 border-green-500/50 rounded-3xl p-8 max-w-sm w-full shadow-2xl animate-bounce-in text-center relative overflow-hidden">
+              {/* Glow effect */}
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-400 to-emerald-500"></div>
 
-            <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-green-500/50 animate-pulse-slow">
-              <span className="text-4xl text-green-400">📧</span>
+              <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-green-500/50 animate-pulse-slow">
+                <span className="text-4xl text-green-400">📧</span>
+              </div>
+
+              <h3 className="text-2xl font-black text-white mb-2">Check Your Email!</h3>
+              <p className="text-slate-400 mb-6 leading-relaxed">
+                We've sent a verification link to your email.
+                <br /><br />
+                Please click the link to activate your account and start making beats!
+              </p>
+
+              <button
+                onClick={() => setShowVerificationModal(false)}
+                className="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 rounded-xl font-bold text-white shadow-lg transition-all hover:scale-[1.02] active:scale-95"
+              >
+                OK, I'll Check It!
+              </button>
             </div>
-
-            <h3 className="text-2xl font-black text-white mb-2">Check Your Email!</h3>
-            <p className="text-slate-400 mb-6 leading-relaxed">
-              We've sent a verification link to your email.
-              <br /><br />
-              Please click the link to activate your account and start making beats!
-            </p>
-
-            <button
-              onClick={() => setShowVerificationModal(false)}
-              className="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 rounded-xl font-bold text-white shadow-lg transition-all hover:scale-[1.02] active:scale-95"
-            >
-              OK, I'll Check It!
-            </button>
           </div>
-        </div>
-      )}
+        )
+      }
 
-    </div>
+    </div >
   );
 }
 
