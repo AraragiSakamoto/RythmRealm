@@ -7900,9 +7900,13 @@ export default function RhythmRealm() {
                           onTouchStart={(e) => { e.preventDefault(); handleTouchStart(instKey, stepIndex); }}
                           className={`
                                  aspect-square rounded transition-all duration-75 ease-out relative overflow-hidden mobile-step
-                                 ${isActive ? `${instrumentInfo.color} shadow-md shadow-current/30 scale-95` : 'bg-slate-700/40 border border-slate-600/30 hover:bg-slate-600/50 hover:border-slate-500/50'}
+                                 ${isActive
+                              ? `${instrumentInfo.color} shadow-md shadow-current/30 scale-95`
+                              : isBeatStart
+                                ? 'bg-slate-600/50 border border-slate-500/40 hover:bg-slate-500/60 hover:border-slate-400/50'
+                                : 'bg-slate-700/40 border border-slate-600/30 hover:bg-slate-600/50 hover:border-slate-500/50'
+                            }
                                  ${isCurrent ? 'ring-2 ring-cyan-400 z-10 brightness-125' : ''}
-                                 ${!isActive && isBeatStart ? 'bg-slate-600/50 border-slate-500/40' : ''} 
                                  ${isTargetStep ? 'bg-yellow-400 border-yellow-500 border-2 shadow-[0_0_15px_rgba(250,204,21,0.8)] z-30' : ''}
                                  ${isCompletedTarget ? 'ring-2 ring-green-400 shadow-[0_0_10px_rgba(74,222,128,0.6)]' : ''}
                                  ${isPremadeNote && isActive ? 'opacity-80 saturate-50 !border-2 !border-slate-400/50' : ''}
