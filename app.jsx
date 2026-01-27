@@ -1,6 +1,10 @@
 ﻿import React, { useState, useEffect, useRef } from 'react';
 import { supabase, authService, scoreService, achievementService, ACHIEVEMENTS, beatStorageService } from './supabase.js';
 
+// VERSION CHECK - If you see this in console, the new code is loaded
+const APP_VERSION = "1.0.6-PERC-FIX";
+console.log(`🎵 GrooveLab ${APP_VERSION} loaded`);
+
 // ==========================================
 // 1. GLOBAL STYLES & ANIMATIONS
 // ==========================================
@@ -2489,33 +2493,59 @@ export default function RhythmRealm() {
                 tutorialsCompleted: profile.total_tutorials_completed || 0,
                 totalScore: profile.total_score || 0,
                 currentStreak: profile.current_streak || 0
-              level: 1,
+              }));
+            } else {
+              // Create profile from user metadata if not found
+              const username = session.user.user_metadata?.username || session.user.email?.split('@')[0] || 'Player';
+              const newProfile = {
+                id: session.user.id,
+                username: username,
+                email: session.user.email,
+                total_score: 0,
+                total_beats_created: 0,
+                level: 1,
                 rank_title: 'Beginner',
                 experience_points: 0
-              });
+              };
+              setUserProfile(newProfile);
             }
+          } catch (profileError) {
+            console.error('Profile fetch error on mount:', profileError);
+            // Create a fallback profile
+            const username = session.user.user_metadata?.username || session.user.email?.split('@')[0] || 'Player';
+            setUserProfile({
+              id: session.user.id,
+              username: username,
+              email: session.user.email,
+              total_score: 0,
+              total_beats_created: 0,
+              level: 1,
+              rank_title: 'Beginner',
+              experience_points: 0
+            });
           }
+        }
       } catch (error) {
-          console.error('Auth check error:', error);
-        } finally {
-          setIsAuthLoading(false);
-        }
-      };
-      checkAuth();
+        console.error('Auth check error:', error);
+      } finally {
+        setIsAuthLoading(false);
+      }
+    };
+    checkAuth();
 
-      // Listen for auth changes
-      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-        if (event === 'SIGNED_IN' && session?.user) {
-          // Only update if not already set (handleLogin already sets these)
-          setUser(prev => prev?.id === session.user.id ? prev : session.user);
-        } else if (event === 'SIGNED_OUT') {
-          setUser(null);
-          setUserProfile(null);
-        }
-      });
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        // Only update if not already set (handleLogin already sets these)
+        setUser(prev => prev?.id === session.user.id ? prev : session.user);
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+        setUserProfile(null);
+      }
+    });
 
-      return () => subscription.unsubscribe();
-    }, []);
+    return () => subscription.unsubscribe();
+  }, []);
 
   // Handle login
   const handleLogin = async (e) => {
@@ -4334,10 +4364,12 @@ export default function RhythmRealm() {
     }
 
     // FORCE FIX: Ensure 'perc' is present for Percussion Party (Level 6)
-    if (scenario.id === 6 || scenario.name.includes("Percussion")) {
+    if (scenario.id === 6 || scenario.name?.includes("Percussion")) {
+      console.log("🔧 PERCUSSION PARTY FIX APPLIED - Adding 'perc' instrument");
       instrumentsToLoad.add('perc');
       instrumentsToLoad.delete('synth'); // Remove typically unwanted instruments for this level
       instrumentsToLoad.delete('keys');
+      console.log("✅ Instruments after fix:", Array.from(instrumentsToLoad));
     }
 
     // 2. Load Grid Pattern
