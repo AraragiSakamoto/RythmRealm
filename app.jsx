@@ -2338,6 +2338,8 @@ export default function RhythmRealm() {
   const [leaderboardData, setLeaderboardData] = useState([]);
   const [leaderboardLoading, setLeaderboardLoading] = useState(false);
   const [userRank, setUserRank] = useState(null);
+  const [leaderboardType, setLeaderboardType] = useState('global'); // 'global' or 'level'
+  const [leaderboardScenarioName, setLeaderboardScenarioName] = useState('');
 
   // ==========================================
   // ACHIEVEMENTS STATE
@@ -2677,18 +2679,40 @@ export default function RhythmRealm() {
   };
 
   // Load leaderboard
-  const loadLeaderboard = async () => {
+  const loadLeaderboard = async (scenarioId = null) => {
     setLeaderboardLoading(true);
+    setLeaderboardType(scenarioId !== null ? 'level' : 'global');
+
     try {
-      const data = await scoreService.getGlobalLeaderboard(100);
-      setLeaderboardData(data);
+      let data;
+      if (scenarioId !== null) {
+        // Find scenario name
+        const scenario = [...GAME_LEVELS, ...SCENARIOS].find(l => l.id === scenarioId);
+        setLeaderboardScenarioName(scenario ? scenario.name : 'Level');
+        data = await scoreService.getScenarioLeaderboard(scenarioId);
+      } else {
+        setLeaderboardScenarioName('');
+        data = await scoreService.getGlobalLeaderboard(100);
+      }
+
+      setLeaderboardData(data || []);
 
       // Find user's rank
       if (user && data) {
-        const rank = data.findIndex(p => p.id === user.id) + 1;
+        let rank = 0;
+        if (scenarioId !== null) {
+          rank = data.findIndex(s => s.user_id === user.id) + 1;
+        } else {
+          rank = data.findIndex(p => p.id === user.id) + 1;
+        }
+
         if (rank > 0) {
           setUserRank(rank);
-          setUserStats(prev => ({ ...prev, leaderboardRank: rank }));
+          if (scenarioId === null) {
+            setUserStats(prev => ({ ...prev, leaderboardRank: rank }));
+          }
+        } else {
+          setUserRank(null);
         }
       }
     } catch (error) {
@@ -4558,7 +4582,14 @@ export default function RhythmRealm() {
           <>
             {/* Leaderboard Button */}
             <button
-              onClick={() => { loadLeaderboard(); setShowLeaderboard(true); }}
+              onClick={() => {
+                if (view === 'studio' && currentScenario && currentScenario.id >= 0) {
+                  loadLeaderboard(currentScenario.id);
+                } else {
+                  loadLeaderboard(null);
+                }
+                setShowLeaderboard(true);
+              }}
               className="p-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 rounded-xl shadow-lg transition-all hover:scale-105"
               title="Leaderboard"
             >
@@ -4615,85 +4646,94 @@ export default function RhythmRealm() {
   // ==========================================
   // LEADERBOARD MODAL COMPONENT
   // ==========================================
-  const LeaderboardModal = () => (
-    <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-amber-500/50 rounded-3xl w-full max-w-2xl shadow-2xl shadow-amber-500/20 animate-bounce-in max-h-[80vh] flex flex-col">
-        <div className="p-6 border-b border-slate-700 flex items-center justify-between shrink-0">
-          <h2 className="text-2xl font-black text-white flex items-center gap-3">
-            <span className="text-3xl">🏆</span> Global Leaderboard
-          </h2>
-          <button onClick={() => setShowLeaderboard(false)} className="p-2 hover:bg-slate-700 rounded-xl transition-all text-slate-400 hover:text-white">
-            <Icons.Close />
-          </button>
-        </div>
+  const LeaderboardModal = () => {
+    const isLevelMode = leaderboardType === 'level';
 
-        <div className="flex-1 overflow-y-auto p-4">
-          {leaderboardLoading ? (
-            <div className="text-center py-12 text-slate-400">
-              <div className="text-5xl mb-4 animate-bounce">⏳</div>
-              <p>Loading leaderboard...</p>
-            </div>
-          ) : leaderboardData.length === 0 ? (
-            <div className="text-center py-12 text-slate-400">
-              <div className="text-5xl mb-4">👥</div>
-              <p>No players yet. Be the first!</p>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {leaderboardData.map((player, index) => {
-                const rank = index + 1;
-                const isCurrentUser = user && player.id === user.id;
-                const medalEmoji = rank === 1 ? '🥁‡' : rank === 2 ? '🥁ˆ' : rank === 3 ? '🥁‰' : '';
+    return (
+      <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="bg-gradient-to-br from-slate-900 to-slate-800 border-2 border-amber-500/50 rounded-3xl w-full max-w-2xl shadow-2xl shadow-amber-500/20 animate-bounce-in max-h-[80vh] flex flex-col">
+          <div className="p-6 border-b border-slate-700 flex items-center justify-between shrink-0">
+            <h2 className="text-2xl font-black text-white flex items-center gap-3">
+              <span className="text-3xl">🏆</span> {isLevelMode ? leaderboardScenarioName : 'Global Leaderboard'}
+            </h2>
+            <button onClick={() => setShowLeaderboard(false)} className="p-2 hover:bg-slate-700 rounded-xl transition-all text-slate-400 hover:text-white">
+              <Icons.Close />
+            </button>
+          </div>
 
-                return (
-                  <div
-                    key={player.id}
-                    className={`flex items-center gap-4 p-4 rounded-xl transition-all ${isCurrentUser
-                      ? 'bg-purple-500/30 border-2 border-purple-500'
-                      : rank <= 3
-                        ? 'bg-amber-500/10 border border-amber-500/30'
-                        : 'bg-slate-800/50 border border-slate-700/50'
-                      }`}
-                  >
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black text-lg ${rank === 1 ? 'bg-amber-400 text-amber-900' :
-                      rank === 2 ? 'bg-slate-300 text-slate-700' :
-                        rank === 3 ? 'bg-amber-600 text-amber-100' :
-                          'bg-slate-700 text-slate-300'
-                      }`}>
-                      {medalEmoji || rank}
-                    </div>
+          <div className="flex-1 overflow-y-auto p-4">
+            {leaderboardLoading ? (
+              <div className="text-center py-12 text-slate-400">
+                <div className="text-5xl mb-4 animate-bounce">⏳</div>
+                <p>Loading leaderboard...</p>
+              </div>
+            ) : leaderboardData.length === 0 ? (
+              <div className="text-center py-12 text-slate-400">
+                <div className="text-5xl mb-4">👥</div>
+                <p>No scores yet. Be the first!</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {leaderboardData.map((item, index) => {
+                  const rank = index + 1;
+                  const isCurrentUser = user && (isLevelMode ? item.user_id === user.id : item.id === user.id);
+                  const profile = isLevelMode ? item.profiles : item;
+                  const scoreVal = isLevelMode ? item.score : item.total_score;
 
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-white">{player.username}</span>
-                        {isCurrentUser && <span className="text-xs bg-purple-500 px-2 py-0.5 rounded-full text-white">You</span>}
+                  const medalEmoji = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
+
+                  return (
+                    <div
+                      key={isLevelMode ? item.id : item.id}
+                      className={`flex items-center gap-4 p-4 rounded-xl transition-all ${isCurrentUser
+                        ? 'bg-purple-500/30 border-2 border-purple-500'
+                        : rank <= 3
+                          ? 'bg-amber-500/10 border border-amber-500/30'
+                          : 'bg-slate-800/50 border border-slate-700/50'
+                        }`}
+                    >
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black text-lg ${rank === 1 ? 'bg-amber-400 text-amber-900' :
+                        rank === 2 ? 'bg-slate-300 text-slate-700' :
+                          rank === 3 ? 'bg-amber-600 text-amber-100' :
+                            'bg-slate-700 text-slate-300'
+                        }`}>
+                        {medalEmoji || rank}
                       </div>
-                      <div className="text-xs text-slate-400">
-                        Level {player.level} • {player.rank_title}
+
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-white">{profile?.username || 'Unknown'}</span>
+                          {isCurrentUser && <span className="text-xs bg-purple-500 px-2 py-0.5 rounded-full text-white">You</span>}
+                        </div>
+                        <div className="text-xs text-slate-400">
+                          {profile?.rank_title || 'Beginner'}
+                        </div>
+                      </div>
+
+                      <div className="text-right">
+                        <div className="font-black text-xl text-white">{scoreVal?.toLocaleString() || 0}</div>
+                        <div className="text-xs text-slate-400">
+                          {isLevelMode ? `Accuracy: ${item.accuracy || 0}%` : `${item.total_beats_created || 0} beats`}
+                        </div>
                       </div>
                     </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
 
-                    <div className="text-right">
-                      <div className="font-black text-xl text-white">{player.total_score?.toLocaleString() || 0}</div>
-                      <div className="text-xs text-slate-400">{player.total_beats_created || 0} beats</div>
-                    </div>
-                  </div>
-                );
-              })}
+          {userRank && userRank > 100 && (
+            <div className="p-4 border-t border-slate-700 shrink-0">
+              <div className="text-center text-slate-400 text-sm">
+                Your rank: <span className="text-purple-400 font-bold">#{userRank}</span>
+              </div>
             </div>
           )}
         </div>
-
-        {userRank && userRank > 10 && (
-          <div className="p-4 border-t border-slate-700 shrink-0">
-            <div className="text-center text-slate-400 text-sm">
-              Your rank: <span className="text-purple-400 font-bold">#{userRank}</span>
-            </div>
-          </div>
-        )}
       </div>
-    </div>
-  );
+    );
+  };
 
   // ==========================================
   // ACHIEVEMENTS MODAL COMPONENT

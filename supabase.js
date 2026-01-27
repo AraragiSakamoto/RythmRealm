@@ -220,6 +220,7 @@ export const scoreService = {
       .from('scores')
       .select(`
         id,
+        user_id,
         score,
         accuracy,
         created_at,
