@@ -7716,7 +7716,24 @@ export default function RhythmRealm() {
             {/* Step indicators - hidden on mobile, clickable to seek */}
             {!isMobile && (
               <div className="flex items-center gap-4 mb-2 p-2 pl-3">
-                <div className="w-[190px] shrink-0 text-xs font-bold text-slate-500 uppercase tracking-widest text-right pr-6">Timeline →</div>
+                <div className="w-[190px] shrink-0 flex items-center justify-end gap-2 pr-6">
+                  <button
+                    onClick={() => {
+                      if (window.confirm("Reset tracks to level defaults?")) {
+                        const reqs = currentScenario?.requirements?.instruments;
+                        const must = currentScenario?.requirements?.mustInclude ? Object.keys(currentScenario.requirements.mustInclude) : [];
+                        const all = [...new Set([...(reqs || []), ...must])];
+                        if (all.length > 0) setActiveInstrumentIds(all);
+                        else setActiveInstrumentIds(['kick', 'snare', 'hihat', 'bass']);
+                      }
+                    }}
+                    className="p-1 hover:bg-slate-700 rounded text-slate-500 hover:text-white transition-colors"
+                    title="Fix Missing Instruments"
+                  >
+                    ↺
+                  </button>
+                  <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Timeline →</span>
+                </div>
                 <div className="grid gap-0.5 flex-1 p-1" style={{ gridTemplateColumns: 'repeat(32, minmax(24px, 1fr))' }}>
                   {[...Array(STEPS)].map((_, i) => (
                     <div
