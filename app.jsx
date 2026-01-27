@@ -2647,8 +2647,12 @@ export default function RhythmRealm() {
       setAuthUsername('');
       setAuthMode('verification');
     } catch (error) {
-      if (error.message.toLowerCase().includes('rate limit')) {
-        setAuthError('⚠️ Specific Rate Limit Exceeded: Please wait 15 minutes or check your spam folder for previous emails.');
+      console.error('Registration error:', error);
+      const errorMsg = error.message.toLowerCase();
+      if (errorMsg.includes('rate limit') || errorMsg.includes('too many')) {
+        setAuthError('⏳ Too many attempts! Please check your email for a previous link or wait 15 minutes.');
+      } else if (errorMsg.includes('already registered') || errorMsg.includes('unique constraint')) {
+        setAuthError('📧 This email is already registered. Please login instead.');
       } else {
         setAuthError(error.message);
       }
