@@ -23,7 +23,8 @@ import { VISUAL_THEMES } from '../utils/themes';
 // I will assume it is `import * as Icons from '../components/Icons'` or similar.
 // I will create Settings.jsx assuming `import * as Icons from '../components/Icons'` works.
 
-import * as Icons from '../components/Icons'; // Placeholder path
+// Assuming Icons are available.
+import { Icons } from './components/Icons';
 
 export default function Settings({
   currentLanguage,
@@ -60,24 +61,24 @@ export default function Settings({
     };
 
     return (
-      <div className="h-screen w-full text-white flex flex-col overflow-hidden font-sans relative">
-         {/* Background would be handled by parent or global styles usually, but here we can add a class if needed */}
-         {/* Assuming PixelMusicBackground is not easily available or we can use a simple gradient */}
-        <div className={`absolute inset-0 -z-10 bg-gradient-to-br ${currentTheme?.primary || 'from-slate-900 to-black'}`} />
+      <div className={`h-screen w-full text-white flex flex-col overflow-hidden font-sans relative ${highContrastMode ? 'high-contrast' : ''} ${largeTextMode ? 'large-text' : ''} bg-slate-950`}>
+        {/* Background */}
+        <div className={`absolute inset-0 -z-10 bg-gradient-to-br from-slate-950 via-purple-950 to-black`} />
 
-        <div className="relative z-10 px-4 sm:px-6 py-4 sm:py-6 flex items-center justify-between border-b border-white/10 bg-black/30 backdrop-blur-sm">
-          <button onClick={() => onSetView('splash')} className="p-2 sm:p-3 bg-white/10 hover:bg-white/20 rounded-xl sm:rounded-2xl shadow-lg transition-all active:scale-95" aria-label={t('back')}>
+        {/* Header */}
+        <div className="relative z-10 px-4 sm:px-6 py-4 sm:py-6 flex items-center justify-between border-b border-white/10 glass-panel shrink-0">
+          <button onClick={() => onSetView('splash')} className="glass-button p-2 sm:p-3 rounded-xl sm:rounded-2xl shadow-lg transition-all active:scale-95" aria-label={t('back')}>
             {Icons.ChevronLeft ? <Icons.ChevronLeft /> : <span>←</span>}
           </button>
-          <h2 className="text-xl sm:text-3xl font-black bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">⚙️ {t('settings')?.toUpperCase()}</h2>
+          <h2 className="text-xl sm:text-3xl font-display font-black bg-gradient-to-r from-neon-cyan via-neon-purple to-neon-pink bg-clip-text text-transparent neon-text tracking-wide">⚙️ {t('settings')?.toUpperCase()}</h2>
           <div className="w-10 sm:w-12"></div>
         </div>
 
         <div className="relative z-10 flex-1 overflow-y-auto p-6 space-y-6">
           {/* Volume Control */}
-          <div className="bg-black/40 backdrop-blur-md rounded-3xl p-6 border border-purple-500/30">
-            <h3 className="text-xl font-black mb-4 flex items-center gap-3">
-              <span className="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center">🔊</span>
+          <div className="glass-panel rounded-3xl p-6 border-neon-purple/30 shadow-[0_0_15px_rgba(139,92,246,0.1)]">
+            <h3 className="text-xl font-display font-black mb-4 flex items-center gap-3">
+              <span className="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center text-black shadow-lg">🔊</span>
               {t('masterVolume')}
             </h3>
             <input
@@ -86,32 +87,32 @@ export default function Settings({
               max="100"
               value={masterVolume || 70}
               onChange={(e) => setMasterVolume && setMasterVolume(parseInt(e.target.value))}
-              className="w-full h-3 bg-white/20 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+              className="w-full h-3 bg-white/20 rounded-lg appearance-none cursor-pointer accent-neon-cyan hover:accent-cyan-300"
             />
           </div>
 
           {/* Background Music Toggle */}
-          <div className="bg-black/40 backdrop-blur-md rounded-3xl p-6 border border-purple-500/30">
-            <h3 className="text-xl font-black mb-4 flex items-center gap-3">
-              <span className="w-10 h-10 bg-gradient-to-br from-pink-400 to-rose-500 rounded-xl flex items-center justify-center">🎵</span>
+          <div className="glass-panel rounded-3xl p-6 border-neon-pink/30 shadow-[0_0_15px_rgba(236,72,153,0.1)]">
+            <h3 className="text-xl font-display font-black mb-4 flex items-center gap-3">
+              <span className="w-10 h-10 bg-gradient-to-br from-pink-400 to-rose-500 rounded-xl flex items-center justify-center text-black shadow-lg">🎵</span>
               {t('backgroundMusic')}
             </h3>
             <div className="flex items-center justify-between">
-              <span className="text-white/80">Ambient music on menus</span>
+              <span className="text-white/80 font-medium">Ambient music on menus</span>
               <button
                 onClick={() => setBgMusicEnabled(!bgMusicEnabled)}
-                className={`w-16 h-8 rounded-full transition-all duration-300 ${bgMusicEnabled ? 'bg-gradient-to-r from-cyan-400 to-purple-500' : 'bg-white/20'}`}
+                className={`w-16 h-8 rounded-full transition-all duration-300 border border-white/10 ${bgMusicEnabled ? 'bg-gradient-to-r from-neon-cyan to-neon-purple shadow-[0_0_10px_rgba(6,182,212,0.5)]' : 'bg-white/5'}`}
               >
                 <div className={`w-6 h-6 bg-white rounded-full shadow-lg transition-all duration-300 ${bgMusicEnabled ? 'translate-x-9' : 'translate-x-1'}`}></div>
               </button>
             </div>
-            <p className="text-xs text-white/50 mt-2">Music automatically stops during beat creation and tutorials</p>
+            <p className="text-xs text-white/50 mt-2 font-medium">Music automatically stops during beat creation and tutorials</p>
           </div>
 
           {/* Visual Themes */}
-          <div className="bg-black/40 backdrop-blur-md rounded-3xl p-6 border border-purple-500/30">
-            <h3 className="text-xl font-black mb-4 flex items-center gap-3">
-              <span className="w-10 h-10 bg-gradient-to-br from-violet-400 to-purple-500 rounded-xl flex items-center justify-center">🎨</span>
+          <div className="glass-panel rounded-3xl p-6 border-neon-cyan/30 shadow-[0_0_15px_rgba(6,182,212,0.1)]">
+            <h3 className="text-xl font-display font-black mb-4 flex items-center gap-3">
+              <span className="w-10 h-10 bg-gradient-to-br from-violet-400 to-purple-500 rounded-xl flex items-center justify-center text-black shadow-lg">🎨</span>
               {t('visualThemes')}
             </h3>
             <div className="grid grid-cols-3 gap-3">
@@ -119,9 +120,9 @@ export default function Settings({
                 <button
                   key={theme.id}
                   onClick={() => setCurrentThemeId(theme.id)}
-                  className={`p-3 rounded-2xl bg-gradient-to-br ${theme.primary} hover:scale-105 transition-all flex flex-col items-center gap-2 ${currentTheme?.id === theme.id ? 'ring-4 ring-white shadow-lg scale-105' : 'opacity-70 hover:opacity-100'}`}
+                  className={`p-3 rounded-2xl bg-gradient-to-br ${theme.primary} hover:scale-105 transition-all flex flex-col items-center gap-2 ${currentTheme?.id === theme.id ? 'ring-4 ring-white shadow-xl scale-105' : 'opacity-70 hover:opacity-100 hover:shadow-lg'}`}
                 >
-                  <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
                     {theme.id === 'ocean' && '🌊'}
                     {theme.id === 'sunset' && '🌦'}
                     {theme.id === 'golden' && '✨'}
@@ -129,23 +130,23 @@ export default function Settings({
                     {theme.id === 'neon' && '🎧'}
                     {theme.id === 'midnight' && '🌙'}
                   </div>
-                  <span className="text-xs font-bold">{theme.name}</span>
+                  <span className="text-xs font-bold text-white drop-shadow-md">{theme.name}</span>
                 </button>
               ))}
             </div>
           </div>
 
           {/* Accessibility Settings */}
-          <div className="bg-gradient-to-br from-yellow-500/20 to-orange-500/20 backdrop-blur-md rounded-3xl p-6 border-2 border-yellow-500/50">
-            <h3 className="text-xl font-black mb-4 flex items-center gap-3">
-              <span className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center">♿</span>
+          <div className="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 backdrop-blur-md rounded-3xl p-6 border border-yellow-500/40 shadow-[0_0_15px_rgba(234,179,8,0.1)]">
+            <h3 className="text-xl font-display font-black mb-4 flex items-center gap-3">
+              <span className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center text-black shadow-lg">♿</span>
               {t('accessibility')}
             </h3>
-            <p className="text-sm text-white/70 mb-4">Make the app easier to use for everyone</p>
+            <p className="text-sm text-white/70 mb-4 font-medium">Make the app easier to use for everyone</p>
 
             <div className="space-y-4">
               {/* Text-to-Speech */}
-              <div className="flex items-center justify-between p-3 bg-black/30 rounded-2xl">
+              <div className="flex items-center justify-between p-3 bg-black/30 rounded-2xl border border-white/5">
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">🔊</span>
                   <div>
@@ -162,14 +163,14 @@ export default function Settings({
                     }
                   }}
                   aria-label={textToSpeechEnabled ? 'Disable text to speech' : 'Enable text to speech'}
-                  className={`w-16 h-8 rounded-full transition-all duration-300 ${textToSpeechEnabled ? 'bg-gradient-to-r from-yellow-400 to-orange-500' : 'bg-white/20'}`}
+                  className={`w-16 h-8 rounded-full transition-all duration-300 border border-white/10 ${textToSpeechEnabled ? 'bg-gradient-to-r from-yellow-400 to-orange-500 shadow-[0_0_10px_rgba(234,179,8,0.5)]' : 'bg-white/10'}`}
                 >
                   <div className={`w-6 h-6 bg-white rounded-full shadow-lg transition-all duration-300 ${textToSpeechEnabled ? 'translate-x-9' : 'translate-x-1'}`}></div>
                 </button>
               </div>
 
                {/* High Contrast Mode */}
-              <div className="flex items-center justify-between p-3 bg-black/30 rounded-2xl">
+              <div className="flex items-center justify-between p-3 bg-black/30 rounded-2xl border border-white/5">
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">🔆</span>
                   <div>
@@ -180,14 +181,14 @@ export default function Settings({
                 <button
                   onClick={() => setHighContrastMode(!highContrastMode)}
                   aria-label={highContrastMode ? 'Disable high contrast mode' : 'Enable high contrast mode'}
-                  className={`w-16 h-8 rounded-full transition-all duration-300 ${highContrastMode ? 'bg-gradient-to-r from-yellow-400 to-orange-500' : 'bg-white/20'}`}
+                  className={`w-16 h-8 rounded-full transition-all duration-300 border border-white/10 ${highContrastMode ? 'bg-gradient-to-r from-yellow-400 to-orange-500 shadow-[0_0_10px_rgba(234,179,8,0.5)]' : 'bg-white/10'}`}
                 >
                   <div className={`w-6 h-6 bg-white rounded-full shadow-lg transition-all duration-300 ${highContrastMode ? 'translate-x-9' : 'translate-x-1'}`}></div>
                 </button>
               </div>
 
               {/* Large Text Mode */}
-              <div className="flex items-center justify-between p-3 bg-black/30 rounded-2xl">
+              <div className="flex items-center justify-between p-3 bg-black/30 rounded-2xl border border-white/5">
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">🔤</span>
                   <div>
@@ -198,14 +199,14 @@ export default function Settings({
                 <button
                   onClick={() => setLargeTextMode(!largeTextMode)}
                   aria-label={largeTextMode ? 'Disable large text mode' : 'Enable large text mode'}
-                  className={`w-16 h-8 rounded-full transition-all duration-300 ${largeTextMode ? 'bg-gradient-to-r from-yellow-400 to-orange-500' : 'bg-white/20'}`}
+                  className={`w-16 h-8 rounded-full transition-all duration-300 border border-white/10 ${largeTextMode ? 'bg-gradient-to-r from-yellow-400 to-orange-500 shadow-[0_0_10px_rgba(234,179,8,0.5)]' : 'bg-white/10'}`}
                 >
                   <div className={`w-6 h-6 bg-white rounded-full shadow-lg transition-all duration-300 ${largeTextMode ? 'translate-x-9' : 'translate-x-1'}`}></div>
                 </button>
               </div>
 
               {/* Keyboard Navigation */}
-              <div className="flex items-center justify-between p-3 bg-black/30 rounded-2xl">
+              <div className="flex items-center justify-between p-3 bg-black/30 rounded-2xl border border-white/5">
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">⌨️</span>
                   <div>
@@ -216,7 +217,7 @@ export default function Settings({
                 <button
                   onClick={() => setKeyboardNavMode(!keyboardNavMode)}
                   aria-label={keyboardNavMode ? 'Disable keyboard navigation mode' : 'Enable keyboard navigation mode'}
-                  className={`w-16 h-8 rounded-full transition-all duration-300 ${keyboardNavMode ? 'bg-gradient-to-r from-yellow-400 to-orange-500' : 'bg-white/20'}`}
+                  className={`w-16 h-8 rounded-full transition-all duration-300 border border-white/10 ${keyboardNavMode ? 'bg-gradient-to-r from-yellow-400 to-orange-500 shadow-[0_0_10px_rgba(234,179,8,0.5)]' : 'bg-white/10'}`}
                 >
                   <div className={`w-6 h-6 bg-white rounded-full shadow-lg transition-all duration-300 ${keyboardNavMode ? 'translate-x-9' : 'translate-x-1'}`}></div>
                 </button>
@@ -251,7 +252,7 @@ export default function Settings({
                     }
                   }}
                   aria-label={voiceControlEnabled ? 'Disable voice control' : 'Enable voice control for hands-free use'}
-                  className={`w-16 h-8 rounded-full transition-all duration-300 ${voiceControlEnabled ? 'bg-gradient-to-r from-purple-400 to-pink-500' : 'bg-white/20'}`}
+                  className={`w-16 h-8 rounded-full transition-all duration-300 border border-white/10 ${voiceControlEnabled ? 'bg-gradient-to-r from-purple-400 to-pink-500 shadow-[0_0_10px_rgba(168,85,247,0.5)]' : 'bg-white/10'}`}
                 >
                   <div className={`w-6 h-6 bg-white rounded-full shadow-lg transition-all duration-300 ${voiceControlEnabled ? 'translate-x-9' : 'translate-x-1'}`}></div>
                 </button>
@@ -259,32 +260,32 @@ export default function Settings({
 
                {/* Voice Control Status & Commands */}
               {voiceControlEnabled && (
-                <div className="p-4 bg-purple-500/20 rounded-2xl border border-purple-400/30">
+                <div className="p-4 bg-purple-500/20 rounded-2xl border border-purple-400/30 animate-fade-in">
                   <div className="flex items-center gap-2 mb-3">
                     <div className={`w-3 h-3 rounded-full ${isListening ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`}></div>
-                    <span className="font-bold text-sm">{isListening ? '🎤 Listening...' : '🔇 Not listening'}</span>
+                    <span className="font-bold text-sm w-full">{isListening ? '🎤 Listening...' : '🔇 Not listening'}</span>
                   </div>
                   {lastVoiceCommand && (
-                    <div className="text-xs opacity-70 mb-3">Last command: "{lastVoiceCommand}"</div>
+                    <div className="text-xs opacity-70 mb-3 bg-black/20 p-2 rounded-lg">Last command: <span className="text-neon-cyan font-bold">"{lastVoiceCommand}"</span></div>
                   )}
                   <div className="text-xs opacity-80">
                     <div className="font-bold mb-2">🗣️ Say these commands:</div>
-                    <div className="grid grid-cols-2 gap-1">
-                      <span>• "Play" / "Stop"</span>
-                      <span>• "Go home"</span>
-                      <span>• "DJ mode"</span>
-                      <span>• "Free play"</span>
-                      <span>• "Faster" / "Slower"</span>
-                      <span>• "Clear"</span>
-                      <span>• "Go back"</span>
-                      <span>• "Help"</span>
+                    <div className="grid grid-cols-2 gap-2 text-[10px] sm:text-xs">
+                      <span className="bg-white/5 p-1 rounded">"Play" / "Stop"</span>
+                      <span className="bg-white/5 p-1 rounded">"Go home"</span>
+                      <span className="bg-white/5 p-1 rounded">"DJ mode"</span>
+                      <span className="bg-white/5 p-1 rounded">"Free play"</span>
+                      <span className="bg-white/5 p-1 rounded">"Faster" / "Slower"</span>
+                      <span className="bg-white/5 p-1 rounded">"Clear"</span>
+                      <span className="bg-white/5 p-1 rounded">"Go back"</span>
+                      <span className="bg-white/5 p-1 rounded">"Help"</span>
                     </div>
                   </div>
                 </div>
               )}
 
               {/* Language Selector */}
-              <div className="p-4 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-2xl border border-blue-400/30">
+              <div className="p-4 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-2xl border border-blue-400/30 shadow-[0_0_15px_rgba(59,130,246,0.1)]">
                 <div className="flex items-center gap-3 mb-3">
                   <span className="text-2xl">🌐</span>
                   <div>
@@ -305,9 +306,9 @@ export default function Settings({
                           window.speechSynthesis.speak(utterance);
                         }
                       }}
-                       className={`p-2 rounded-xl text-xs font-bold transition-all flex flex-col items-center gap-1 ${currentLanguage === code
-                        ? 'bg-gradient-to-r from-blue-400 to-cyan-500 text-black'
-                        : 'bg-white/10 hover:bg-white/20'
+                      className={`p-2 rounded-xl text-xs font-bold transition-all flex flex-col items-center gap-1 border border-transparent ${currentLanguage === code
+                        ? 'bg-gradient-to-r from-blue-400 to-cyan-500 text-black shadow-lg scale-105'
+                        : 'bg-white/10 hover:bg-white/20 hover:border-white/20'
                         }`}
                       aria-label={`Change language to ${lang.name}`}
                     >
@@ -333,7 +334,7 @@ export default function Settings({
                     window.speechSynthesis.speak(utterance);
                   }
                 }}
-                className={`w-full p-4 rounded-2xl font-bold text-lg transition-all ${accessibilityMode ? 'bg-gradient-to-r from-green-400 to-emerald-500 text-black' : 'bg-gradient-to-r from-yellow-400 to-orange-500 text-black hover:from-yellow-300 hover:to-orange-400'}`}
+                className={`w-full p-4 rounded-2xl font-bold text-lg transition-all shadow-lg transform active:scale-95 ${accessibilityMode ? 'bg-gradient-to-r from-green-400 to-emerald-500 text-black' : 'bg-gradient-to-r from-yellow-400 to-orange-500 text-black hover:from-yellow-300 hover:to-orange-400'}`}
                 aria-label={accessibilityMode ? 'Disable all accessibility features' : 'Enable all accessibility features'}
               >
                 {accessibilityMode ? `✔ ${t('allEnabled')}` : `☑️ ${t('enableAll')}`}
@@ -345,69 +346,69 @@ export default function Settings({
                   <span className="text-lg">💡</span>
                   <span className="font-bold text-sm">Screen Reader Tips</span>
                 </div>
-                <ul className="text-xs opacity-80 space-y-1 ml-6">
-                  <li>• Use Tab to navigate between buttons</li>
-                  <li>• Press Enter or Space to activate</li>
-                  <li>• Arrow keys work in grid areas</li>
-                  <li>• Escape closes popups and modals</li>
+                <ul className="text-xs opacity-80 space-y-1 ml-6 list-disc">
+                  <li>Use Tab to navigate between buttons</li>
+                  <li>Press Enter or Space to activate</li>
+                  <li>Arrow keys work in grid areas</li>
+                  <li>Escape closes popups and modals</li>
                 </ul>
               </div>
             </div>
           </div>
 
           {/* Sound Packs */}
-          <div className="bg-black/40 backdrop-blur-md rounded-3xl p-6 border border-purple-500/30">
-            <h3 className="text-xl font-black mb-4 flex items-center gap-3">
-              <span className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center">🎵</span>
+          <div className="glass-panel rounded-3xl p-6 border-neon-cyan/30 shadow-[0_0_15px_rgba(6,182,212,0.1)]">
+            <h3 className="text-xl font-display font-black mb-4 flex items-center gap-3">
+              <span className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center text-black shadow-lg">🎵</span>
               Sound Packs
             </h3>
             <div className="space-y-2">
               <button
                 onClick={() => handleApplySoundPack('classic')}
-                className={`w-full p-4 rounded-2xl text-left flex items-center gap-4 transition-all ${activeSoundPack === 'classic' ? 'bg-indigo-500/20 border-2 border-indigo-400 shadow-lg shadow-indigo-500/20' : 'bg-white/10 hover:bg-white/20 border border-white/10'}`}
+                className={`w-full p-4 rounded-2xl text-left flex items-center gap-4 transition-all ${activeSoundPack === 'classic' ? 'bg-indigo-500/20 border-2 border-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.3)]' : 'bg-white/5 hover:bg-white/10 border border-white/10'}`}
               >
-                <span className="text-2xl">🥁 </span>
+                <span className="text-2xl filter drop-shadow">🥁 </span>
                 <div className="flex-1">
                   <div className={`font-bold ${activeSoundPack === 'classic' ? 'text-white' : 'text-slate-300'}`}>Classic Kit</div>
                   <div className="text-xs opacity-60">Acoustic drums & piano</div>
                 </div>
-                {activeSoundPack === 'classic' && <span className="text-indigo-400 font-bold text-xs bg-indigo-500/20 px-2 py-1 rounded-lg">ACTIVE</span>}
+                {activeSoundPack === 'classic' && <span className="text-indigo-400 font-bold text-xs bg-indigo-500/20 px-2 py-1 rounded-lg border border-indigo-500/30">ACTIVE</span>}
               </button>
 
               <button
                 onClick={() => handleApplySoundPack('electronic')}
-                className={`w-full p-4 rounded-2xl text-left flex items-center gap-4 transition-all ${activeSoundPack === 'electronic' ? 'bg-cyan-500/20 border-2 border-cyan-400 shadow-lg shadow-cyan-500/20' : 'bg-white/10 hover:bg-white/20 border border-white/10'}`}
+                className={`w-full p-4 rounded-2xl text-left flex items-center gap-4 transition-all ${activeSoundPack === 'electronic' ? 'bg-cyan-500/20 border-2 border-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.3)]' : 'bg-white/5 hover:bg-white/10 border border-white/10'}`}
               >
-                <span className="text-2xl">🎹</span>
+                <span className="text-2xl filter drop-shadow">🎹</span>
                 <div className="flex-1">
                   <div className={`font-bold ${activeSoundPack === 'electronic' ? 'text-white' : 'text-slate-300'}`}>Electronic</div>
                   <div className="text-xs opacity-60">Synth, 808s & Trap</div>
                 </div>
-                {activeSoundPack === 'electronic' && <span className="text-cyan-400 font-bold text-xs bg-cyan-500/20 px-2 py-1 rounded-lg">ACTIVE</span>}
+                {activeSoundPack === 'electronic' && <span className="text-neon-cyan font-bold text-xs bg-cyan-500/20 px-2 py-1 rounded-lg border border-cyan-500/30">ACTIVE</span>}
               </button>
 
               <button
                 onClick={() => handleApplySoundPack('rock')}
-                className={`w-full p-4 rounded-2xl text-left flex items-center gap-4 transition-all ${activeSoundPack === 'rock' ? 'bg-red-500/20 border-2 border-red-400 shadow-lg shadow-red-500/20' : 'bg-white/10 hover:bg-white/20 border border-white/10'}`}
+                className={`w-full p-4 rounded-2xl text-left flex items-center gap-4 transition-all ${activeSoundPack === 'rock' ? 'bg-red-500/20 border-2 border-red-400 shadow-[0_0_15px_rgba(239,68,68,0.3)]' : 'bg-white/5 hover:bg-white/10 border border-white/10'}`}
               >
-                <span className="text-2xl">🎸</span>
+                <span className="text-2xl filter drop-shadow">🎸</span>
                 <div className="flex-1">
                   <div className={`font-bold ${activeSoundPack === 'rock' ? 'text-white' : 'text-slate-300'}`}>Rock Band</div>
                   <div className="text-xs opacity-60">Punchy drums & organ</div>
                 </div>
-                {activeSoundPack === 'rock' && <span className="text-red-400 font-bold text-xs bg-red-500/20 px-2 py-1 rounded-lg">ACTIVE</span>}
+                {activeSoundPack === 'rock' && <span className="text-red-400 font-bold text-xs bg-red-500/20 px-2 py-1 rounded-lg border border-red-500/30">ACTIVE</span>}
               </button>
             </div>
           </div>
 
           {/* App Info */}
-          <div className="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20">
-            <h3 className="text-xl font-black mb-4 flex items-center gap-3">
-              <span className="w-10 h-10 bg-gradient-to-br from-slate-400 to-slate-500 rounded-xl flex items-center justify-center">ℹ️</span>
+          <div className="glass-panel rounded-3xl p-6 border-white/10">
+            <h3 className="text-xl font-display font-black mb-4 flex items-center gap-3">
+              <span className="w-10 h-10 bg-gradient-to-br from-slate-400 to-slate-500 rounded-xl flex items-center justify-center text-black shadow-lg">ℹ️</span>
               {t('about')}
             </h3>
-            <div className="space-y-2 text-sm opacity-80">
-              <p><strong>{t('appTitle')}</strong> v1.0.0</p>
+            <div className="space-y-2 text-sm opacity-80 font-medium">
+              <p><strong>{t('appTitle')}</strong> v1.0.6-MVC</p>
               <p>A creative music-making experience</p>
               <p className="text-xs opacity-60 mt-4">Made with ❤️ using React & Web Audio API</p>
             </div>

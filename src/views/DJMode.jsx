@@ -1,10 +1,10 @@
 import React from 'react';
-import { PixelMusicBackground } from '../components/PixelMusicBackground';
-import VoiceControlIndicator from '../components/VoiceControlIndicator';
-import { Icons } from '../components/Icons';
-import { DJ_TRACKS, DJ_BEATS, DJ_TUTORIAL_STEPS, EFFECT_PADS } from '../../utils/dj_data';
-import { AudioEngine } from '../../utils/AudioEngine';
-import { SOUND_VARIANTS, STEPS } from '../../utils/constants';
+import { PixelMusicBackground } from './components/PixelMusicBackground';
+import VoiceControlIndicator from './components/VoiceControlIndicator';
+import { Icons } from './components/Icons';
+import { DJ_TRACKS, DJ_BEATS, DJ_TUTORIAL_STEPS, EFFECT_PADS } from '../utils/dj_data';
+import AudioEngine from '../utils/AudioEngine';
+import { SOUND_VARIANTS, STEPS } from '../utils/constants';
 
 export default function DJMode({
     djDecks,

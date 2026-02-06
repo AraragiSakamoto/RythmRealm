@@ -1,6 +1,6 @@
 import React from 'react';
 import { SCENARIOS, DEFAULT_SCENARIO, SOUND_VARIANTS } from '../../utils/constants';
-import { AudioEngine } from '../../utils/AudioEngine';
+import AudioEngine from '../../utils/AudioEngine';
 
 export default function NewPlayerModal({ 
   isOpen, 

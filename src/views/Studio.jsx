@@ -1,9 +1,9 @@
 import React, { useRef } from 'react';
-import { Icons } from '../components/Icons';
-import AchievementNotification from '../components/AchievementNotification';
-import { AudioEngine } from '../../utils/AudioEngine';
-import { SoundLab } from '../components/SoundLab';
-import BeatGrid from '../components/BeatGrid';
+import { Icons } from './components/Icons';
+import AchievementNotification from './components/AchievementNotification';
+import AudioEngine from '../utils/AudioEngine';
+import { SoundLab } from './components/SoundLab';
+import BeatGrid from './components/BeatGrid';
 
 export default function Studio({
     grid,

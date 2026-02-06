@@ -1,6 +1,6 @@
 
 import { useEffect, useRef } from 'react';
-import { AudioEngine } from '../utils/AudioEngine';
+import AudioEngine from '../utils/AudioEngine';
 import { SOUND_VARIANTS } from '../utils/constants';
 
 export const useAudioController = ({

@@ -1,9 +1,9 @@
 import React from 'react';
-import { PixelMusicBackground } from '../components/PixelMusicBackground';
-import { Icons } from '../components/Icons';
-import AchievementNotification from '../components/AchievementNotification';
+import { PixelMusicBackground } from './components/PixelMusicBackground';
+import { Icons } from './components/Icons';
+import AchievementNotification from './components/AchievementNotification';
 import ProfileModal from './modals/ProfileModal';
-import { getUnlockedLevels } from '../../utils/gameLogic';
+import { getUnlockedLevels } from '../utils/gameLogic';
 
 export default function LevelSelector({
     user,
@@ -25,14 +25,14 @@ export default function LevelSelector({
 
             <AchievementNotification achievement={achievementNotification} />
 
-            <div className="relative z-10 px-6 py-6 flex items-center justify-between border-b border-white/10 bg-black/30 backdrop-blur-sm">
-                <button onClick={() => onSetView('modes')} className="p-3 bg-white/10 hover:bg-white/20 rounded-2xl shadow-lg transition-all active:scale-95">
+            <div className="relative z-10 px-6 py-6 flex items-center justify-between border-b border-white/10 glass-panel">
+                <button onClick={() => onSetView('modes')} className="glass-button p-3 rounded-2xl shadow-lg active:scale-95">
                     <Icons.ChevronLeft />
                 </button>
-                <h2 className="text-3xl font-black bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">SELECT LEVEL</h2>
+                <h2 className="text-3xl font-display font-black bg-gradient-to-r from-neon-cyan via-neon-purple to-neon-pink bg-clip-text text-transparent neon-text">SELECT LEVEL</h2>
                 <button
                     onClick={() => setShowProfileModal(true)}
-                    className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-xl font-black shadow-lg hover:scale-105 transition-transform"
+                    className="w-12 h-12 rounded-full bg-gradient-to-br from-neon-purple to-neon-pink flex items-center justify-center text-xl font-bold shadow-lg hover:scale-105 transition-transform border border-white/20"
                 >
                     {(userProfile?.username || 'P')[0].toUpperCase()}
                 </button>
@@ -47,28 +47,28 @@ export default function LevelSelector({
                         className={`
                   relative p-6 rounded-3xl text-left transition-all duration-300 group overflow-hidden border-b-8 active:border-b-0 active:translate-y-2
                   ${level.unlocked
-                                ? `bg-gradient-to-br from-slate-800 to-slate-900 hover:scale-[1.02] border-${level.color.split('-')[1]}-700 shadow-xl`
-                                : 'bg-slate-900/50 grayscale opacity-70 cursor-not-allowed border-slate-800'}
+                            ? `glass-panel hover:bg-white/5 hover:scale-[1.02] border-white/10 shadow-[0_0_15px_rgba(0,0,0,0.3)] hover:shadow-[0_0_20px_${level.color === 'from-cyan-500 to-blue-600' ? '#06b6d4' : '#8b5cf6'}_0.4]`
+                            : 'bg-black/40 grayscale opacity-70 cursor-not-allowed border-white/5'}
                 `}
                     >
                         {level.unlocked && (
-                            <div className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br ${level.color} opacity-20 rounded-bl-full`}></div>
+                            <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${level.color} opacity-20 rounded-bl-full filter blur-xl group-hover:opacity-30 transition-opacity`}></div>
                         )}
 
                         <div className="relative z-10">
                             <div className="flex justify-between items-start mb-4">
-                                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shadow-lg ${level.unlocked ? `bg-gradient-to-br ${level.color}` : 'bg-slate-800'}`}>
+                                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-4xl shadow-lg transition-transform group-hover:scale-110 ${level.unlocked ? `bg-gradient-to-br ${level.color}` : 'bg-white/10'}`}>
                                     {level.icon}
                                 </div>
                                 {level.unlocked && levelProgress && levelProgress[level.id]?.completed && (
-                                    <div className="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg animate-bounce">
+                                    <div className="bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg animate-bounce tracking-wider">
                                         COMPLETED
                                     </div>
                                 )}
                             </div>
 
-                            <h3 className="text-2xl font-black mb-1">{level.name}</h3>
-                            <p className="text-sm opacity-60 font-medium mb-4">{level.objective}</p>
+                            <h3 className="text-2xl font-display font-black mb-1 group-hover:text-neon-cyan transition-colors">{level.name}</h3>
+                            <p className="text-sm opacity-60 font-medium mb-4 line-clamp-2">{level.objective}</p>
 
                             <div className="flex items-center gap-2">
                                 <span className={`text-xs px-2 py-1 rounded-lg font-bold ${level.difficulty === 'Easy' ? 'bg-green-500/20 text-green-400' :
@@ -78,7 +78,7 @@ export default function LevelSelector({
                                     {level.difficulty.toUpperCase()}
                                 </span>
                                 {!level.unlocked && <span className="text-xs text-slate-500 font-bold">🔒 LOCKED</span>}
-                                {level.unlocked && <span className="text-xs text-purple-400 font-bold">+XP REWARD</span>}
+                                {level.unlocked && <span className="text-xs text-neon-purple font-bold">+XP REWARD</span>}
                             </div>
                         </div>
                     </button>

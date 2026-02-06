@@ -1,10 +1,10 @@
 import React from 'react';
-import { Icons } from '../components/Icons';
-import AchievementNotification from '../components/AchievementNotification';
-import { AudioEngine } from '../../utils/AudioEngine';
-import { checkLevelCompletion } from '../../utils/gameLogic';
-import { SoundLab } from '../components/SoundLab';
-import BeatGrid from '../components/BeatGrid';
+import { Icons } from './components/Icons';
+import AchievementNotification from './components/AchievementNotification';
+import AudioEngine from '../utils/AudioEngine';
+import { checkLevelCompletion } from '../utils/gameLogic';
+import { SoundLab } from './components/SoundLab';
+import BeatGrid from './components/BeatGrid';
 
 export default function LevelPlay({
     currentLevel,
@@ -23,8 +23,7 @@ export default function LevelPlay({
     setShowLevelTutorial,
     activeSoundLab,
     setActiveSoundLab,
-  activeSoundLab,
-  setActiveSoundLab,
+
   activeTracks, // Updated from activeInstrumentIds
     instrumentConfig,
     activeSoundPack,
@@ -54,82 +53,82 @@ export default function LevelPlay({
   const guidePattern = currentLevel.premadePattern;
 
     return (
-      <div className={`h-screen w-full flex flex-col overflow-hidden font-sans ${highContrastMode ? 'high-contrast' : ''} ${largeTextMode ? 'large-text' : ''}`}>
+      <div className={`h-screen w-full flex flex-col overflow-hidden font-sans ${highContrastMode ? 'high-contrast' : ''} ${largeTextMode ? 'large-text' : ''} bg-slate-950`}>
         
         <AchievementNotification achievement={achievementNotification} />
 
         {/* Level Header */}
-        <div className="bg-gradient-to-r from-purple-900 to-pink-900 px-4 py-3 landscape:py-1 flex items-center justify-between border-b border-white/10 shrink-0">
+        <div className="glass-panel border-b border-white/10 px-4 py-3 landscape:py-1 flex items-center justify-between shrink-0 z-20">
           <button
             onClick={() => {
               setIsPlaying(false);
               AudioEngine.stopAll();
               onSetView('levels');
             }}
-            className="p-2 bg-white/10 hover:bg-white/20 rounded-xl text-white transition-all"
+            className="glass-button p-2 rounded-xl text-white hover:text-neon-cyan"
           ><Icons.ChevronLeft /></button>
 
           <div className="text-center">
             <div className="flex items-center gap-2 justify-center">
-              <span className="text-xl">{currentLevel.icon}</span>
-              <span className="font-black text-white text-lg">{currentLevel.name}</span>
+              <span className="text-xl filter drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">{currentLevel.icon}</span>
+              <span className="font-display font-black text-white text-xl tracking-wide">{currentLevel.name}</span>
             </div>
-            <div className="text-xs text-purple-300">{currentLevel.difficulty}</div>
+            <div className="text-xs text-neon-purple font-bold tracking-widest">{currentLevel.difficulty.toUpperCase()}</div>
           </div>
 
           <button
             onClick={showNextHint}
             className={`
-              relative group overflow-hidden px-4 py-2 rounded-full font-bold transition-all duration-300
+              relative group overflow-hidden px-4 py-2 rounded-full font-bold transition-all duration-300 border
               ${currentLevel.hints
-                ? 'bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-[0_0_15px_rgba(251,191,36,0.4)] hover:shadow-[0_0_25px_rgba(251,191,36,0.6)] hover:scale-105'
-                : 'bg-slate-700 text-slate-500 cursor-not-allowed'}
+              ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 hover:bg-amber-500/30 hover:shadow-[0_0_15px_rgba(245,158,11,0.3)]'
+              : 'bg-white/5 text-slate-500 border-white/5 cursor-not-allowed'}
             `}
           >
             <div className="flex items-center gap-2 relative z-10">
               <span className="text-lg filter drop-shadow">💡</span>
-              <span className="tracking-wide text-sm hidden sm:inline">HINT</span>
+              <span className="tracking-wide text-xs font-display hidden sm:inline">HINT</span>
             </div>
           </button>
         </div>
 
-        {/* Level 1 Tutorial Overlay */}
+        {/* Level 1 Tutorial Overlay - Styled */}
         {currentLevel.id === 1 && showLevelTutorial && (
-          <div className="absolute inset-0 z-50 pointer-events-none flex items-center justify-center p-4">
-            <div className="bg-slate-900/95 border-2 border-cyan-500 rounded-3xl p-8 max-w-lg w-full shadow-2xl pointer-events-auto animate-bounce-in text-center relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-cyan-400 to-purple-500"></div>
-                <div className="w-20 h-20 bg-cyan-900/50 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-cyan-400/30">
-                    <span className="text-4xl">👋</span>
+          <div className="absolute inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <div className="glass-panel border-2 border-neon-cyan rounded-3xl p-8 max-w-lg w-full shadow-[0_0_50px_rgba(6,182,212,0.2)] pointer-events-auto animate-bounce-in text-center relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-neon-cyan to-neon-purple"></div>
+              <div className="w-20 h-20 bg-neon-cyan/20 rounded-full flex items-center justify-center mx-auto mb-6 border border-neon-cyan/50 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
+                <span className="text-4xl animate-pulse-slow">👋</span>
                 </div>
-                <h2 className="text-3xl font-black text-white mb-3">Welcome to the Studio!</h2>
+              <h2 className="text-4xl font-display font-black text-white mb-3 tracking-tight">Welcome to the Studio!</h2>
                 <p className="text-slate-300 text-lg mb-8 leading-relaxed">
-                    You've got a <span className="text-cyan-400 font-bold">Rock Beat</span> started.
+                You've got a <span className="text-neon-cyan font-bold">Rock Beat</span> started.
                     <br />
-                    Your goal is to <span className="text-white font-bold border-b-2 border-purple-500">finish the pattern</span>.
+                Your goal is to <span className="text-white font-bold border-b-2 border-neon-purple">finish the pattern</span>.
                 </p>
                 <div className="space-y-4">
                     <button
                         onClick={() => setShowLevelTutorial(false)}
-                        className="w-full py-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 rounded-2xl font-black text-xl text-white shadow-lg transition-all"
+                  className="w-full py-4 bg-gradient-to-r from-neon-cyan to-blue-600 hover:from-cyan-400 hover:to-blue-500 rounded-2xl font-display font-black text-xl text-white shadow-lg transition-all transform hover:scale-[1.02]"
                     >
                         GOT IT, LET'S ROCK! 🤘
                     </button>
-                    <button onClick={() => setShowLevelTutorial(false)} className="text-slate-500 font-bold text-sm">Skip</button>
+                <button onClick={() => setShowLevelTutorial(false)} className="text-slate-500 hover:text-white font-bold text-sm transition-colors">Skip Tutorial</button>
                 </div>
             </div>
           </div>
         )}
 
         {/* Objective Banner */}
-        <div className="bg-slate-800/80 px-4 py-3 landscape:py-1 text-center border-b border-slate-700 shrink-0">
-          <div className="text-white font-bold landscape:text-sm">{currentLevel.objective}</div>
-          <div className="flex flex-wrap justify-center gap-2 mt-2 landscape:mt-0 landscape:gap-1">
+        <div className="glass-panel border-b border-white/5 px-4 py-2 flex flex-col items-center justify-center shrink-0 z-10 space-y-2">
+          <div className="text-white font-bold text-sm font-display tracking-wide">{currentLevel.objective}</div>
+          <div className="flex flex-wrap justify-center gap-2">
             {Object.entries(currentLevel.requirements?.mustInclude || {}).map(([inst, count]) => {
               const current = grid[inst]?.filter(Boolean).length || 0;
               const met = current >= count;
               return (
-                <div key={inst} className={`px-2 py-1 rounded-lg text-xs font-bold ${met ? 'bg-green-500/30 text-green-400' : 'bg-slate-700 text-slate-400'}`}>
-                  {inst.toUpperCase()}: {current}/{count} {met && '✔'}
+                <div key={inst} className={`px-2 py-0.5 rounded-md text-[10px] uppercase font-bold border ${met ? 'bg-green-500/20 text-green-400 border-green-500/30 shadow-[0_0_10px_rgba(74,222,128,0.2)]' : 'bg-white/5 text-slate-400 border-white/10'}`}>
+                  {inst}: {current}/{count} {met && '✔'}
                 </div>
               );
             })}
@@ -138,28 +137,28 @@ export default function LevelPlay({
 
         {/* Hint Popup */}
         {showHint && currentLevel.hints && (
-          <div className="absolute top-32 left-1/2 -translate-x-1/2 z-50 bg-amber-500 text-black px-6 py-3 rounded-2xl shadow-2xl max-w-sm text-center font-bold animate-bounce-in">
+          <div className="absolute top-32 left-1/2 -translate-x-1/2 z-50 bg-amber-500/90 backdrop-blur-md text-black px-6 py-4 rounded-2xl shadow-2xl max-w-sm text-center font-bold animate-bounce-in border-2 border-amber-300">
             {currentLevel.hints[currentHintIndex]}
           </div>
         )}
 
         {/* Progress Bar */}
-        <div className="bg-slate-900 px-4 py-2 landscape:py-1 shrink-0">
-          <div className="flex justify-between text-xs text-slate-400 mb-1">
+        <div className="bg-black/40 px-4 py-2 shrink-0 border-t border-white/5">
+          <div className="flex justify-between text-[10px] uppercase font-bold text-slate-500 mb-1 tracking-wider">
             <span>Completion</span>
-            <span className={completion.score >= 100 ? 'text-green-400' : ''}>{completion.score}%</span>
+            <span className={completion.score >= 100 ? 'text-neon-green' : 'text-neon-purple'}>{completion.score}%</span>
           </div>
-          <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+          <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
             <div
-              className={`h-full transition-all ${completion.score >= 100 ? 'bg-green-500' : 'bg-purple-500'}`}
+              className={`h-full transition-all duration-500 ${completion.score >= 100 ? 'bg-green-400 shadow-[0_0_10px_rgba(74,222,128,0.5)]' : 'bg-neon-purple shadow-[0_0_10px_rgba(167,139,250,0.5)]'}`}
               style={{ width: `${Math.min(100, completion.score)}%` }}
             ></div>
           </div>
         </div>
 
         {/* Grid Area */}
-        <div className="flex-1 relative overflow-y-auto overflow-x-hidden bg-slate-900/80">
-            <div className="absolute inset-0">
+        <div className="flex-1 relative overflow-y-auto overflow-x-hidden bg-gradient-to-b from-slate-900/50 to-black/80">
+          <div className="absolute inset-0 p-4">
                 <BeatGrid 
                     grid={grid}
               activeTracks={activeTracks || []}
