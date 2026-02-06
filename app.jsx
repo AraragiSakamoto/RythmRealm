@@ -15,6 +15,7 @@ import LevelSelector from './src/views/LevelSelector';
 import LevelPlay from './src/views/LevelPlay';
 import DJMode from './src/views/DJMode';
 import Studio from './src/views/Studio';
+import Settings from './src/views/Settings';
 
 // Constants
 import { STEPS } from './src/utils/constants';
@@ -32,7 +33,7 @@ export default function App() {
     isPlaying: app.isPlaying,
     setIsPlaying: app.setIsPlaying,
     tempo: app.tempo,
-    activeInstrumentIds: app.activeInstrumentIds,
+    activeTracks: app.activeTracks,
     instrumentConfig: app.instrumentConfig,
     soundSettings: app.soundSettings,
     currentStep: app.currentStep,
@@ -54,6 +55,25 @@ export default function App() {
             onSetView={app.setView}
             onSelectLevel={(level) => {
               app.setCurrentLevel(level);
+              // Initialize tracks for the level
+              const levelTracks = [];
+              if (level.requirements?.mustInclude) {
+                Object.entries(level.requirements.mustInclude).forEach(([type, count]) => {
+                  for (let i = 0; i < count; i++) levelTracks.push({ id: `${type}-${i + 1}`, type });
+                });
+              } else if (level.premadePattern) {
+                Object.keys(level.premadePattern).forEach(type => {
+                  levelTracks.push({ id: `${type}-1`, type });
+                });
+              }
+              // Ensure we have at least kick, snare, hihat if empty
+              if (levelTracks.length === 0) {
+                levelTracks.push({ id: 'kick-1', type: 'kick' });
+                levelTracks.push({ id: 'snare-1', type: 'snare' });
+                levelTracks.push({ id: 'hihat-1', type: 'hihat' });
+              }
+
+              app.setActiveTracks(levelTracks);
               app.setView('levelPlay');
             }}
             onLogout={auth.logout}
@@ -87,7 +107,7 @@ export default function App() {
             setShowLevelTutorial={app.setShowLevelTutorial}
             activeSoundLab={app.activeSoundLab}
             setActiveSoundLab={app.setActiveSoundLab}
-            activeInstrumentIds={app.activeInstrumentIds}
+            activeTracks={app.activeTracks}
             instrumentConfig={app.instrumentConfig}
             activeSoundPack={app.activeSoundPack}
             currentStep={app.currentStep}
@@ -109,8 +129,8 @@ export default function App() {
             achievementNotification={app.achievementNotification}
             activeSoundLab={app.activeSoundLab}
             setActiveSoundLab={app.setActiveSoundLab}
-            activeInstrumentIds={app.activeInstrumentIds}
-            setActiveInstrumentIds={app.setActiveInstrumentIds}
+            activeTracks={app.activeTracks}
+            setActiveTracks={app.setActiveTracks}
             activeSoundPack={app.activeSoundPack}
             currentStep={app.currentStep}
             tempo={app.tempo}
@@ -160,7 +180,7 @@ export default function App() {
               lastVoiceCommand={app.lastVoiceCommand}
               currentStep={app.currentStep}
               setGrid={app.setGrid}
-              setActiveInstrumentIds={app.setActiveInstrumentIds}
+              activeTracks={app.activeTracks}
               setCurrentStep={app.setCurrentStep}
             />
           );
@@ -189,8 +209,39 @@ export default function App() {
             lastVoiceCommand={app.lastVoiceCommand}
             currentStep={app.currentStep}
             setGrid={app.setGrid}
-            setActiveInstrumentIds={app.setActiveInstrumentIds}
+            activeTracks={app.activeTracks} // Updated
             setCurrentStep={app.setCurrentStep}
+          />
+        );
+
+      case 'settings':
+        return (
+          <Settings
+            currentLanguage={app.currentLanguage}
+            setCurrentLanguage={app.setCurrentLanguage}
+            masterVolume={app.soundSettings?.masterVolume} // Assuming masterVolume is in soundSettings or app
+            setMasterVolume={(vol) => app.setSoundSettings(prev => ({ ...prev, masterVolume: vol }))} // Mock for now if not in controller
+            bgMusicEnabled={app.bgMusicEnabled}
+            setBgMusicEnabled={app.setBgMusicEnabled}
+            currentTheme={app.currentTheme}
+            setCurrentThemeId={app.setCurrentThemeId}
+            accessibilityMode={app.accessibilityMode}
+            setAccessibilityMode={app.setAccessibilityMode}
+            textToSpeechEnabled={app.textToSpeechEnabled}
+            setTextToSpeechEnabled={app.setTextToSpeechEnabled}
+            highContrastMode={app.highContrastMode}
+            setHighContrastMode={app.setHighContrastMode}
+            largeTextMode={app.largeTextMode}
+            setLargeTextMode={app.setLargeTextMode}
+            keyboardNavMode={app.keyboardNavMode}
+            setKeyboardNavMode={app.setKeyboardNavMode}
+            voiceControlEnabled={app.voiceControlEnabled}
+            setVoiceControlEnabled={app.setVoiceControlEnabled}
+            isListening={app.isListening}
+            lastVoiceCommand={app.lastVoiceCommand}
+            activeSoundPack={app.activeSoundPack}
+            applySoundPack={app.setActiveSoundPack}
+            onSetView={app.setView}
           />
         );
 

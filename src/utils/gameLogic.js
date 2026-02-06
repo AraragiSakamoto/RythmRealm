@@ -18,9 +18,16 @@ export const checkLevelCompletion = (grid, level) => {
   let totalCriteria = 0;
 
   if (mustInclude) {
-    Object.entries(mustInclude).forEach(([inst, count]) => {
+    Object.entries(mustInclude).forEach(([instType, count]) => {
       totalCriteria++;
-      const current = grid[inst]?.filter(Boolean).length || 0;
+      // Aggregate notes from all tracks of this type (e.g., 'kick-1', 'kick-2' for 'kick')
+      let current = 0;
+      Object.keys(grid).forEach(trackId => {
+        if (trackId.startsWith(instType)) {
+          current += grid[trackId]?.filter(Boolean).length || 0;
+        }
+      });
+
       if (current >= count) {
         score++;
       } else {

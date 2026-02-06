@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Icons } from '../components/Icons';
 import AchievementNotification from '../components/AchievementNotification';
 import { AudioEngine } from '../../utils/AudioEngine';
@@ -16,42 +16,79 @@ export default function Studio({
     achievementNotification,
     activeSoundLab,
     setActiveSoundLab,
-    activeInstrumentIds,
-    setActiveInstrumentIds,
+  activeTracks,
+  setActiveTracks,
     activeSoundPack,
     currentStep,
     tempo,
     setTempo,
     instrumentConfig
 }) {
+  const fileInputRef = useRef(null);
 
-    const handleToggleStep = (instId, step) => {
+  const handleToggleStep = (trackId, step) => {
         setGrid(prev => {
             const newGrid = { ...prev };
-            const newRow = [...(newGrid[instId] || [])];
+          const newRow = [...(newGrid[trackId] || [])];
             newRow[step] = !newRow[step];
-            newGrid[instId] = newRow;
+          newGrid[trackId] = newRow;
             return newGrid;
         });
     };
-    
-    // Logic to add tracks
+
     const handleAddTrack = () => {
-        // Only if we have space and unused instruments
-        // For MVP refactor, assume all instruments are available or logic is in BeatGrid
-        // BeatGrid doesn't have add logic inside itself, it just calls `onRemoveTrack`?
-        // Wait, BeatGrid has `ADD INSTRUMENT` button at the bottom.
-        // It should call a callback.
-        // I didn't add `onAddTrack` prop to BeatGrid in Step 300.
-        // BeatGrid renders Add button if `onRemoveTrack` is present.
-        // I should add logic to open a menu to add track.
-        // For now, I'll pass a dummy or implement logic if I can.
+    if (activeTracks.length >= 12) return;
+    // Default to adding a new instrument type or duplicating last one?
+    // Let's just add a random one/default one for now, or cycle.
+    // Or simpler: Add 'kick' by default, user can change it?
+    // Let's add 'perc' or 'fx' if missing, or just specific logic.
+    // For MVP: Add 'perc' as default new track.
+    const newId = `perc-${Date.now()}`;
+    setActiveTracks(prev => [...prev, { id: newId, type: 'perc' }]);
+    // Initialize grid for it
+    setGrid(prev => ({
+      ...prev,
+      [newId]: Array(32).fill(false)
+    }));
+  };
+
+  const handleRemoveTrack = (trackId) => {
+    if (activeTracks.length > 1) {
+      setActiveTracks(prev => prev.filter(t => t.id !== trackId));
+    }
+  };
+
+  const handleExport = () => {
+    const data = {
+      version: '1.0',
+      tempo,
+      activeTracks,
+      grid
     };
-    
-    const handleRemoveTrack = (instId) => {
-        if (activeInstrumentIds.length > 1) {
-            setActiveInstrumentIds(prev => prev.filter(id => id !== instId));
-        }
+    const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `beat-${Date.now()}.json`;
+    a.click();
+    };
+
+  const handleImport = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (data.tempo) setTempo(data.tempo);
+        if (data.activeTracks) setActiveTracks(data.activeTracks);
+        if (data.grid) setGrid(data.grid);
+      } catch (err) {
+        console.error("Failed to import beat", err);
+        alert("Invalid beat file");
+      }
+      };
+      reader.readAsText(file);
     };
 
     return (
@@ -65,7 +102,7 @@ export default function Studio({
             onClick={() => {
               setIsPlaying(false);
               AudioEngine.stopAll();
-              onSetView('modes'); // Go back to modes selection or Splash
+              onSetView('modes'); 
             }}
             className="p-2 bg-white/10 hover:bg-white/20 rounded-xl text-white transition-all"
           ><Icons.ChevronLeft /></button>
@@ -81,7 +118,9 @@ export default function Studio({
                 <span className="text-cyan-400 font-mono font-bold">{tempo} BPM</span>
                 <button onClick={() => setTempo(Math.min(200, tempo + 5))} className="text-xs px-1 hover:text-cyan-400">+</button>
              </div>
-             <button className="p-2 bg-purple-600 rounded-lg text-white font-bold text-xs hover:bg-purple-500">SAVE</button>
+            <button onClick={handleExport} className="p-2 bg-indigo-600 rounded-lg text-white font-bold text-xs hover:bg-indigo-500">EXPORT</button>
+            <button onClick={() => fileInputRef.current?.click()} className="p-2 bg-purple-600 rounded-lg text-white font-bold text-xs hover:bg-purple-500">IMPORT</button>
+            <input type="file" ref={fileInputRef} onChange={handleImport} className="hidden" accept=".json" />
           </div>
         </div>
 
@@ -90,14 +129,15 @@ export default function Studio({
             <div className="absolute inset-0">
                 <BeatGrid 
                     grid={grid}
-                    activeInstrumentIds={activeInstrumentIds}
+              activeTracks={activeTracks}
                     instrumentConfig={instrumentConfig}
                     activeSoundPack={activeSoundPack}
                     currentStep={currentStep}
                     onToggleStep={handleToggleStep}
-                    onInstrumentClick={(inst) => setActiveSoundLab(inst)}
+              onInstrumentClick={(instType) => setActiveSoundLab(instType)}
                     onRemoveTrack={handleRemoveTrack}
-                    isMobile={false} // TODO: detect mobile from window width or prop
+              onAddTrack={handleAddTrack}
+              isMobile={false} 
                 />
             </div>
             

@@ -7,11 +7,19 @@ export const useAppController = () => {
     // Mode Logic
     const [view, setView] = useState('splash');
     const [previousView, setPreviousView] = useState(null);
+    const [currentLanguage, setCurrentLanguage] = useState('en');
+
+    // Audio / Visual Settings
+    const [activeSoundPack, setActiveSoundPack] = useState('classic');
+    const [bgMusicEnabled, setBgMusicEnabled] = useState(true);
 
     // Game Logic
     const [grid, setGrid] = useState(() => {
         const initialGrid = {};
-        Object.keys(SOUND_VARIANTS).forEach(key => initialGrid[key] = Array(STEPS).fill(false));
+        // Default tracks: kick-1, snare-1, hihat-1
+        initialGrid['kick-1'] = Array(STEPS).fill(false);
+        initialGrid['snare-1'] = Array(STEPS).fill(false);
+        initialGrid['hihat-1'] = Array(STEPS).fill(false);
         return initialGrid;
     });
     
@@ -21,7 +29,11 @@ export const useAppController = () => {
     const [currentStep, setCurrentStep] = useState(0);
 
     // Configuration
-    const [activeInstrumentIds, setActiveInstrumentIds] = useState(['kick', 'snare', 'hihat']);
+    const [activeTracks, setActiveTracks] = useState([
+        { id: 'kick-1', type: 'kick' },
+        { id: 'snare-1', type: 'snare' },
+        { id: 'hihat-1', type: 'hihat' }
+    ]);
     const [instrumentConfig, setInstrumentConfig] = useState({
         kick: 0, snare: 0, hihat: 0, tom: 0, clap: 0,
         bass: 0, synth: 0, keys: 0,
@@ -66,7 +78,11 @@ export const useAppController = () => {
     const [isListening, setIsListening] = useState(false);
     const [lastVoiceCommand, setLastVoiceCommand] = useState(null);
     const [highContrastMode, setHighContrastMode] = useState(false);
+
     const [largeTextMode, setLargeTextMode] = useState(false);
+    const [textToSpeechEnabled, setTextToSpeechEnabled] = useState(false);
+    const [keyboardNavMode, setKeyboardNavMode] = useState(false);
+    const [accessibilityMode, setAccessibilityMode] = useState(false); // Master toggle
     
     // Achievement Notification
     const [achievementNotification, setAchievementNotification] = useState(null);
@@ -85,7 +101,7 @@ export const useAppController = () => {
         isPlaying, setIsPlaying,
         tempo, setTempo,
         currentStep, setCurrentStep,
-        activeInstrumentIds, setActiveInstrumentIds,
+        activeTracks, setActiveTracks,
         instrumentConfig, setInstrumentConfig,
         soundSettings, setSoundSettings,
         currentTheme, setCurrentThemeId,
@@ -113,7 +129,14 @@ export const useAppController = () => {
         isListening, setIsListening,
         lastVoiceCommand, setLastVoiceCommand,
         highContrastMode, setHighContrastMode,
+
         largeTextMode, setLargeTextMode,
-        achievementNotification, setAchievementNotification
+        achievementNotification, setAchievementNotification,
+        currentLanguage, setCurrentLanguage,
+        activeSoundPack, setActiveSoundPack,
+        bgMusicEnabled, setBgMusicEnabled,
+        textToSpeechEnabled, setTextToSpeechEnabled,
+        keyboardNavMode, setKeyboardNavMode,
+        accessibilityMode, setAccessibilityMode
     };
 };

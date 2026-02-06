@@ -23,7 +23,9 @@ export default function LevelPlay({
     setShowLevelTutorial,
     activeSoundLab,
     setActiveSoundLab,
-    activeInstrumentIds,
+  activeSoundLab,
+  setActiveSoundLab,
+  activeTracks, // Updated from activeInstrumentIds
     instrumentConfig,
     activeSoundPack,
     currentStep,
@@ -45,6 +47,11 @@ export default function LevelPlay({
             return newGrid;
         });
     };
+
+  // Prepare Guide Pattern for Tutorial Mode
+  // Mapping keys (kick, snare) to activeTracks logic is complex if multiple tracks exist.
+  // For levels, we assume tracks match types usually.
+  const guidePattern = currentLevel.premadePattern;
 
     return (
       <div className={`h-screen w-full flex flex-col overflow-hidden font-sans ${highContrastMode ? 'high-contrast' : ''} ${largeTextMode ? 'large-text' : ''}`}>
@@ -155,17 +162,18 @@ export default function LevelPlay({
             <div className="absolute inset-0">
                 <BeatGrid 
                     grid={grid}
-                    activeInstrumentIds={activeInstrumentIds || Object.keys(currentLevel.requirements?.mustInclude || []).concat(['kick', 'snare', 'hihat'])}
-                    // Assuming activeInstrumentIds are managed by parent app controller now
+              activeTracks={activeTracks || []}
+              // activeInstrumentIds removed
                     instrumentConfig={instrumentConfig}
                     activeSoundPack={activeSoundPack}
                     currentStep={currentStep}
                     onToggleStep={handleToggleStep}
                     onInstrumentClick={(inst) => setActiveSoundLab(inst)}
                     // onRemoveTrack not enabled in levels usually
-                    lockedInstruments={[]} // TODO: implement locked logic
+              lockedInstruments={[]} 
                     tutorialActive={tutorialActive}
-                    isMobile={false} // TODO: detect mobile
+              guidePattern={currentLevel.id <= 5 ? currentLevel.premadePattern : null} // Enable guides for early levels
+              isMobile={false} 
                 />
             </div>
              {/* Play Controls Overlay */}
