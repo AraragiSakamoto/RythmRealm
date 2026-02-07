@@ -1,5 +1,4 @@
-import React from 'react';
-import { PixelMusicBackground } from './components/PixelMusicBackground';
+import React, { useState, useEffect } from 'react';
 import UserProfileHeader from './components/UserProfileHeader';
 import AchievementNotification from './components/AchievementNotification';
 import VoiceControlIndicator from './components/VoiceControlIndicator';
@@ -8,20 +7,26 @@ import ProfileModal from './modals/ProfileModal';
 import AuthModal from './modals/AuthModal';
 import LeaderboardModal from './modals/LeaderboardModal';
 import AchievementsModal from './modals/AchievementsModal';
-import { Icons } from './components/Icons';
 import { GAME_LEVELS } from '../utils/constants';
+
+// Premium animated background component
+const NebulaBackground = () => (
+  <div className="absolute inset-0 z-0 overflow-hidden bg-surface-dark">
+    <div className="absolute top-[-20%] left-[-20%] w-[70%] h-[70%] bg-neon-purple/20 rounded-full blur-[120px] animate-pulse-slow"></div>
+    <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-neon-blue/20 rounded-full blur-[100px] animate-pulse-slow delay-1000"></div>
+    <div className="absolute top-[30%] left-[40%] w-[40%] h-[40%] bg-neon-pink/10 rounded-full blur-[90px] animate-pulse-slow delay-2000"></div>
+    <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay"></div>
+  </div>
+);
 
 export default function Splash({
   user,
   userProfile,
-  currentTheme,
   achievementNotification,
   voiceControlEnabled,
   isListening,
   lastVoiceCommand,
   onSetView,
-  onLogin,
-  onRegister,
   onLogout,
   showNewPlayerModal,
   setShowNewPlayerModal,
@@ -54,92 +59,138 @@ export default function Splash({
   handleAuthLogin,
   handleAuthRegister
 }) {
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      setMousePos({
+        x: (e.clientX / window.innerWidth - 0.5) * 20,
+        y: (e.clientY / window.innerHeight - 0.5) * 20
+      });
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
 
   return (
-    <div className="h-screen w-full text-white flex flex-col items-center justify-center overflow-hidden font-sans relative selection:bg-pink-500 selection:text-white">
-      <PixelMusicBackground theme={currentTheme} />
+    <div className="h-screen w-full flex flex-col items-center justify-center overflow-hidden font-sans relative selection:bg-neon-pink selection:text-white">
+      <NebulaBackground />
       
-      <UserProfileHeader 
-        user={user}
-        userProfile={userProfile}
-        onShowLeaderboard={() => setShowLeaderboardModal(true)}
-        onShowAchievements={() => setShowAchievementsModal(true)}
-        onShowProfile={() => setShowProfileModal(true)}
-        onLogout={() => onLogout(true)}
-        onLogin={() => {
-          setAuthMode('login');
-          setShowAuthModal(true);
-        }}
-      />
-      
+      <div className="absolute top-0 right-0 p-6 z-20">
+        <UserProfileHeader
+          user={user}
+          userProfile={userProfile}
+          onShowLeaderboard={() => setShowLeaderboardModal(true)}
+          onShowAchievements={() => setShowAchievementsModal(true)}
+          onShowProfile={() => setShowProfileModal(true)}
+          onLogout={() => onLogout(true)}
+          onLogin={() => {
+            setAuthMode('login');
+            setShowAuthModal(true);
+          }}
+        />
+      </div>
+
       <AchievementNotification achievement={achievementNotification} />
       <VoiceControlIndicator enabled={voiceControlEnabled} isListening={isListening} lastCommand={lastVoiceCommand} />
 
-      <div className="relative z-10 text-center space-y-8 p-8 max-w-4xl w-full animate-fade-in">
-        {/* Logo & Title */}
-        <div className="mb-8 relative group">
-          <div className="absolute inset-0 bg-gradient-to-r from-neon-purple to-neon-pink blur-3xl opacity-20 group-hover:opacity-40 transition-opacity duration-1000"></div>
-          <div className="text-8xl sm:text-9xl mb-4 animate-bounce hover:scale-110 transition-transform cursor-default drop-shadow-[0_0_15px_rgba(236,72,153,0.5)]">🎹</div>
-          <h1 className="text-6xl sm:text-9xl font-display font-black tracking-tighter mb-2 bg-gradient-to-r from-neon-cyan via-neon-purple to-neon-pink bg-clip-text text-transparent neon-text p-2">
-            RHYTHM<br />REALM
-          </h1>
-          <p className="text-xl sm:text-2xl text-neon-cyan font-bold tracking-widest uppercase opacity-80 drop-shadow-md">Create • Share • Compete</p>
+      <div className="relative z-10 text-center flex flex-col items-center justify-center max-w-7xl w-full px-6 animate-fade-in">
+
+        {/* Hero Section */}
+        <div
+          className="mb-12 relative group"
+          style={{ transform: `translate(${mousePos.x}px, ${mousePos.y}px)` }}
+        >
+          <div className="relative z-10">
+            <h1 className="text-7xl sm:text-9xl font-display font-bold tracking-tighter mb-4 leading-none">
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-slate-400 drop-shadow-2xl">
+                RHYTHM
+              </span>
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-neon-purple via-neon-pink to-neon-cyan neon-text">
+                REALM
+              </span>
+            </h1>
+            <p className="text-xl sm:text-2xl text-slate-400 font-light tracking-[0.2em] uppercase mt-6 max-w-2xl mx-auto border-t border-white/10 pt-6">
+              Create • Share • <span className="text-neon-cyan font-medium">Compete</span>
+            </p>
+          </div>
+
+          {/* Decorative Glow */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-hero-glow blur-[100px] opacity-20 -z-10 rounded-full animate-pulse-slow"></div>
         </div>
 
-        {/* User Quick Stats (if logged in) */}
-        {user && userProfile && (
-          <div className="glass-panel rounded-2xl p-6 border-neon-purple/30 flex items-center justify-center gap-8 animate-slide-up mx-auto max-w-2xl shadow-[0_0_20px_rgba(139,92,246,0.1)]">
-            <div className="text-center">
-              <div className="text-3xl font-display font-black text-neon-purple">{userProfile.level || 1}</div>
-              <div className="text-xs uppercase tracking-wider opacity-70 font-bold">Level</div>
-            </div>
-            <div className="w-px h-10 bg-white/20"></div>
-            <div className="text-center">
-              <div className="text-3xl font-display font-black text-neon-pink">{userProfile.total_score?.toLocaleString() || 0}</div>
-              <div className="text-xs uppercase tracking-wider opacity-70 font-bold">XP</div>
-            </div>
-            <div className="w-px h-10 bg-white/20"></div>
-            <div className="text-center">
-              <div className="text-3xl font-display font-black text-neon-cyan">{Object.values(levelProgress || {}).filter(p => p?.completed).length} / {GAME_LEVELS.length}</div>
-              <div className="text-xs uppercase tracking-wider opacity-70 font-bold">Levels</div>
-            </div>
-          </div>
-        )}
+        {/* Dynamic Action Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl mx-auto">
 
-        {/* Main Action Buttons */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg mx-auto">
+          {/* Play Button - Large */}
           <button
-            /* The parent component handles setting ShowNewPlayerModal */
             onClick={() => setShowNewPlayerModal(true)}
-            className="group relative p-6 bg-gradient-to-r from-neon-purple to-neon-pink rounded-2xl shadow-[0_0_20px_rgba(236,72,153,0.4)] hover:shadow-[0_0_30px_rgba(236,72,153,0.6)] hover:scale-105 transition-all duration-300 border-b-4 border-pink-900 active:border-b-0 active:translate-y-1 overflow-hidden sm:col-span-2"
+            className="md:col-span-3 group relative h-24 sm:h-32 rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(46,92,230,0.3)] hover:shadow-[0_0_60px_rgba(46,92,230,0.5)] transition-all duration-500 transform hover:-translate-y-1"
           >
-            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-            <span className="relative z-10 flex items-center justify-center gap-3 text-2xl font-display font-black tracking-wide">
-              <span className="text-3xl group-hover:rotate-12 transition-transform">🚀</span>
-              START PLAYING
-            </span>
+            <div className="absolute inset-0 bg-gradient-to-r from-neon-blue via-neon-purple to-neon-pink opacity-90 group-hover:opacity-100 transition-opacity"></div>
+            <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.2)_50%,transparent_75%)] w-[200%] h-full animate-[shimmer_3s_infinite] translate-x-[-100%]"></div>
+
+            <div className="relative h-full flex items-center justify-between px-10">
+              <div className="text-left">
+                <div className="text-xs font-bold tracking-widest text-white/80 mb-1">ENTER THE REALM</div>
+                <div className="text-4xl sm:text-5xl font-display font-bold text-white tracking-tight flex items-center gap-4">
+                  START PLAYING <span className="text-3xl sm:text-4xl transition-transform group-hover:translate-x-2">→</span>
+                </div>
+              </div>
+              <div className="text-6xl opacity-20 group-hover:opacity-40 group-hover:scale-110 transition-all duration-500 rotate-12">
+                🎹
+              </div>
+            </div>
           </button>
 
+          {/* Secondary Actions */}
           <button
             onClick={() => onSetView('modes')}
-            className="glass-button p-4 rounded-xl border border-white/10 hover:border-neon-cyan hover:shadow-[0_0_15px_rgba(6,182,212,0.3)] group"
+            className="md:col-span-2 group glass-button p-6 rounded-2xl flex items-center justify-between hover:border-neon-cyan/50 hover:bg-neon-cyan/5"
           >
-            <div className="text-4xl mb-2 group-hover:scale-110 transition-transform">🎮</div>
-            <div className="font-bold text-lg text-white group-hover:text-neon-cyan font-display">Game Modes</div>
+            <div className="text-left">
+              <h3 className="text-2xl font-bold text-white group-hover:text-neon-cyan transition-colors mb-2">Game Modes</h3>
+              <p className="text-sm text-slate-400">Campaigns, Arcade & More</p>
+            </div>
+            <div className="text-4xl grayscale group-hover:grayscale-0 transition-all duration-300 scale-90 group-hover:scale-110">
+              🎮
+            </div>
           </button>
 
           <button
             onClick={() => onSetView('settings')}
-            className="glass-button p-4 rounded-xl border border-white/10 hover:border-neon-purple hover:shadow-[0_0_15px_rgba(139,92,246,0.3)] group"
+            className="glass-button p-6 rounded-2xl flex flex-col items-center justify-center gap-3 hover:border-neon-purple/50 hover:bg-neon-purple/5 group"
           >
-            <div className="text-4xl mb-2 group-hover:rotate-90 transition-transform duration-500">⚙️</div>
-            <div className="font-bold text-lg text-white group-hover:text-neon-purple font-display">Settings</div>
+            <div className="text-3xl text-slate-400 group-hover:text-neon-purple group-hover:rotate-90 transition-all duration-500">
+              ⚙️
+            </div>
+            <span className="font-bold text-sm tracking-widest text-slate-300 group-hover:text-white">SETTINGS</span>
           </button>
         </div>
 
+        {/* User Stats Ticker */}
+        {user && userProfile && (
+          <div className="mt-12 glass-panel rounded-full px-8 py-3 flex items-center gap-8 animate-slide-up">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-neon-green animate-pulse"></span>
+              <span className="text-xs font-bold text-slate-300 tracking-wider">ONLINE</span>
+            </div>
+            <div className="w-px h-4 bg-white/10"></div>
+            <div className="text-sm font-medium text-slate-300">
+              Lvl <span className="text-neon-purple font-bold text-lg">{userProfile.level || 1}</span>
+            </div>
+            <div className="w-px h-4 bg-white/10"></div>
+            <div className="text-sm font-medium text-slate-300">
+              XP <span className="text-neon-pink font-bold text-lg">{userProfile.total_score?.toLocaleString() || 0}</span>
+            </div>
+          </div>
+        )}
+
         {/* Footer */}
-        <div className="absolute bottom-4 left-0 w-full text-center text-xs text-white/30 font-display tracking-widest">
-            v1.0.6-MVC • Made with ❤️ by the Google DeepMind Team
+        <div className="absolute bottom-6 w-full text-center">
+          <p className="text-[10px] text-slate-500 font-mono tracking-widest uppercase opacity-50 hover:opacity-100 transition-opacity cursor-default">
+            v1.1.0 • Rhythm Realm Studio
+          </p>
         </div>
       </div>
 
@@ -189,14 +240,14 @@ export default function Splash({
         data={leaderboardData}
         loading={leaderboardLoading}
         user={user}
-        userRank={null} // Pass actual rank if available in data
+        userRank={null}
         isLevelMode={false}
       />
       
       <AchievementsModal
         isOpen={showAchievementsModal}
         onClose={() => setShowAchievementsModal(false)}
-        allAchievements={achievementsData || []} // Need to pass achievements data
+        allAchievements={achievementsData || []}
         loading={achievementsLoading}
         userAchievements={userAchievements}
       />
