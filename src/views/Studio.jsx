@@ -97,32 +97,67 @@ export default function Studio({
         <AchievementNotification achievement={achievementNotification} />
 
         {/* Studio Header */}
+        {/* Studio Header */}
         <div className="bg-gradient-to-r from-slate-900 to-slate-800 px-4 py-3 landscape:py-1 flex items-center justify-between border-b border-white/10 shrink-0">
-          <button
-            onClick={() => {
-              setIsPlaying(false);
-              AudioEngine.stopAll();
-              onSetView('modes'); 
-            }}
-            className="p-2 bg-white/10 hover:bg-white/20 rounded-xl text-white transition-all"
-          ><Icons.ChevronLeft /></button>
-
-          <div className="text-center">
-             <h1 className="text-xl font-black bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">STUDIO</h1>
-             <div className="text-xs text-slate-400">Free Play Mode</div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => onSetView('home')}
+              className="p-2 mr-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+            >
+              <Icons.ChevronLeft />
+            </button>
+            <h1 className="text-xl font-black text-white tracking-tight flex items-center gap-2">
+              <span className="text-2xl">🎛️</span>
+              STUDIO
+            </h1>
           </div>
 
           <div className="flex items-center gap-2">
-             <div className="bg-black/50 px-3 py-1.5 rounded-lg border border-cyan-500/30 flex items-center gap-2">
-                <button onClick={() => setTempo(Math.max(60, tempo - 5))} className="text-xs px-1 hover:text-cyan-400">-</button>
-                <span className="text-cyan-400 font-mono font-bold">{tempo} BPM</span>
-                <button onClick={() => setTempo(Math.min(200, tempo + 5))} className="text-xs px-1 hover:text-cyan-400">+</button>
-             </div>
-            <button onClick={handleExport} className="p-2 bg-indigo-600 rounded-lg text-white font-bold text-xs hover:bg-indigo-500">EXPORT</button>
-            <button onClick={() => fileInputRef.current?.click()} className="p-2 bg-purple-600 rounded-lg text-white font-bold text-xs hover:bg-purple-500">IMPORT</button>
-            <input type="file" ref={fileInputRef} onChange={handleImport} className="hidden" accept=".json" />
+            <div className="bg-black/50 px-3 py-1.5 rounded-lg border border-cyan-500/30 flex items-center gap-2 mr-4">
+              <button onClick={() => setTempo(Math.max(60, tempo - 5))} className="text-xs px-1 hover:text-cyan-400 font-bold">-</button>
+              <span className="text-cyan-400 font-mono font-bold w-16 text-center">{tempo} BPM</span>
+              <button onClick={() => setTempo(Math.min(200, tempo + 5))} className="text-xs px-1 hover:text-cyan-400 font-bold">+</button>
+            </div>
+
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleImport}
+              className="hidden"
+              accept=".json"
+            />
+            <button
+              onClick={() => fileInputRef.current.click()}
+              className="px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-300 border border-blue-500/30 hover:bg-blue-500/30 text-xs font-bold transition-all flex items-center gap-2"
+              title="Import Beat"
+            >
+              <Icons.Upload className="w-4 h-4" />
+              <span className="hidden sm:inline">IMPORT</span>
+            </button>
+
+            <button
+              onClick={handleExport}
+              className="px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/30 text-xs font-bold transition-all flex items-center gap-2"
+              title="Export Beat"
+            >
+              <Icons.Download className="w-4 h-4" />
+              <span className="hidden sm:inline">EXPORT</span>
+            </button>
+
+            <div className="h-6 w-px bg-white/10 mx-2"></div>
+
+            <button
+              onClick={() => {
+                AudioEngine.init();
+                setIsPlaying(!isPlaying);
+              }}
+              className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${isPlaying ? 'bg-red-500 hover:bg-red-600 animate-pulse' : 'bg-green-500 hover:bg-green-600'}`}
+            >
+              {isPlaying ? <Icons.Pause /> : <Icons.Play />}
+            </button>
           </div>
         </div>
+
 
         {/* Studio Workspace */}
         <div className="flex-1 relative overflow-y-auto overflow-x-hidden bg-slate-900/80">

@@ -82,8 +82,8 @@ export default function BeatGrid({
                                                 ${isActive 
                                                     ? `bg-gradient-to-b ${instData.color} shadow-[0_0_10px_rgba(255,255,255,0.3)] scale-100` 
                                                     : isBeat ? 'bg-white/10' : 'bg-white/5'}
-                                                ${isCurrent ? 'brightness-150 ring-2 ring-white/50 scale-105 z-10' : ''}
-                                                hover:scale-110 hover:z-20
+                                                ${isCurrent ? 'brightness-150 ring-2 ring-white/50 z-10' : ''}
+                                                hover:scale-105 hover:z-20
                                                 ${!isActive && isGhost ? 'border-2 border-dashed border-white/40' : ''} 
                                             `}
                                         >

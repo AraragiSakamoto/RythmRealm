@@ -164,6 +164,51 @@ export const useGameData = (user) => {
         return null;
     };
 
+    // --- Export / Import ---
+    const exportBeat = (beat) => {
+        const dataStr = JSON.stringify(beat, null, 2);
+        const blob = new Blob([dataStr], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `${beat.name.replace(/\s+/g, '_')}_beat.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    const importBeat = async (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const beat = JSON.parse(e.target.result);
+                    // Simple validation: check for grid
+                    if (!beat.grid) throw new Error("Invalid beat file");
+
+                    // Add imported beat to saved beats with new ID
+                    const newBeat = {
+                        ...beat,
+                        id: Date.now(),
+                        name: `${beat.name} (Imported)`,
+                        cloudSaved: false // Treat as local
+                    };
+
+                    setSavedBeats(prev => {
+                        const updated = [...prev, newBeat];
+                        localStorage.setItem('rhythmRealm_savedBeats', JSON.stringify(updated));
+                        return updated;
+                    });
+
+                    resolve(newBeat);
+                } catch (err) {
+                    reject(err);
+                }
+            };
+            reader.readAsText(file);
+        });
+    };
+
     return {
         savedBeats,
         levelProgress,
@@ -175,6 +220,9 @@ export const useGameData = (user) => {
         deleteBeat,
         completeLevel,
         checkAchievements,
-        loadUserBeats
+        checkAchievements,
+        loadUserBeats,
+        exportBeat,
+        importBeat
     };
 };

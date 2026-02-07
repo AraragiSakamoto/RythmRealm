@@ -156,36 +156,50 @@ export default function LevelPlay({
           </div>
         </div>
 
-        {/* Grid Area */}
-        <div className="flex-1 relative overflow-y-auto overflow-x-hidden bg-gradient-to-b from-slate-900/50 to-black/80">
-          <div className="absolute inset-0 p-4">
+        {/* Grid Area - Remodeled */}
+        <div className="flex-1 relative overflow-y-auto overflow-x-hidden bg-gradient-to-b from-slate-900/50 to-black/80 flex items-center justify-center p-4">
+          <div className={`
+                w-full max-w-6xl mx-auto transition-all duration-500
+                ${isPlaying ? 'scale-[1.02] filter brightness-110' : 'scale-100'}
+            `}>
                 <BeatGrid 
                     grid={grid}
               activeTracks={activeTracks || []}
-              // activeInstrumentIds removed
                     instrumentConfig={instrumentConfig}
                     activeSoundPack={activeSoundPack}
                     currentStep={currentStep}
                     onToggleStep={handleToggleStep}
-                    onInstrumentClick={(inst) => setActiveSoundLab(inst)}
-                    // onRemoveTrack not enabled in levels usually
+              onInstrumentClick={(inst) => setActiveSoundLab(inst)}
               lockedInstruments={[]} 
                     tutorialActive={tutorialActive}
-              guidePattern={currentLevel.id <= 5 ? currentLevel.premadePattern : null} // Enable guides for early levels
+              guidePattern={currentLevel.id <= 5 ? currentLevel.premadePattern : null}
               isMobile={false} 
                 />
             </div>
-             {/* Play Controls Overlay */}
-            <div className="absolute bottom-6 right-6 flex items-center gap-4 pointer-events-auto">
+
+          {/* Play Controls - Remodeled Floating Bar */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-6 pointer-events-auto bg-black/60 backdrop-blur-xl border border-white/10 px-8 py-3 rounded-full shadow-2xl z-30">
                  <button
                     onClick={() => {
                         AudioEngine.init();
                         setIsPlaying(!isPlaying);
                     }}
-                    className={`w-16 h-16 rounded-full flex items-center justify-center text-3xl transition-all shadow-lg ${isPlaying ? 'bg-red-500 hover:bg-red-600 animate-pulse' : 'bg-green-500 hover:bg-green-600'}`}
+              className={`
+                        w-14 h-14 rounded-full flex items-center justify-center text-2xl transition-all shadow-[0_0_20px_rgba(0,0,0,0.5)] border-2 border-white/10
+                        ${isPlaying
+                  ? 'bg-red-500 hover:bg-red-600 animate-pulse shadow-[0_0_20px_rgba(239,68,68,0.4)]'
+                  : 'bg-green-500 hover:bg-green-600 shadow-[0_0_20px_rgba(34,197,94,0.4)] hover:scale-110'}
+                    `}
                   >
-                    {isPlaying ? '⏸' : '▶'}
+              {isPlaying ? <Icons.Pause className="w-6 h-6 text-white" /> : <Icons.Play className="w-6 h-6 text-white ml-1" />}
                   </button>
+
+            <div className="h-8 w-px bg-white/10"></div>
+
+            <div className="flex flex-col text-xs font-bold text-slate-400">
+              <span>TEMPO</span>
+              <span className="text-white text-lg leading-none">{currentLevel.tempo || 120}</span>
+            </div>
             </div>
         </div>
         
