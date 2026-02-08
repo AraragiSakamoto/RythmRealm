@@ -20,43 +20,45 @@ export default function BeatGrid({
         <div className="w-full max-w-7xl mx-auto p-2 sm:p-4 overflow-x-auto perspective-container">
             <div className="space-y-4 pb-32 sm:pb-12" style={{ transformOrigin: 'center top' }}>
                 {activeTracks.map((track, index) => {
-                    const instData = INSTRUMENTS_DATA[track.type];
+                    const instData = INSTRUMENTS_DATA[track.type] || { name: 'Unknown', color: 'bg-gray-500', icon: <Icons.HelpCircle /> }; // Fallback
                     const uniqueId = track.id;
                     const variantIndex = instrumentConfig[track.type] || 0;
                     const variantName = SOUND_VARIANTS[track.type]?.[variantIndex]?.name || 'Classic';
+                    const iconColorClass = instData.color ? instData.color.replace('bg-', 'text-') : 'text-white';
                     
                     return (
                         <div 
                             key={uniqueId} 
                             className={`
-                                flex items-center gap-4 p-3 rounded-2xl transition-all duration-300 border border-white/5 group relative
+                                flex items-center gap-4 p-2 sm:p-3 rounded-2xl transition-all duration-300 border border-white/5 group relative
                                 ${index % 2 === 0 ? 'bg-white/[0.02]' : 'bg-transparent'}
                                 hover:bg-white/[0.04] hover:border-white/10 hover:shadow-[0_0_20px_rgba(0,0,0,0.2)]
                             `}
                         >
-                            {/* Instrument Control */}
-                            <div className="w-14 sm:w-40 shrink-0 flex flex-col sm:flex-row items-center gap-4 border-r border-white/5 pr-4 relative">
+                            {/* Instrument Control - Sticky Left */}
+                            <div className="sticky left-0 z-20 bg-slate-950/90 backdrop-blur-md w-14 sm:w-40 shrink-0 flex flex-col sm:flex-row items-center gap-4 border-r border-white/5 pr-4 rounded-l-xl shadow-[5px_0_15px_-5px_rgba(0,0,0,0.5)]">
                                 <button
                                     onClick={() => onInstrumentClick && onInstrumentClick(track.type)}
                                     className={`
-                                        w-12 h-12 rounded-xl flex items-center justify-center text-2xl shadow-lg transition-all
+                                        w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-xl sm:text-2xl shadow-lg transition-all
                                         bg-gradient-to-br from-gray-800 to-black border border-white/10
                                         hover:scale-105 active:scale-95 group-hover:border-${instData.color?.split('-')[1] || 'white'}/50
+                                        ${iconColorClass}
                                     `}
-                                    style={{ color: instData.hex || '#fff' }} // Assuming hex prop exists or fallback
                                     title={instData.name}
                                 >
                                     {instData.icon}
                                 </button>
                                 <div className="hidden sm:block text-left min-w-0 flex-1">
-                                    <div className="font-bold text-sm tracking-wide text-slate-200">{instData.name}</div>
-                                    <div className="text-[10px] uppercase font-bold tracking-wider text-slate-500 group-hover:text-neon-cyan transition-colors">{variantName}</div>
+                                    <div className="font-bold text-sm tracking-wide text-slate-200 truncate">{instData.name}</div>
+                                    <div className="text-[10px] uppercase font-bold tracking-wider text-slate-500 group-hover:text-neon-cyan transition-colors truncate">{variantName}</div>
                                 </div>
 
                                 {onRemoveTrack && !lockedInstruments.includes(track.type) && (
                                     <button 
                                         onClick={() => onRemoveTrack(uniqueId)}
                                         className="absolute -left-2 -top-2 opacity-0 group-hover:opacity-100 transition-opacity bg-red-500/80 hover:bg-red-500 text-white rounded-full p-1 shadow-lg"
+                                        title="Remove Track"
                                     >
                                         <Icons.Trash className="w-3 h-3" />
                                     </button>
@@ -64,7 +66,7 @@ export default function BeatGrid({
                             </div>
 
                             {/* The Grid Steps */}
-                            <div className="flex-1 flex gap-1.5 overflow-x-auto pb-1 sm:pb-0 no-scrollbar touch-pan-x items-center">
+                            <div className="flex-1 flex gap-1 sm:gap-1.5 overflow-x-auto pb-2 sm:pb-0 no-scrollbar touch-pan-x items-center pl-2">
                                 {Array(STEPS).fill(0).map((_, step) => {
                                     const isActive = grid[uniqueId]?.[step];
                                     const isCurrent = currentStep === step;
@@ -79,13 +81,14 @@ export default function BeatGrid({
                                             onClick={() => onToggleStep(uniqueId, step)}
                                             className={`
                                                 relative shrink-0 transition-all duration-200 rounded sm:rounded-md
-                                                ${isMobile ? 'w-8 h-10' : 'w-9 h-14'}
+                                                ${isMobile ? 'w-7 h-10' : 'w-8 h-12 lg:w-9 lg:h-14'}
                                                 ${isActive 
                                                     ? `bg-gradient-to-b ${instData.color || 'from-neon-purple to-purple-600'} shadow-[0_0_12px_rgba(139,92,246,0.5)] scale-100 border border-white/20`
                                                     : isBeat ? 'bg-white/[0.08]' : 'bg-white/[0.03]'}
                                                 ${isCurrent ? 'ring-2 ring-white z-10 scale-105 brightness-150 shadow-[0_0_15px_rgba(255,255,255,0.4)]' : ''}
                                                 hover:bg-white/20 hover:scale-105
-                                                ${!isActive && isGhost ? 'border border-dashed border-white/40 opacity-50' : ''} 
+                                                ${!isActive && isGhost ? 'border border-dashed border-white/40 opacity-50' : ''}
+                                                ${!isActive && !isGhost ? 'border border-transparent' : ''}
                                             `}
                                         >
                                             {/* Step Marker */}

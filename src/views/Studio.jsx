@@ -204,10 +204,10 @@ export default function Studio({
         {activeSoundLab && (
           <div className="absolute inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
                  <SoundLab 
-                    instrument={activeSoundLab} 
-                    settings={{}} 
+              instKey={activeSoundLab}
+              config={instrumentConfig?.[activeSoundLab] || {}} 
                     onClose={() => setActiveSoundLab(null)}
-                    onChange={() => {}} 
+              onChange={() => { }} // TODO: Implement state update
                  />
             </div>
         )}

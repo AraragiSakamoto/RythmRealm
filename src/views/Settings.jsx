@@ -70,7 +70,10 @@ export default function Settings({
           <button onClick={() => onSetView('splash')} className="glass-button p-2 sm:p-3 rounded-xl sm:rounded-2xl shadow-lg transition-all active:scale-95" aria-label={t('back')}>
             {Icons.ChevronLeft ? <Icons.ChevronLeft /> : <span>←</span>}
           </button>
-          <h2 className="text-xl sm:text-3xl font-display font-black bg-gradient-to-r from-neon-cyan via-neon-purple to-neon-pink bg-clip-text text-transparent neon-text tracking-wide">⚙️ {t('settings')?.toUpperCase()}</h2>
+          <h2 className="text-xl sm:text-3xl font-display font-black bg-gradient-to-r from-neon-cyan via-neon-purple to-neon-pink bg-clip-text text-transparent neon-text tracking-wide flex items-center gap-3">
+            <Icons.Settings className="w-8 h-8 text-neon-purple" />
+            {t('settings')?.toUpperCase()}
+          </h2>
           <div className="w-10 sm:w-12"></div>
         </div>
 
@@ -78,7 +81,9 @@ export default function Settings({
           {/* Volume Control */}
           <div className="glass-panel rounded-3xl p-6 border-neon-purple/30 shadow-[0_0_15px_rgba(139,92,246,0.1)]">
             <h3 className="text-xl font-display font-black mb-4 flex items-center gap-3">
-              <span className="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center text-black shadow-lg">🔊</span>
+              <span className="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center text-black shadow-lg">
+                <Icons.Volume className="w-6 h-6" />
+              </span>
               {t('masterVolume')}
             </h3>
             <input
@@ -94,7 +99,9 @@ export default function Settings({
           {/* Background Music Toggle */}
           <div className="glass-panel rounded-3xl p-6 border-neon-pink/30 shadow-[0_0_15px_rgba(236,72,153,0.1)]">
             <h3 className="text-xl font-display font-black mb-4 flex items-center gap-3">
-              <span className="w-10 h-10 bg-gradient-to-br from-pink-400 to-rose-500 rounded-xl flex items-center justify-center text-black shadow-lg">🎵</span>
+              <span className="w-10 h-10 bg-gradient-to-br from-pink-400 to-rose-500 rounded-xl flex items-center justify-center text-black shadow-lg">
+                <Icons.Music className="w-6 h-6" />
+              </span>
               {t('backgroundMusic')}
             </h3>
             <div className="flex items-center justify-between">
@@ -112,7 +119,9 @@ export default function Settings({
           {/* Visual Themes */}
           <div className="glass-panel rounded-3xl p-6 border-neon-cyan/30 shadow-[0_0_15px_rgba(6,182,212,0.1)]">
             <h3 className="text-xl font-display font-black mb-4 flex items-center gap-3">
-              <span className="w-10 h-10 bg-gradient-to-br from-violet-400 to-purple-500 rounded-xl flex items-center justify-center text-black shadow-lg">🎨</span>
+              <span className="w-10 h-10 bg-gradient-to-br from-violet-400 to-purple-500 rounded-xl flex items-center justify-center text-black shadow-lg">
+                <Icons.Palette className="w-6 h-6" />
+              </span>
               {t('visualThemes')}
             </h3>
             <div className="grid grid-cols-3 gap-3">
@@ -122,7 +131,7 @@ export default function Settings({
                   onClick={() => setCurrentThemeId(theme.id)}
                   className={`p-3 rounded-2xl bg-gradient-to-br ${theme.primary} hover:scale-105 transition-all flex flex-col items-center gap-2 ${currentTheme?.id === theme.id ? 'ring-4 ring-white shadow-xl scale-105' : 'opacity-70 hover:opacity-100 hover:shadow-lg'}`}
                 >
-                  <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                  <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm text-2xl">
                     {theme.id === 'ocean' && '🌊'}
                     {theme.id === 'sunset' && '🌦'}
                     {theme.id === 'golden' && '✨'}
@@ -139,7 +148,9 @@ export default function Settings({
           {/* Accessibility Settings */}
           <div className="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 backdrop-blur-md rounded-3xl p-6 border border-yellow-500/40 shadow-[0_0_15px_rgba(234,179,8,0.1)]">
             <h3 className="text-xl font-display font-black mb-4 flex items-center gap-3">
-              <span className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center text-black shadow-lg">♿</span>
+              <span className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center text-black shadow-lg">
+                <Icons.Accessibility className="w-6 h-6" />
+              </span>
               {t('accessibility')}
             </h3>
             <p className="text-sm text-white/70 mb-4 font-medium">Make the app easier to use for everyone</p>
@@ -148,7 +159,7 @@ export default function Settings({
               {/* Text-to-Speech */}
               <div className="flex items-center justify-between p-3 bg-black/30 rounded-2xl border border-white/5">
                 <div className="flex items-center gap-3">
-                  <span className="text-2xl">🔊</span>
+                  <Icons.Volume className="w-6 h-6 text-yellow-400" />
                   <div>
                     <div className="font-bold">{t('textToSpeech')}</div>
                     <div className="text-xs opacity-70">{t('textToSpeechDesc')}</div>
@@ -172,7 +183,7 @@ export default function Settings({
                {/* High Contrast Mode */}
               <div className="flex items-center justify-between p-3 bg-black/30 rounded-2xl border border-white/5">
                 <div className="flex items-center gap-3">
-                  <span className="text-2xl">🔆</span>
+                  <Icons.Sun className="w-6 h-6 text-yellow-400" />
                   <div>
                     <div className="font-bold">{t('highContrast')}</div>
                     <div className="text-xs opacity-70">{t('highContrastDesc')}</div>
@@ -190,7 +201,7 @@ export default function Settings({
               {/* Large Text Mode */}
               <div className="flex items-center justify-between p-3 bg-black/30 rounded-2xl border border-white/5">
                 <div className="flex items-center gap-3">
-                  <span className="text-2xl">🔤</span>
+                  <Icons.Type className="w-6 h-6 text-yellow-400" />
                   <div>
                     <div className="font-bold">{t('largeText')}</div>
                     <div className="text-xs opacity-70">{t('largeTextDesc')}</div>
@@ -208,7 +219,7 @@ export default function Settings({
               {/* Keyboard Navigation */}
               <div className="flex items-center justify-between p-3 bg-black/30 rounded-2xl border border-white/5">
                 <div className="flex items-center gap-3">
-                  <span className="text-2xl">⌨️</span>
+                  <Icons.Keyboard className="w-6 h-6 text-yellow-400" />
                   <div>
                     <div className="font-bold">{t('keyboardNav')}</div>
                     <div className="text-xs opacity-70">{t('keyboardNavDesc')}</div>
@@ -226,7 +237,7 @@ export default function Settings({
               {/* Voice Control - Hands Free */}
               <div className="flex items-center justify-between p-3 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-2xl border border-purple-400/30">
                 <div className="flex items-center gap-3">
-                  <span className="text-2xl">🎙️</span>
+                  <Icons.Mic className="w-6 h-6 text-purple-400" />
                   <div>
                     <div className="font-bold">{t('voiceControl')}</div>
                     <div className="text-xs opacity-70">{t('voiceControlDesc')}</div>
@@ -245,7 +256,8 @@ export default function Settings({
                           console.error(err);
                         const utterance = new SpeechSynthesisUtterance('Microphone access denied. Please allow microphone access in your browser to use voice control.');
                         window.speechSynthesis.speak(utterance);
-                        alert('🎙️ Microphone access required!\n\nPlease allow microphone access in your browser to use voice control.\n\nClick the microphone icon in your browser\'s address bar to enable it.');
+                        window.speechSynthesis.speak(utterance);
+                        alert('Microphone access required!\n\nPlease allow microphone access in your browser to use voice control.\n\nClick the microphone icon in your browser\'s address bar to enable it.');
                       }
                     } else {
                       setVoiceControlEnabled(false);
@@ -263,13 +275,20 @@ export default function Settings({
                 <div className="p-4 bg-purple-500/20 rounded-2xl border border-purple-400/30 animate-fade-in">
                   <div className="flex items-center gap-2 mb-3">
                     <div className={`w-3 h-3 rounded-full ${isListening ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`}></div>
-                    <span className="font-bold text-sm w-full">{isListening ? '🎤 Listening...' : '🔇 Not listening'}</span>
+                    <div className={`w-3 h-3 rounded-full ${isListening ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`}></div>
+                    <div className="flex items-center gap-2 font-bold text-sm w-full">
+                      {isListening ? <Icons.Mic className="w-4 h-4" /> : <Icons.MicOff className="w-4 h-4" />}
+                      <span>{isListening ? 'Listening...' : 'Not listening'}</span>
+                    </div>
                   </div>
                   {lastVoiceCommand && (
                     <div className="text-xs opacity-70 mb-3 bg-black/20 p-2 rounded-lg">Last command: <span className="text-neon-cyan font-bold">"{lastVoiceCommand}"</span></div>
                   )}
                   <div className="text-xs opacity-80">
-                    <div className="font-bold mb-2">🗣️ Say these commands:</div>
+                    <div className="font-bold mb-2 flex items-center gap-2">
+                      <Icons.Mic className="w-3 h-3" />
+                      Say these commands:
+                    </div>
                     <div className="grid grid-cols-2 gap-2 text-[10px] sm:text-xs">
                       <span className="bg-white/5 p-1 rounded">"Play" / "Stop"</span>
                       <span className="bg-white/5 p-1 rounded">"Go home"</span>
@@ -287,7 +306,7 @@ export default function Settings({
               {/* Language Selector */}
               <div className="p-4 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-2xl border border-blue-400/30 shadow-[0_0_15px_rgba(59,130,246,0.1)]">
                 <div className="flex items-center gap-3 mb-3">
-                  <span className="text-2xl">🌐</span>
+                  <Icons.Globe className="w-8 h-8 text-blue-400" />
                   <div>
                     <div className="font-bold">{t('language')}</div>
                     <div className="text-xs opacity-70">{t('languageDesc')}</div>
@@ -334,16 +353,17 @@ export default function Settings({
                     window.speechSynthesis.speak(utterance);
                   }
                 }}
-                className={`w-full p-4 rounded-2xl font-bold text-lg transition-all shadow-lg transform active:scale-95 ${accessibilityMode ? 'bg-gradient-to-r from-green-400 to-emerald-500 text-black' : 'bg-gradient-to-r from-yellow-400 to-orange-500 text-black hover:from-yellow-300 hover:to-orange-400'}`}
+                className={`w-full p-4 rounded-2xl font-bold text-lg transition-all shadow-lg transform active:scale-95 flex items-center justify-center gap-3 ${accessibilityMode ? 'bg-gradient-to-r from-green-400 to-emerald-500 text-black' : 'bg-gradient-to-r from-yellow-400 to-orange-500 text-black hover:from-yellow-300 hover:to-orange-400'}`}
                 aria-label={accessibilityMode ? 'Disable all accessibility features' : 'Enable all accessibility features'}
               >
-                {accessibilityMode ? `✔ ${t('allEnabled')}` : `☑️ ${t('enableAll')}`}
+                {accessibilityMode ? <Icons.Check className="w-6 h-6" /> : <Icons.Check className="w-6 h-6 opacity-50" />}
+                {accessibilityMode ? t('allEnabled') : t('enableAll')}
               </button>
 
               {/* Screen Reader Info */}
               <div className="p-3 bg-blue-500/20 rounded-2xl border border-blue-400/30">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-lg">💡</span>
+                  <Icons.Info className="w-5 h-5 text-blue-400" />
                   <span className="font-bold text-sm">Screen Reader Tips</span>
                 </div>
                 <ul className="text-xs opacity-80 space-y-1 ml-6 list-disc">
@@ -359,7 +379,9 @@ export default function Settings({
           {/* Sound Packs */}
           <div className="glass-panel rounded-3xl p-6 border-neon-cyan/30 shadow-[0_0_15px_rgba(6,182,212,0.1)]">
             <h3 className="text-xl font-display font-black mb-4 flex items-center gap-3">
-              <span className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center text-black shadow-lg">🎵</span>
+              <span className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center text-black shadow-lg">
+                <Icons.Music className="w-6 h-6" />
+              </span>
               Sound Packs
             </h3>
             <div className="space-y-2">
@@ -367,7 +389,9 @@ export default function Settings({
                 onClick={() => handleApplySoundPack('classic')}
                 className={`w-full p-4 rounded-2xl text-left flex items-center gap-4 transition-all ${activeSoundPack === 'classic' ? 'bg-indigo-500/20 border-2 border-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.3)]' : 'bg-white/5 hover:bg-white/10 border border-white/10'}`}
               >
-                <span className="text-2xl filter drop-shadow">🥁 </span>
+                <span className="text-2xl filter drop-shadow">
+                  <Icons.Music className="w-8 h-8" />
+                </span>
                 <div className="flex-1">
                   <div className={`font-bold ${activeSoundPack === 'classic' ? 'text-white' : 'text-slate-300'}`}>Classic Kit</div>
                   <div className="text-xs opacity-60">Acoustic drums & piano</div>
@@ -379,7 +403,9 @@ export default function Settings({
                 onClick={() => handleApplySoundPack('electronic')}
                 className={`w-full p-4 rounded-2xl text-left flex items-center gap-4 transition-all ${activeSoundPack === 'electronic' ? 'bg-cyan-500/20 border-2 border-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.3)]' : 'bg-white/5 hover:bg-white/10 border border-white/10'}`}
               >
-                <span className="text-2xl filter drop-shadow">🎹</span>
+                <span className="text-2xl filter drop-shadow">
+                  <Icons.Music className="w-8 h-8" />
+                </span>
                 <div className="flex-1">
                   <div className={`font-bold ${activeSoundPack === 'electronic' ? 'text-white' : 'text-slate-300'}`}>Electronic</div>
                   <div className="text-xs opacity-60">Synth, 808s & Trap</div>
@@ -391,7 +417,9 @@ export default function Settings({
                 onClick={() => handleApplySoundPack('rock')}
                 className={`w-full p-4 rounded-2xl text-left flex items-center gap-4 transition-all ${activeSoundPack === 'rock' ? 'bg-red-500/20 border-2 border-red-400 shadow-[0_0_15px_rgba(239,68,68,0.3)]' : 'bg-white/5 hover:bg-white/10 border border-white/10'}`}
               >
-                <span className="text-2xl filter drop-shadow">🎸</span>
+                <span className="text-2xl filter drop-shadow">
+                  <Icons.Music className="w-8 h-8" />
+                </span>
                 <div className="flex-1">
                   <div className={`font-bold ${activeSoundPack === 'rock' ? 'text-white' : 'text-slate-300'}`}>Rock Band</div>
                   <div className="text-xs opacity-60">Punchy drums & organ</div>
@@ -404,7 +432,9 @@ export default function Settings({
           {/* App Info */}
           <div className="glass-panel rounded-3xl p-6 border-white/10">
             <h3 className="text-xl font-display font-black mb-4 flex items-center gap-3">
-              <span className="w-10 h-10 bg-gradient-to-br from-slate-400 to-slate-500 rounded-xl flex items-center justify-center text-black shadow-lg">ℹ️</span>
+              <span className="w-10 h-10 bg-gradient-to-br from-slate-400 to-slate-500 rounded-xl flex items-center justify-center text-black shadow-lg">
+                <Icons.Info className="w-6 h-6" />
+              </span>
               {t('about')}
             </h3>
             <div className="space-y-2 text-sm opacity-80 font-medium">

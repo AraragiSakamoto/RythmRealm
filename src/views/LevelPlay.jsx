@@ -207,8 +207,8 @@ export default function LevelPlay({
         {activeSoundLab && (
             <div className="absolute inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
                  <SoundLab 
-                    instrument={activeSoundLab} 
-                    settings={{}} // Needs settings passed down
+              instKey={activeSoundLab}
+              config={instrumentConfig?.[activeSoundLab] || {}} 
                     onClose={() => setActiveSoundLab(null)}
                     onChange={() => {}} 
                  />
