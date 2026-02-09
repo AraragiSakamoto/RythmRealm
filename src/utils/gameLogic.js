@@ -13,6 +13,8 @@ export const checkLevelCompletion = (grid, level) => {
   if (!level || !level.requirements) return { score: 100, completed: true };
 
   const { mustInclude } = level.requirements;
+  const premade = level.premadePattern || {};
+
   let passed = true;
   let score = 0;
   let totalCriteria = 0;
@@ -20,24 +22,49 @@ export const checkLevelCompletion = (grid, level) => {
   if (mustInclude) {
     Object.entries(mustInclude).forEach(([instType, count]) => {
       totalCriteria++;
-      // Aggregate notes from all tracks of this type (e.g., 'kick-1', 'kick-2' for 'kick')
-      let current = 0;
+
+      // Calculate active notes (User + Premade)
+      let currentTotal = 0;
       Object.keys(grid).forEach(trackId => {
         if (trackId.startsWith(instType)) {
-          current += grid[trackId]?.filter(Boolean).length || 0;
+          currentTotal += grid[trackId]?.filter(Boolean).length || 0;
         }
       });
 
-      if (current >= count) {
+      // Calculate Premade notes for this instrument type
+      let premadeCount = 0;
+      if (premade[instType]) {
+        // If premade is [0, 8] (array of steps)
+        if (Array.isArray(premade[instType])) {
+          premadeCount = premade[instType].length;
+        }
+      }
+
+      // Target to be Added by User = Total Required - Premade
+      // If result is negative, it means premade already covers it (shouldn't happen in good design), treat as 0 needed.
+      const targetAdded = Math.max(0, count - premadeCount);
+
+      // Notes Added by User = Current Total - Premade Total
+      // (Clamp at 0 in case user deleted premade notes)
+      const userAdded = Math.max(0, currentTotal - premadeCount);
+
+      // If no notes need to be added for this instrument, it passes automatically
+      if (targetAdded === 0) {
         score++;
       } else {
-        passed = false;
-        // Partial score
-        score += (current / count); 
+        if (userAdded >= targetAdded) {
+          score++;
+        } else {
+          passed = false;
+            score += (userAdded / targetAdded);
+          }
       }
     });
   }
   
   const finalScore = totalCriteria === 0 ? 100 : Math.round((score / totalCriteria) * 100);
-  return { score: finalScore, completed: passed && finalScore === 100 };
+  // Ensure we don't accidentally exceed 100 or drop below 0
+  const clampedScore = Math.max(0, Math.min(100, finalScore));
+
+  return { score: clampedScore, completed: passed && clampedScore === 100 };
 };

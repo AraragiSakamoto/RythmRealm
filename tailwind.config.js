@@ -49,6 +49,12 @@ export default {
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'hero-glow': 'conic-gradient(from 180deg at 50% 50%, #2E5CE6 0deg, #9D00FF 180deg, #FF007F 360deg)',
+      },
+      boxShadow: {
+        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.36)',
+      },
+      dropShadow: {
+        'neon': '0 0 15px rgba(255, 255, 255, 0.3)',
       }
     },
   },

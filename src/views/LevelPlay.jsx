@@ -6,6 +6,8 @@ import { checkLevelCompletion } from '../utils/gameLogic';
 import { SoundLab } from './components/SoundLab';
 import BeatGrid from './components/BeatGrid';
 
+import LevelBackground from './components/LevelBackground'; // Import the new component
+
 export default function LevelPlay({
     currentLevel,
     grid,
@@ -28,7 +30,8 @@ export default function LevelPlay({
     instrumentConfig,
     activeSoundPack,
     currentStep,
-    tutorialActive
+  tutorialActive,
+  onCompleteLevel
 }) {
     if (!currentLevel) return null;
     
@@ -53,12 +56,15 @@ export default function LevelPlay({
   const guidePattern = currentLevel.premadePattern;
 
     return (
-      <div className={`h-screen w-full flex flex-col overflow-hidden font-sans ${highContrastMode ? 'high-contrast' : ''} ${largeTextMode ? 'large-text' : ''} bg-slate-950`}>
-        
+      <div className={`h-screen w-full flex flex-col overflow-hidden font-sans ${highContrastMode ? 'high-contrast' : ''} ${largeTextMode ? 'large-text' : ''} bg-black relative`}>
+
+        {/* Animated Background */}
+        <LevelBackground renderScene={currentLevel.renderScene} />
+
         <AchievementNotification achievement={achievementNotification} />
 
         {/* Level Header */}
-        <div className="glass-panel border-b border-white/10 px-4 py-3 landscape:py-1 flex items-center justify-between shrink-0 z-20">
+        <div className="glass-panel border-b border-white/10 px-4 py-3 landscape:py-1 flex items-center justify-between shrink-0 z-20 relative">
           <button
             onClick={() => {
               setIsPlaying(false);
@@ -101,11 +107,27 @@ export default function LevelPlay({
                 <span className="text-4xl animate-pulse-slow">👋</span>
                 </div>
               <h2 className="text-4xl font-display font-black text-white mb-3 tracking-tight">Welcome to the Studio!</h2>
-                <p className="text-slate-300 text-lg mb-8 leading-relaxed">
+              <p className="text-slate-300 text-lg mb-6 leading-relaxed">
                 You've got a <span className="text-neon-cyan font-bold">Rock Beat</span> started.
-                    <br />
-                Your goal is to <span className="text-white font-bold border-b-2 border-neon-purple">finish the pattern</span>.
                 </p>
+
+              <div className="bg-white/5 rounded-xl p-4 mb-6 text-left border border-white/10">
+                <h3 className="text-neon-purple font-bold text-sm uppercase tracking-wider mb-2">How it works:</h3>
+                <ul className="space-y-2 text-slate-300 text-sm">
+                  <li className="flex items-start gap-2">
+                    <span className="bg-slate-700 text-white rounded px-1.5 py-0.5 text-xs font-bold mt-0.5">1</span>
+                    <span>The grid is divided into <strong className="text-white">4 BEATS</strong> (1, 2, 3, 4).</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="bg-slate-700 text-white rounded px-1.5 py-0.5 text-xs font-bold mt-0.5">2</span>
+                    <span>Each beat has <strong className="text-white">4 STEPS</strong> (squares).</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="bg-slate-700 text-white rounded px-1.5 py-0.5 text-xs font-bold mt-0.5">3</span>
+                    <span>Your goal is to <span className="text-white font-bold border-b-2 border-neon-purple">finish the pattern</span> by filling in the missing steps!</span>
+                  </li>
+                </ul>
+              </div>
                 <div className="space-y-4">
                     <button
                         onClick={() => setShowLevelTutorial(false)}
@@ -120,11 +142,17 @@ export default function LevelPlay({
         )}
 
         {/* Objective Banner */}
-        <div className="glass-panel border-b border-white/5 px-4 py-2 flex flex-col items-center justify-center shrink-0 z-10 space-y-2">
+        <div className="glass-panel border-b border-white/5 px-4 py-2 flex flex-col items-center justify-center shrink-0 z-10 space-y-2 relative">
           <div className="text-white font-bold text-sm font-display tracking-wide">{currentLevel.objective}</div>
           <div className="flex flex-wrap justify-center gap-2">
             {Object.entries(currentLevel.requirements?.mustInclude || {}).map(([inst, count]) => {
-              const current = grid[inst]?.filter(Boolean).length || 0;
+              // Calculate current count by summing notes from all tracks of this type
+              const current = activeTracks
+                .filter(t => t.type === inst)
+                .reduce((sum, track) => {
+                  return sum + (grid[track.id]?.filter(Boolean).length || 0);
+                }, 0);
+
               const met = current >= count;
               return (
                 <div key={inst} className={`px-2 py-0.5 rounded-md text-[10px] uppercase font-bold border ${met ? 'bg-green-500/20 text-green-400 border-green-500/30 shadow-[0_0_10px_rgba(74,222,128,0.2)]' : 'bg-white/5 text-slate-400 border-white/10'}`}>
@@ -143,7 +171,7 @@ export default function LevelPlay({
         )}
 
         {/* Progress Bar */}
-        <div className="bg-black/40 px-4 py-2 shrink-0 border-t border-white/5">
+        <div className="bg-black/40 px-4 py-2 shrink-0 border-t border-white/5 relative z-10">
           <div className="flex justify-between text-[10px] uppercase font-bold text-slate-500 mb-1 tracking-wider">
             <span>Completion</span>
             <span className={completion.score >= 100 ? 'text-neon-green' : 'text-neon-purple'}>{completion.score}%</span>
@@ -157,7 +185,7 @@ export default function LevelPlay({
         </div>
 
         {/* Grid Area - Remodeled */}
-        <div className="flex-1 relative overflow-y-auto overflow-x-hidden bg-gradient-to-b from-slate-900/50 to-black/80 flex items-center justify-center p-4">
+        <div className="flex-1 relative overflow-y-auto overflow-x-hidden bg-transparent flex items-center justify-center p-4 z-10">
           <div className={`
                 w-full max-w-6xl mx-auto transition-all duration-500
                 ${isPlaying ? 'scale-[1.02] filter brightness-110' : 'scale-100'}
@@ -194,12 +222,28 @@ export default function LevelPlay({
               {isPlaying ? <Icons.Pause className="w-6 h-6 text-white" /> : <Icons.Play className="w-6 h-6 text-white ml-1" />}
                   </button>
 
-            <div className="h-8 w-px bg-white/10"></div>
-
             <div className="flex flex-col text-xs font-bold text-slate-400">
               <span>TEMPO</span>
               <span className="text-white text-lg leading-none">{currentLevel.tempo || 120}</span>
             </div>
+
+            {/* Finish Button */}
+            {completion.completed && (
+              <div className="absolute left-full ml-6 animate-bounce-in">
+                <button
+                  onClick={() => {
+                    AudioEngine.stopAll();
+                    setIsPlaying(false);
+                    if (onCompleteLevel) onCompleteLevel(completion.score);
+                    onSetView('levels'); // Go back to levels
+                  }}
+                  className="bg-green-500 hover:bg-green-400 text-slate-900 font-black font-display text-lg px-6 py-3 rounded-xl shadow-[0_0_20px_rgba(74,222,128,0.5)] flex items-center gap-2 hover:scale-105 transition-all whitespace-nowrap"
+                >
+                  <span>FINISH</span>
+                  <Icons.Check className="w-5 h-5" />
+                </button>
+              </div>
+            )}
             </div>
         </div>
         

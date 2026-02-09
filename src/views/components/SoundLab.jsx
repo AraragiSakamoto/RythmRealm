@@ -1,7 +1,23 @@
 import React from 'react';
 import { Icons } from './Icons';
+import { INSTRUMENTS_DATA, SOUND_VARIANTS } from '../../utils/constants';
 
-export const SoundLab = ({ instKey, config, onChange, onClose }) => {
+export const SoundLab = ({
+  instKey,
+  config,
+  onChange,
+  onClose,
+  instrumentConfig,
+  setInstrumentConfig,
+  activeTracks,
+  setActiveTracks
+}) => {
+  // Find current track info
+  const currentTrack = activeTracks?.find(t => t.id === instKey);
+  const currentType = currentTrack?.type || 'kick';
+  const currentVariantIndex = instrumentConfig?.[currentType] || 0;
+  const variants = SOUND_VARIANTS[currentType] || [];
+
   // Close on Escape key
   React.useEffect(() => {
     const handleEscape = (e) => {
@@ -11,19 +27,86 @@ export const SoundLab = ({ instKey, config, onChange, onClose }) => {
     return () => window.removeEventListener('keydown', handleEscape);
   }, [onClose]);
 
+  const handleTypeChange = (newType) => {
+    if (!setActiveTracks) return;
+    setActiveTracks(prev => prev.map(t =>
+      t.id === instKey ? { ...t, type: newType } : t
+    ));
+  };
+
+  const handleVariantChange = (index) => {
+    if (!setInstrumentConfig) return;
+    setInstrumentConfig(prev => ({
+      ...prev,
+      [currentType]: index
+    }));
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/70 backdrop-blur-sm p-4 pt-16 pb-24" onClick={onClose}>
       <div className="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-sm max-h-[calc(100vh-10rem)] flex flex-col animate-bounce-in text-white relative" onClick={(e) => e.stopPropagation()}>
         {/* Sticky Header */}
         <div className="flex justify-between items-center p-4 pb-3 border-b border-slate-700 shrink-0">
-          <h3 className="font-black text-lg uppercase tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">{instKey} Lab</h3>
+          <div className="flex flex-col">
+            <h3 className="font-black text-lg uppercase tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">{INSTRUMENTS_DATA[currentType]?.name || instKey} Lab</h3>
+            <span className="text-[10px] text-slate-500 font-mono">{instKey}</span>
+          </div>
           <button onClick={onClose} className="w-8 h-8 bg-slate-800 hover:bg-red-500 text-slate-400 hover:text-white rounded-lg flex items-center justify-center transition-all border border-slate-700 hover:border-red-500">
             <Icons.Close />
           </button>
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="flex-1 overflow-y-auto p-4 space-y-6">
+
+          {/* Instrument Selection Section */}
+          <div className="space-y-4 p-4 bg-slate-800/30 rounded-xl border border-white/5">
+            {/* Instrument Type */}
+            <div>
+              <label className="text-xs font-bold text-slate-400 uppercase mb-2 block">Instrument</label>
+              <div className="grid grid-cols-4 gap-2">
+                {Object.values(INSTRUMENTS_DATA).map(inst => (
+                  <button
+                    key={inst.id}
+                    onClick={() => handleTypeChange(inst.id)}
+                    className={`
+                                  flex flex-col items-center justify-center p-2 rounded-lg transition-all border
+                                  ${currentType === inst.id
+                        ? `bg-slate-700 border-${inst.color.replace('bg-', '')} ring-1 ring-${inst.color.replace('bg-', '')}`
+                        : 'bg-slate-800 border-transparent hover:bg-slate-700 hover:border-white/10 opacity-60 hover:opacity-100'}
+                              `}
+                    title={inst.name}
+                  >
+                    <div className={`text-xl mb-1 ${currentType === inst.id ? 'text-white' : 'text-slate-400'}`}>{inst.icon}</div>
+                    <span className="text-[8px] uppercase font-bold">{inst.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Sound Variant */}
+            <div>
+              <label className="text-xs font-bold text-slate-400 uppercase mb-2 block">Sound Variant</label>
+              <div className="flex flex-wrap gap-2">
+                {variants.map((v, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleVariantChange(idx)}
+                    className={`
+                                   px-3 py-1.5 rounded-full text-xs font-bold border transition-all
+                                   ${currentVariantIndex === idx
+                        ? 'bg-neon-cyan/20 text-neon-cyan border-neon-cyan/50'
+                        : 'bg-slate-800 text-slate-400 border-slate-700 hover:border-slate-500'}
+                               `}
+                  >
+                    {v.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+
           {/* Mute Toggle */}
           <div className="p-3 bg-slate-800/50 rounded-xl border border-slate-700/50">
             <div className="flex items-center justify-between">

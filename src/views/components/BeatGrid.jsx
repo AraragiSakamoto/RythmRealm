@@ -53,10 +53,23 @@ export default function BeatGrid({
                         const variantIndex = instrumentConfig[track.type] || 0;
                         const variantName = SOUND_VARIANTS[track.type]?.[variantIndex]?.name || 'Classic';
 
-                        // Extract base color name for text coloring (e.g. from 'bg-red-400' get 'red')
-                        // This is a rough heuristic, defaulting to neon-cyan if complex
-                        const baseColorMatch = instData.color?.match(/bg-([a-z]+)-/);
-                        const baseColor = baseColorMatch ? baseColorMatch[1] : 'cyan';
+                        // Specific color mapping to ensure valid Tailwind classes
+                        const colorMap = {
+                            kick: { bg: 'bg-red-500', shadow: 'shadow-red-500/50', text: 'text-red-400', border: 'border-red-500/50' },
+                            snare: { bg: 'bg-amber-400', shadow: 'shadow-amber-400/50', text: 'text-amber-400', border: 'border-amber-400/50' },
+                            hihat: { bg: 'bg-cyan-400', shadow: 'shadow-cyan-400/50', text: 'text-cyan-400', border: 'border-cyan-400/50' },
+                            bass: { bg: 'bg-purple-500', shadow: 'shadow-purple-500/50', text: 'text-purple-400', border: 'border-purple-500/50' },
+                            synth: { bg: 'bg-pink-500', shadow: 'shadow-pink-500/50', text: 'text-pink-400', border: 'border-pink-500/50' },
+                            tom: { bg: 'bg-indigo-500', shadow: 'shadow-indigo-500/50', text: 'text-indigo-400', border: 'border-indigo-500/50' },
+                            perc: { bg: 'bg-orange-500', shadow: 'shadow-orange-500/50', text: 'text-orange-400', border: 'border-orange-500/50' },
+                            fx: { bg: 'bg-emerald-500', shadow: 'shadow-emerald-500/50', text: 'text-emerald-400', border: 'border-emerald-500/50' },
+                            keys: { bg: 'bg-teal-400', shadow: 'shadow-teal-400/50', text: 'text-teal-400', border: 'border-teal-400/50' },
+                            vox: { bg: 'bg-fuchsia-500', shadow: 'shadow-fuchsia-500/50', text: 'text-fuchsia-400', border: 'border-fuchsia-500/50' },
+                            lead: { bg: 'bg-blue-500', shadow: 'shadow-blue-500/50', text: 'text-blue-400', border: 'border-blue-500/50' },
+                            orch: { bg: 'bg-rose-500', shadow: 'shadow-rose-500/50', text: 'text-rose-400', border: 'border-rose-500/50' }
+                        };
+
+                        const colors = colorMap[track.type] || colorMap.kick; // Fallback
 
                         return (
                             <div
@@ -64,14 +77,14 @@ export default function BeatGrid({
                                 className="flex items-center gap-4 group relative"
                             >
                                 {/* Instrument Control - Redesigned Compact & Techy */}
-                                <div className="sticky left-0 z-20 w-[164px] shrink-0 flex items-center gap-2 bg-[#0a0a16] border border-white/5 rounded-lg p-1 pr-3 shadow-lg">
+                                <div className="sticky left-0 z-20 w-[164px] shrink-0 flex items-center gap-2 bg-[#0a0a16] border border-white/5 rounded-lg p-1 pr-3 shadow-lg relative group/card">
                                     {/* Icon Box */}
                                     <button
-                                        onClick={() => onInstrumentClick && onInstrumentClick(track.type)}
+                                        onClick={() => onInstrumentClick && onInstrumentClick(track.id)}
                                         className={`
                                             w-10 h-10 rounded-md flex items-center justify-center text-lg shadow-inner transition-all
                                             bg-gradient-to-br from-gray-800 to-black border border-white/10
-                                            text-${baseColor}-400 group-hover:text-white group-hover:border-${baseColor}-400/50
+                                            ${colors.text} group-hover:text-white group-hover:${colors.border}
                                         `}
                                         title={instData.name}
                                     >
@@ -85,7 +98,7 @@ export default function BeatGrid({
                                     </div>
 
                                     {/* Mute/Solo Indicators (Visual only for now, could act as buttons) */}
-                                    <div className="flex flex-col gap-0.5">
+                                    <div className="flex flex-col gap-0.5 opacity-100 group-hover/card:opacity-0 transition-opacity">
                                         <div className="w-1 h-1 rounded-full bg-green-500/50"></div>
                                         <div className="w-1 h-1 rounded-full bg-slate-700"></div>
                                         <div className="w-1 h-1 rounded-full bg-slate-700"></div>
@@ -94,11 +107,14 @@ export default function BeatGrid({
                                     {/* Remove Track Button (Hover) */}
                                     {onRemoveTrack && !lockedInstruments.includes(track.type) && (
                                         <button
-                                            onClick={() => onRemoveTrack(uniqueId)}
-                                            className="absolute -left-2 -top-1 opacity-0 group-hover:opacity-100 transition-opacity bg-red-500 hover:bg-red-400 text-white rounded-full p-0.5 shadow-lg scale-75"
+                                            onClick={(e) => {
+                                                e.stopPropagation(); // Prevent triggering other clicks
+                                                onRemoveTrack(uniqueId);
+                                            }}
+                                            className="absolute right-2 opacity-0 group-hover/card:opacity-100 transition-all text-slate-400 hover:text-red-500 hover:bg-red-500/10 p-1.5 rounded-md backdrop-blur-sm"
                                             title="Remove Track"
                                         >
-                                            <Icons.Trash className="w-3 h-3" />
+                                            <Icons.Trash className="w-4 h-4" />
                                         </button>
                                     )}
                                 </div>
@@ -121,16 +137,17 @@ export default function BeatGrid({
                                                     relative shrink-0 flex-1 h-12 rounded-sm transition-all duration-100
                                                     ${isBeatStart ? 'ml-1' : ''} /* Gap between beats */
                                                     ${isActive 
-                                                        ? `bg-${baseColor}-500 shadow-[0_0_10px_rgba(var(--color-${baseColor}-500),0.6)] border border-white/20`
+                                                    ? `${colors.bg} shadow-[0_0_10px_currentColor] border ${colors.border} text-${colors.bg.replace('bg-', '')}`
                                                         : 'bg-white/[0.03] hover:bg-white/[0.08] border border-transparent'}
                                                     ${isCurrent ? 'ring-1 ring-white z-10 brightness-150' : ''}
                                                     ${!isActive && isGhost ? 'border border-dashed border-white/30 opacity-40' : ''}
                                                 `}
+                                                style={isActive ? { boxShadow: `0 0 10px var(--tw-shadow-color)` } : {}}
                                             >
                                                 {/* Active Content */}
                                                 {isActive && (
                                                     <div className="w-full h-full flex items-center justify-center">
-                                                        <div className="w-1.5 h-1.5 rounded-full bg-white/40"></div>
+                                                        <div className="w-1.5 h-1.5 rounded-full bg-white/60"></div>
                                                     </div>
                                                 )}
                                             </button>

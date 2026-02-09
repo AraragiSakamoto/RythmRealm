@@ -16,6 +16,8 @@ import LevelPlay from './src/views/LevelPlay';
 import DJMode from './src/views/DJMode';
 import Studio from './src/views/Studio';
 import Settings from './src/views/Settings';
+import GameModes from './src/views/GameModes';
+import TutorialMode from './src/views/TutorialMode';
 
 // Constants
 import { STEPS } from './src/utils/constants';
@@ -55,25 +57,69 @@ export default function App() {
             onSetView={app.setView}
             onSelectLevel={(level) => {
               app.setCurrentLevel(level);
-              // Initialize tracks for the level
+
+              // 1. Initialize empty grid and tracks list
               const levelTracks = [];
-              if (level.requirements?.mustInclude) {
-                Object.entries(level.requirements.mustInclude).forEach(([type, count]) => {
-                  for (let i = 0; i < count; i++) levelTracks.push({ id: `${type}-${i + 1}`, type });
-                });
-              } else if (level.premadePattern) {
-                Object.keys(level.premadePattern).forEach(type => {
-                  levelTracks.push({ id: `${type}-1`, type });
+              const newGrid = {};
+
+              // 2. Add tracks from Premade Pattern and populate Grid
+              if (level.premadePattern) {
+                Object.entries(level.premadePattern).forEach(([type, steps]) => {
+                  const trackId = `${type}-1`;
+                  // Avoid duplicates if multiple tracks of same type allowed in future, 
+                  // but for now 1 per type is safe assumption for levels.
+                  if (!levelTracks.find(t => t.id === trackId)) {
+                    levelTracks.push({ id: trackId, type });
+                  }
+
+                  // Initialize row
+                  newGrid[trackId] = Array(32).fill(false);
+
+                  // Set active steps
+                  if (Array.isArray(steps)) {
+                    steps.forEach(stepIndex => {
+                      if (stepIndex >= 0 && stepIndex < 32) {
+                        newGrid[trackId][stepIndex] = true;
+                      }
+                    });
+                  }
                 });
               }
-              // Ensure we have at least kick, snare, hihat if empty
+
+              // 3. Ensure tracks exist for all Required Instruments (even if empty pattern)
+              if (level.requirements?.instruments) {
+                level.requirements.instruments.forEach(type => {
+                  // Check if we already have a track for this type
+                  const existing = levelTracks.find(t => t.type === type);
+                  if (!existing) {
+                    const trackId = `${type}-1`;
+                    levelTracks.push({ id: trackId, type });
+                    newGrid[trackId] = Array(32).fill(false);
+                  }
+                });
+              } else if (level.requirements?.mustInclude) {
+                // Fallback if 'instruments' array is missing but 'mustInclude' exists
+                Object.keys(level.requirements.mustInclude).forEach(type => {
+                  const existing = levelTracks.find(t => t.type === type);
+                  if (!existing) {
+                    const trackId = `${type}-1`;
+                    levelTracks.push({ id: trackId, type });
+                    newGrid[trackId] = Array(32).fill(false);
+                  }
+                });
+              }
+
+              // 4. Default Fallback
               if (levelTracks.length === 0) {
-                levelTracks.push({ id: 'kick-1', type: 'kick' });
-                levelTracks.push({ id: 'snare-1', type: 'snare' });
-                levelTracks.push({ id: 'hihat-1', type: 'hihat' });
+                ['kick', 'snare', 'hihat'].forEach(type => {
+                  const id = `${type}-1`;
+                  levelTracks.push({ id, type });
+                  newGrid[id] = Array(32).fill(false);
+                });
               }
 
               app.setActiveTracks(levelTracks);
+              app.setGrid(newGrid); // Apply the premade pattern to state
               app.setView('levelPlay');
             }}
             onLogout={auth.logout}
@@ -112,6 +158,13 @@ export default function App() {
             activeSoundPack={app.activeSoundPack}
             currentStep={app.currentStep}
             tutorialActive={app.tutorialActive}
+            onCompleteLevel={(score) => {
+              if (app.currentLevel) {
+                gameData.completeLevel(app.currentLevel.id, score, 100); // 100 accuracy placeholder
+                // Show success success notification or just confetti?
+                // For now, let's auto-navigate back after a delay or just let the LevelPlay UI handle the exit
+              }
+            }}
           // Pass other props needed for grid rendering in LevelPlay
           />
         );
@@ -133,58 +186,28 @@ export default function App() {
             setActiveTracks={app.setActiveTracks}
             activeSoundPack={app.activeSoundPack}
             currentStep={app.currentStep}
+            setCurrentStep={app.setCurrentStep}
             tempo={app.tempo}
             setTempo={app.setTempo}
             instrumentConfig={app.instrumentConfig}
+            setInstrumentConfig={app.setInstrumentConfig}
+            soundSettings={app.soundSettings}
+            setSoundSettings={app.setSoundSettings}
           />
         );
 
       case 'dj':
-      case 'modes': // Mapping modes to DJ for now or separate menu
-        // If 'modes' was a menu, we can implement a GamesModes view later.
-        // For now, let's treat 'modes' as DJ mode entry or similar if that matches legacy.
-        // If the previous app had a 'modes' view that showed DJ, Levels, Studio, we need that.
-        // Splash "Game Modes" button sets view to 'settings' (wait, in Splash.jsx line 118 it sets 'modes').
-        // I didn't verify the existence of a specific Modes view.
-        // I'll return DJ Mode if view is 'dj' and maybe a placeholder for 'modes' that redirects to DJ or Levels.
-        if (app.view === 'modes') {
-          // Creating a simple intermediate menu or reusable component for Modes could be better.
-          // But for MVP refactor, let's redirect to Levels for now or render a simple choice?
-          // Let's render DJMode for 'dj' and LevelSelector for 'levels'.
-          // If 'modes' is selected, maybe we show DJMode? Or Levels?
-          // Let's assume 'modes' button in splash was meant to go to a mode selection.
-          // I'll Default to DJ Mode for 'modes' to show it off, or Levels.
-          // Actually, Splash has "Start Playing" -> Levels (via tutorial logic).
-          // "Game Modes" -> might be DJ Mode.
-          return (
-            <DJMode
-              djDecks={app.djDecks}
-              setDjDecks={app.setDjDecks}
-              djLooping={app.djLooping}
-              setDjLooping={app.setDjLooping}
-              djCrossfader={app.djCrossfader}
-              setDjCrossfader={app.setDjCrossfader}
-              djTutorialActive={app.djTutorialActive}
-              setDjTutorialActive={app.setDjTutorialActive}
-              djTutorialStep={app.djTutorialStep}
-              setDjTutorialStep={app.setDjTutorialStep}
-              tempo={app.tempo}
-              setTempo={app.setTempo}
-              isPlaying={app.isPlaying}
-              setIsPlaying={app.setIsPlaying}
-              onSetView={app.setView}
-              highContrastMode={app.highContrastMode}
-              largeTextMode={app.largeTextMode}
-              voiceControlEnabled={app.voiceControlEnabled}
-              isListening={app.isListening}
-              lastVoiceCommand={app.lastVoiceCommand}
-              currentStep={app.currentStep}
-              setGrid={app.setGrid}
-              activeTracks={app.activeTracks}
-              setCurrentStep={app.setCurrentStep}
-            />
-          );
-        }
+        // Helper function for SoundLab changes within DJMode
+        const handleSoundLabChange = (trackId, param, value) => {
+          app.setInstrumentConfig(prev => ({
+            ...prev,
+            [trackId]: {
+              ...prev[trackId],
+              [param]: value
+            }
+          }));
+        };
+
         return (
           <DJMode
             djDecks={app.djDecks}
@@ -209,10 +232,17 @@ export default function App() {
             lastVoiceCommand={app.lastVoiceCommand}
             currentStep={app.currentStep}
             setGrid={app.setGrid}
-            activeTracks={app.activeTracks} // Updated
+            activeTracks={app.activeTracks}
             setCurrentStep={app.setCurrentStep}
           />
         );
+
+      case 'modes':
+        return <GameModes onSetView={app.setView} />;
+
+      case 'tutorial':
+        return <TutorialMode onSetView={app.setView} />;
+
 
       case 'settings':
         return (

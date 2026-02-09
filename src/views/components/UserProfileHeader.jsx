@@ -59,12 +59,16 @@ export default function UserProfileHeader({
           </button>
         </>
       ) : (
-        <button
-          onClick={onLogin}
-          className="px-5 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-400 hover:to-pink-400 rounded-xl font-bold text-white shadow-lg shadow-purple-500/30 transition-all hover:scale-105 flex items-center gap-2"
-        >
-          <span className="text-lg">👤</span> Login / Sign Up
-        </button>
+          <button
+            onClick={onLogin}
+            className="group px-5 py-2.5 rounded-xl font-bold text-white relative overflow-hidden transition-all hover:scale-105"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-neon-purple to-neon-pink opacity-80 group-hover:opacity-100 transition-opacity"></div>
+            <div className="absolute inset-[1px] bg-slate-900 rounded-[10px] z-0"></div>
+            <div className="relative z-10 flex items-center justify-center gap-2 text-white group-hover:text-neon-cyan transition-colors font-black tracking-wide uppercase text-sm whitespace-nowrap">
+              <span>Login / Sign Up</span>
+            </div>
+          </button>
       )}
     </div>
   );

@@ -173,7 +173,7 @@ export default function DJMode({
 
         {/* DJ Header */}
         <div className="relative z-10 px-4 py-3 flex items-center justify-between border-b border-cyan-500/30 bg-black/60 backdrop-blur-md">
-          <button onClick={() => { setIsPlaying(false); setDjTutorialActive(false); onSetView('modes'); }} className="p-2 bg-white/10 hover:bg-white/20 rounded-xl text-white transition-all">
+          <button onClick={() => { setIsPlaying(false); setDjTutorialActive(false); onSetView('splash'); }} className="p-2 bg-white/10 hover:bg-white/20 rounded-xl text-white transition-all">
             <Icons.ChevronLeft />
           </button>
           <div className="flex items-center gap-3">

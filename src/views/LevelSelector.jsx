@@ -5,6 +5,42 @@ import AchievementNotification from './components/AchievementNotification';
 import ProfileModal from './modals/ProfileModal';
 import { getUnlockedLevels } from '../utils/gameLogic';
 
+const ScenePreview = ({ renderScene, tempo = 100 }) => {
+    const [pulse, setPulse] = React.useState(0);
+
+    React.useEffect(() => {
+        let animationFrame;
+
+        const animate = () => {
+            const now = Date.now();
+            // Synced to tempo (half-time for smoother preview)
+            const speed = (tempo / 60) * Math.PI * 0.5;
+            const p = (Math.sin(now / 1000 * speed) + 1) / 2;
+            setPulse(p);
+            animationFrame = requestAnimationFrame(animate);
+        };
+
+        animate();
+        return () => cancelAnimationFrame(animationFrame);
+    }, [tempo]);
+
+    if (!renderScene) return null;
+
+    // Simulate all instruments hitting for the preview
+    const visuals = {
+        pulse,
+        kick: pulse,
+        snare: pulse,
+        hihat: pulse,
+        bass: pulse,
+        synth: pulse,
+        perc: pulse,
+        other: pulse
+    };
+
+    return renderScene(visuals);
+};
+
 export default function LevelSelector({
     user,
     userProfile,
@@ -45,40 +81,62 @@ export default function LevelSelector({
                         disabled={!level.unlocked}
                         onClick={() => onSelectLevel(level)}
                         className={`
-                  relative p-6 rounded-3xl text-left transition-all duration-300 group overflow-hidden border-b-8 active:border-b-0 active:translate-y-2
+                  relative p-6 rounded-3xl text-left transition-all duration-300 group overflow-hidden border
                   ${level.unlocked
-                            ? `glass-panel hover:bg-white/5 hover:scale-[1.02] border-white/10 shadow-[0_0_15px_rgba(0,0,0,0.3)] hover:shadow-[0_0_20px_${level.color === 'from-cyan-500 to-blue-600' ? '#06b6d4' : '#8b5cf6'}_0.4]`
-                            : 'bg-black/40 grayscale opacity-70 cursor-not-allowed border-white/5'}
+                            ? `bg-black/40 hover:bg-black/60 border-white/10 hover:border-white/30 shadow-lg hover:shadow-[0_0_30px_${level.color === 'from-cyan-500 to-blue-600' ? '#06b6d4' : '#8b5cf6'}_0.6] hover:-translate-y-1`
+                            : 'bg-black/60 border-white/5 grayscale opacity-60 cursor-not-allowed'}
                 `}
                     >
-                        {level.unlocked && (
-                            <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${level.color} opacity-20 rounded-bl-full filter blur-xl group-hover:opacity-30 transition-opacity`}></div>
-                        )}
+                        {/* Scenario Animation */}
+                        {level.renderScene && <ScenePreview renderScene={level.renderScene} tempo={level.tempo} />}
 
-                        <div className="relative z-10">
-                            <div className="flex justify-between items-start mb-4">
-                                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-4xl shadow-lg transition-transform group-hover:scale-110 ${level.unlocked ? `bg-gradient-to-br ${level.color}` : 'bg-white/10'}`}>
+                        {/* Old Glows Removed - ScenePreview replaces them */}
+
+                        <div className="relative z-10 flex flex-col h-full pointer-events-none">
+                            <div className="flex justify-between items-start mb-6">
+                                {/* Icon Badge */}
+                                <div className={`
+                                    w-16 h-16 rounded-2xl flex items-center justify-center text-3xl shadow-2xl transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6 border border-white/10
+                                    ${level.unlocked ? `bg-gradient-to-br ${level.color} text-white` : 'bg-white/5 text-slate-600'}
+                                `}>
                                     {level.icon}
                                 </div>
+
+                                {/* Status Chip */}
                                 {level.unlocked && levelProgress && levelProgress[level.id]?.completed && (
-                                    <div className="bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg animate-bounce tracking-wider">
-                                        COMPLETED
+                                    <div className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-black px-3 py-1.5 rounded-full tracking-widest uppercase shadow-[0_0_10px_rgba(16,185,129,0.3)]">
+                                        Completed
                                     </div>
                                 )}
                             </div>
 
-                            <h3 className="text-2xl font-display font-black mb-1 group-hover:text-neon-cyan transition-colors">{level.name}</h3>
-                            <p className="text-sm opacity-60 font-medium mb-4 line-clamp-2">{level.objective}</p>
+                            <h3 className={`text-3xl font-display font-black mb-3 tracking-tight transition-colors ${level.unlocked ? 'text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-slate-300' : 'text-slate-600'}`}>
+                                {level.name}
+                            </h3>
 
-                            <div className="flex items-center gap-2">
-                                <span className={`text-xs px-2 py-1 rounded-lg font-bold ${level.difficulty === 'Easy' ? 'bg-green-500/20 text-green-400' :
-                                    level.difficulty === 'Medium' ? 'bg-yellow-500/20 text-yellow-400' :
-                                        'bg-red-500/20 text-red-400'
+                            <p className={`text-sm font-medium mb-8 leading-relaxed ${level.unlocked ? 'text-slate-300' : 'text-slate-600'}`}>
+                                {level.objective}
+                            </p>
+
+                            <div className="mt-auto flex items-center justify-between border-t border-white/10 pt-4">
+                                <div className="flex items-center gap-3">
+                                    <span className={`text-[10px] px-2.5 py-1 rounded-md font-black uppercase tracking-wider backdrop-blur-sm ${level.difficulty === 'Easy' ? 'bg-green-500/20 text-green-400 border border-green-500/20' :
+                                        level.difficulty === 'Medium' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/20' :
+                                            'bg-red-500/20 text-red-400 border border-red-500/20'
                                     }`}>
-                                    {level.difficulty.toUpperCase()}
-                                </span>
-                                {!level.unlocked && <span className="text-xs text-slate-500 font-bold">🔒 LOCKED</span>}
-                                {level.unlocked && <span className="text-xs text-neon-purple font-bold">+XP REWARD</span>}
+                                        {level.difficulty}
+                                    </span>
+                                </div>
+
+                                {level.unlocked ? (
+                                    <span className="text-[10px] text-neon-purple font-bold uppercase tracking-wider flex items-center gap-1 group-hover:text-white transition-colors">
+                                        +XP REWARD <Icons.ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                                    </span>
+                                ) : (
+                                    <span className="text-[10px] text-slate-600 font-bold uppercase tracking-wider flex items-center gap-1">
+                                        <Icons.Lock className="w-3 h-3" /> Locked
+                                    </span>
+                                )}
                             </div>
                         </div>
                     </button>

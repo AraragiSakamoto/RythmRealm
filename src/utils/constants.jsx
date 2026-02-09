@@ -295,6 +295,186 @@ export const DEFAULT_SCENARIO = {
   )
 };
 
+export const STUDIO_SCENES = [
+  {
+    id: 'neon-pulse',
+    name: "Neon Pulse",
+    theme: "from-red-500 to-pink-500",
+    renderScene: ({ pulse, kick, snare }) => (
+      <div className="absolute inset-0 overflow-hidden opacity-30 group-hover:opacity-50 transition-opacity">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-gradient-to-r from-red-500 to-pink-500 rounded-full blur-[60px]" style={{ transform: `translate(-50%, -50%) scale(${1 + (kick || pulse) * 0.4})` }}></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 border-2 border-white/20 rounded-full transition-opacity duration-75" style={{ transform: `translate(-50%, -50%) scale(${1 + (kick || pulse) * 0.5})`, opacity: (snare || pulse) > 0.1 ? 1 : 0.2 }}></div>
+      </div>
+    )
+  },
+  {
+    id: 'cyber-grid',
+    name: "Cyber Grid",
+    theme: "from-cyan-900 to-blue-900",
+    renderScene: ({ pulse, hihat, kick }) => (
+      <div className="absolute inset-0 overflow-hidden opacity-30 group-hover:opacity-50 transition-opacity">
+        <div className="absolute inset-0 bg-gradient-to-tr from-cyan-900/40 to-blue-900/40"></div>
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="absolute w-[2px] bg-cyan-400/50 transition-all duration-75"
+            style={{
+              left: `${20 * i + 10}%`,
+              bottom: '0',
+              height: `${40 + (hihat || pulse) * 60 * (i % 2 === 0 ? 1 : 0.5)}%`,
+              opacity: 0.3 + (hihat || pulse) * 0.7
+            }}></div>
+        ))}
+        <div className="absolute top-10 right-10 w-24 h-24 bg-cyan-500/30 rounded-full blur-2xl transition-transform duration-100" style={{ transform: `scale(${1 + (kick || pulse) * 0.3})` }}></div>
+      </div>
+    )
+  },
+  {
+    id: 'ocean-waves',
+    name: "Ocean Waves",
+    theme: "from-purple-900 to-indigo-900",
+    renderScene: ({ pulse, bass, kick }) => (
+      <div className="absolute inset-0 overflow-hidden opacity-30 group-hover:opacity-50 transition-opacity">
+        <div className="absolute bottom-0 w-full h-1/2 bg-gradient-to-t from-purple-900/60 to-transparent"></div>
+        <div className="absolute bottom-[-10%] left-0 w-full h-40 bg-purple-500/40 blur-xl transition-transform duration-100" style={{ transform: `scaleY(${1 + (bass || pulse) * 1.5})` }}></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] border-[20px] border-purple-500/10 rounded-full transition-transform duration-75" style={{ transform: `translate(-50%, -50%) scale(${0.9 + (kick || pulse) * 0.2})` }}></div>
+      </div>
+    )
+  },
+  {
+    id: 'golden-hour',
+    name: "Golden Hour",
+    theme: "from-yellow-500 to-orange-500",
+    renderScene: ({ pulse, kick, snare, hihat }) => (
+      <div className="absolute inset-0 overflow-hidden opacity-30 group-hover:opacity-50 transition-opacity">
+        <div className="grid grid-cols-2 grid-rows-2 w-full h-full opacity-30">
+          <div className={`bg-yellow-500/30 transition-opacity duration-75 ${(kick || pulse) > 0.5 ? 'opacity-100' : 'opacity-0'}`}></div>
+          <div className={`bg-orange-500/30 transition-opacity duration-75 ${(snare || pulse) > 0.5 ? 'opacity-100' : 'opacity-0'}`}></div>
+          <div className={`bg-orange-500/30 transition-opacity duration-75 ${(snare || pulse) > 0.5 ? 'opacity-100' : 'opacity-0'}`}></div>
+          <div className={`bg-yellow-500/30 transition-opacity duration-75 ${(kick || pulse) > 0.5 ? 'opacity-100' : 'opacity-0'}`}></div>
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-orange-900/50 to-transparent"></div>
+        <div className="absolute inset-0 bg-white/5 pointer-events-none transition-opacity duration-50" style={{ opacity: (hihat || pulse) * 0.2 }}></div>
+      </div>
+    )
+  },
+  {
+    id: 'mystic-forest',
+    name: "Mystic Forest",
+    theme: "from-indigo-900 to-pink-900",
+    renderScene: ({ pulse, synth, kick }) => (
+      <div className="absolute inset-0 overflow-hidden opacity-30 group-hover:opacity-50 transition-opacity">
+        {[...Array(8)].map((_, i) => (
+          <div key={i} className="absolute rounded-full bg-pink-400/40 blur-md transition-all duration-100"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              width: `${Math.random() * 20 + 10}px`,
+              height: `${Math.random() * 20 + 10}px`,
+              transform: `scale(${1 + (synth || pulse) * 0.8})`,
+              opacity: (synth || pulse) * 0.8
+            }}></div>
+        ))}
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/40 to-pink-900/40 transition-colors duration-200" style={{ filter: `brightness(${1 + (kick || pulse) * 0.3})` }}></div>
+      </div>
+    )
+  },
+  {
+    id: 'sunset-vibes',
+    name: "Sunset Vibes",
+    theme: "from-orange-400 to-red-400",
+    renderScene: ({ pulse, perc, snare }) => (
+      <div className="absolute inset-0 overflow-hidden opacity-30 group-hover:opacity-50 transition-opacity">
+        <div className="absolute inset-0 flex items-center justify-center gap-1">
+          {[...Array(10)].map((_, i) => (
+            <div key={i} className="w-2 bg-orange-400/50 rounded-full transition-all duration-75"
+              style={{
+                height: `${20 + Math.random() * 60 * (perc || pulse)}%`,
+                transform: `scaleY(${1 + (snare || pulse)})`
+              }}></div>
+          ))}
+        </div>
+      </div>
+    )
+  },
+  {
+    id: 'midnight-rain',
+    name: "Midnight Rain",
+    theme: "from-indigo-900 to-blue-900",
+    renderScene: ({ pulse, keys, kick, snare }) => (
+      <div className="absolute inset-0 overflow-hidden opacity-30 group-hover:opacity-50 transition-opacity">
+        <div className="absolute top-[-20%] right-[-20%] w-60 h-60 bg-indigo-300/20 rounded-full blur-3xl animate-pulse transition-transform duration-500" style={{ transform: `scale(${1 + (keys || pulse) * 0.2})` }}></div>
+        <div className="absolute bottom-[-20%] left-[-20%] w-60 h-60 bg-blue-300/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s', transform: `scale(${1 + (kick || pulse) * 0.2})` }}></div>
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="absolute w-20 h-1 bg-white/10 rotate-12 transition-opacity duration-200"
+            style={{
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              opacity: 0.2 + (snare || pulse) * 0.3
+            }}></div>
+        ))}
+      </div>
+    )
+  },
+  {
+    id: 'deep-space',
+    name: "Deep Space",
+    theme: "from-violet-900 to-fuchsia-900",
+    renderScene: ({ pulse, bass, synth, kick }) => (
+      <div className="absolute inset-0 overflow-hidden opacity-30 group-hover:opacity-50 transition-opacity">
+        <div className="absolute inset-0 bg-gradient-to-r from-violet-900/40 via-fuchsia-900/40 to-violet-900/40 transition-colors duration-100" style={{ filter: `brightness(${1 + (kick || pulse) * 0.5})` }}></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 border border-white/20 rounded-full transition-transform duration-100" style={{ transform: `translate(-50%, -50%) rotate(${pulse * 360}deg) scale(${1 + (bass || pulse) * 0.3})` }}>
+          <div className="absolute top-0 left-1/2 w-2 h-2 bg-white/50 rounded-full"></div>
+        </div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-60 h-60 border border-white/10 rounded-full transition-transform duration-100" style={{ transform: `translate(-50%, -50%) rotate(-${pulse * 180}deg) scale(${1 + (synth || pulse) * 0.2})` }}>
+          <div className="absolute bottom-0 left-1/2 w-2 h-2 bg-white/50 rounded-full"></div>
+        </div>
+      </div>
+    )
+  },
+  {
+    id: 'speed-tunnel',
+    name: "Speed Tunnel",
+    theme: "from-cyan-900 to-black",
+    renderScene: ({ pulse, kick, hihat }) => (
+      <div className="absolute inset-0 overflow-hidden opacity-30 group-hover:opacity-50 transition-opacity">
+        <div className={`absolute inset-0 bg-black/40 transition-colors duration-50 ${(kick || pulse) > 0.5 ? 'bg-cyan-900/20' : ''}`}></div>
+        {[...Array(12)].map((_, i) => (
+          <div key={i} className="absolute h-[1px] bg-cyan-400/80 transition-transform duration-75"
+            style={{
+              left: 0,
+              right: 0,
+              top: `${Math.random() * 100}%`,
+              transform: `translateX(${Math.sin((pulse || 0) * 10 + i) * 50}px) scaleX(${1 + (hihat || pulse)})`,
+              opacity: Math.random()
+            }}></div>
+        ))}
+        <div className="absolute inset-0 border-2 border-cyan-500/30 transition-opacity duration-50" style={{ opacity: 0.3 + (kick || pulse) * 0.7 }}></div>
+      </div>
+    )
+  },
+  {
+    id: 'epic-core',
+    name: "Epic Core",
+    theme: "from-amber-500 to-orange-600",
+    renderScene: ({ pulse, kick, snare, bass, synth }) => (
+      <div className="absolute inset-0 overflow-hidden opacity-30 group-hover:opacity-50 transition-opacity">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-amber-200/20 via-amber-900/40 to-black transition-all duration-100" style={{ filter: `brightness(${1 + (kick || pulse) * 0.4})` }}></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border border-amber-500/30 rounded-full transition-transform duration-100"
+              style={{
+                width: `${30 + i * 15}%`,
+                height: `${30 + i * 15}%`,
+                transform: `translate(-50%, -50%) rotate(${(pulse || 0) * (i % 2 === 0 ? 90 : -90)}deg) scale(${1 + (bass || pulse) * 0.1})`,
+                borderWidth: `${1 + (synth || pulse) * 2}px`,
+                borderColor: `rgba(245, 158, 11, ${0.3 + (snare || pulse) * 0.4})`
+              }}></div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+];
+
 export const SCENARIOS = [
   {
     id: 0, name: "Sunny Vibes", bpm: 112, desc: "Bright, happy, and uplifting atmosphere", locked: false, theme: "from-yellow-400 to-orange-400", bgClass: "bg-sky-200", ambience: "beach",
@@ -363,29 +543,21 @@ export const GAME_LEVELS = [
     icon: <Icons.Activity />,
     description: "Learn the basics! Place kicks and snares to create your first beat.",
     objective: "Continue the rock beat pattern",
-    premadePattern: {
-      kick: [0, 8],
-      snare: [4, 12]
-    },
-    requirements: {
-      instruments: ['kick', 'snare'],
-      minNotes: 4,
-      mustInclude: { kick: 2, snare: 2 }
-    },
-    hints: [
-      "Start with the KICK drum - it's the heartbeat of your music!",
-      "Place kicks on beats 1 and 3 (steps 0, 8, 16, 24)",
-      "Add SNARE on beats 2 and 4 (steps 4, 12, 20, 28) for the backbeat",
-      "Hit PLAY to hear your creation!"
-    ],
+    premadePattern: { kick: [0, 8], snare: [4, 12] },
+    requirements: { instruments: ['kick', 'snare'], minNotes: 8, mustInclude: { kick: 4, snare: 4 } },
+    hints: ["Start with the KICK drum!", "Place kicks on beats 1 and 3", "Add SNARE on beats 2 and 4", "Hit PLAY!"],
     patternVariations: [
       { name: "Rock Backbeat", pattern: { kick: [0, 16], snare: [8, 24] }, difficulty: "Easy" },
       { name: "Hip-Hop Swing", pattern: { kick: [0, 11, 16, 27], snare: [8, 24] }, difficulty: "Medium" },
       { name: "Reggae One-Drop", pattern: { kick: [16], snare: [8, 24] }, difficulty: "Hard" }
     ],
-    tempo: 100,
-    unlocked: true,
-    themeId: 'neon'
+    tempo: 100, unlocked: true, themeId: 'neon',
+    renderScene: ({ pulse, kick, snare }) => (
+      <div className="absolute inset-0 overflow-hidden opacity-30 group-hover:opacity-50 transition-opacity">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-gradient-to-r from-red-500 to-pink-500 rounded-full blur-[60px]" style={{ transform: `translate(-50%, -50%) scale(${1 + (kick || pulse) * 0.4})` }}></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 border-2 border-white/20 rounded-full transition-opacity duration-75" style={{ transform: `translate(-50%, -50%) scale(${1 + (kick || pulse) * 0.5})`, opacity: (snare || pulse) > 0.1 ? 1 : 0.2 }}></div>
+      </div>
+    )
   },
   {
     id: 2,
@@ -397,29 +569,30 @@ export const GAME_LEVELS = [
     icon: <Icons.Layers />,
     description: "Time to add some rhythm! The drums are ready - you add the Hi-Hats.",
     objective: "Add 4 HI-HATS to the existing beat",
-    premadePattern: {
-      kick: [0, 8, 16, 24],
-      snare: [4, 12, 20, 28]
-    },
-    requirements: {
-      instruments: ['hihat'],
-      minNotes: 4,
-      mustInclude: { hihat: 4 }
-    },
-    hints: [
-      "Hi-hats create the 'tick-tick-tick' rhythm!",
-      "Try placing hi-hats on every other step for 8th notes",
-      "The hi-hat fills the space between kick and snare",
-      "Experiment with different patterns!"
-    ],
+    premadePattern: { kick: [0, 8, 16, 24], snare: [4, 12, 20, 28] },
+    requirements: { instruments: ['hihat'], minNotes: 4, mustInclude: { hihat: 4 } },
+    hints: ["Hi-hats create the 'tick-tick-tick' rhythm!", "Try placing hi-hats on every other step", "Experiment with patterns!"],
     patternVariations: [
       { name: "Disco Groove", pattern: { kick: [0, 8, 16, 24], snare: [8, 24], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30] }, difficulty: "Easy" },
       { name: "Trap Roll", pattern: { kick: [0, 16], snare: [8, 24], hihat: [0, 1, 2, 3, 8, 9, 10, 11, 16, 17, 18, 19, 24, 25, 26, 27] }, difficulty: "Medium" },
       { name: "Breakbeat Shuffle", pattern: { kick: [0, 10, 16], snare: [5, 13, 21, 29], hihat: [0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30] }, difficulty: "Hard" }
     ],
-    tempo: 100,
-    unlocked: true,
-    themeId: 'neon'
+    tempo: 100, unlocked: true, themeId: 'neon',
+    renderScene: ({ pulse, hihat, kick }) => (
+      <div className="absolute inset-0 overflow-hidden opacity-30 group-hover:opacity-50 transition-opacity">
+        <div className="absolute inset-0 bg-gradient-to-tr from-cyan-900/40 to-blue-900/40"></div>
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="absolute w-[2px] bg-cyan-400/50 transition-all duration-75"
+            style={{
+              left: `${20 * i + 10}%`,
+              bottom: '0',
+              height: `${40 + (hihat || pulse) * 60 * (i % 2 === 0 ? 1 : 0.5)}%`,
+              opacity: 0.3 + (hihat || pulse) * 0.7
+            }}></div>
+        ))}
+        <div className="absolute top-10 right-10 w-24 h-24 bg-cyan-500/30 rounded-full blur-2xl transition-transform duration-100" style={{ transform: `scale(${1 + (kick || pulse) * 0.3})` }}></div>
+      </div>
+    )
   },
   {
     id: 3,
@@ -429,32 +602,24 @@ export const GAME_LEVELS = [
     maxStars: 3,
     xpReward: 100,
     icon: <Icons.Music />,
-    description: "The drums are tight. Now lay down a heavy Bass line to shake the floor!",
+    description: "The drums are tight. Now lay down a heavy Bass line!",
     objective: "Add a BASS line to the drum beat",
-    premadePattern: {
-      kick: [0, 10, 16, 26],
-      snare: [8, 24],
-      hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30]
-    },
-    requirements: {
-      instruments: ['bass'],
-      minNotes: 4,
-      mustInclude: { bass: 4 }
-    },
-    hints: [
-      "Bass usually follows the kick drum",
-      "Try placing bass notes where your kicks are",
-      "Add some bass notes in between for groove",
-      "Lower sounds = more power!"
-    ],
+    premadePattern: { kick: [0, 10, 16, 26], snare: [8, 24], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30] },
+    requirements: { instruments: ['bass'], minNotes: 4, mustInclude: { bass: 4 } },
+    hints: ["Bass usually follows the kick drum", "Lower sounds = more power!"],
     patternVariations: [
       { name: "Dubstep Wobble", pattern: { kick: [0, 16], snare: [8, 24], bass: [0, 2, 4, 6, 16, 18, 20, 22] }, difficulty: "Easy" },
       { name: "Funk Slap", pattern: { kick: [0, 16], snare: [8, 24], bass: [0, 3, 7, 10, 16, 19, 23, 26] }, difficulty: "Medium" },
       { name: "Trance Roll", pattern: { kick: [0, 4, 8, 12, 16, 20, 24, 28], snare: [8, 24], bass: [0, 1, 4, 5, 8, 9, 12, 13, 16, 17, 20, 21, 24, 25, 28, 29] }, difficulty: "Hard" }
     ],
-    tempo: 95,
-    unlocked: false,
-    themeId: 'ocean'
+    tempo: 95, unlocked: false, themeId: 'ocean',
+    renderScene: ({ pulse, bass, kick }) => (
+      <div className="absolute inset-0 overflow-hidden opacity-30 group-hover:opacity-50 transition-opacity">
+        <div className="absolute bottom-0 w-full h-1/2 bg-gradient-to-t from-purple-900/60 to-transparent"></div>
+        <div className="absolute bottom-[-10%] left-0 w-full h-40 bg-purple-500/40 blur-xl transition-transform duration-100" style={{ transform: `scaleY(${1 + (bass || pulse) * 1.5})` }}></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] border-[20px] border-purple-500/10 rounded-full transition-transform duration-75" style={{ transform: `translate(-50%, -50%) scale(${0.9 + (kick || pulse) * 0.2})` }}></div>
+      </div>
+    )
   },
   {
     id: 4,
@@ -466,25 +631,27 @@ export const GAME_LEVELS = [
     icon: <Icons.Disc />,
     description: "Learn the classic house music pattern!",
     objective: "Create a house beat with kick on every beat",
-    requirements: {
-      instruments: ['kick', 'snare', 'hihat'],
-      minNotes: 12,
-      mustInclude: { kick: 4, snare: 2, hihat: 4 }
-    },
-    hints: [
-      "'Four on the floor' means kick on beats 1, 2, 3, 4",
-      "Place kicks on steps 0, 8, 16, 24",
-      "Claps/snares go on 2 and 4 (steps 8, 24)",
-      "Hi-hats go on the OFF-beats for that house bounce!"
-    ],
+    requirements: { instruments: ['kick', 'snare', 'hihat'], minNotes: 12, mustInclude: { kick: 4, snare: 2, hihat: 4 } },
+    hints: ["Kicks on 1, 2, 3, 4", "Snares on 2 and 4", "Hi-hats on off-beats"],
     patternVariations: [
       { name: "Chicago House", pattern: { kick: [0, 8, 16, 24], snare: [8, 24], hihat: [4, 12, 20, 28] }, difficulty: "Easy" },
       { name: "UK Garage 2-Step", pattern: { kick: [0, 12, 16, 28], snare: [6, 22], hihat: [0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30] }, difficulty: "Medium" },
       { name: "Baile Funk", pattern: { kick: [0, 3, 6, 8, 11, 14, 16, 19, 22, 24, 27, 30], snare: [8, 24], hihat: [2, 10, 18, 26] }, difficulty: "Hard" }
     ],
-    tempo: 124,
-    unlocked: false,
-    themeId: 'golden'
+    tempo: 124, unlocked: false, themeId: 'golden',
+    renderScene: ({ pulse, kick, snare, hihat }) => (
+      <div className="absolute inset-0 overflow-hidden opacity-30 group-hover:opacity-50 transition-opacity">
+        <div className="grid grid-cols-2 grid-rows-2 w-full h-full opacity-30">
+          <div className={`bg-yellow-500/30 transition-opacity duration-75 ${(kick || pulse) > 0.5 ? 'opacity-100' : 'opacity-0'}`}></div>
+          <div className={`bg-orange-500/30 transition-opacity duration-75 ${(snare || pulse) > 0.5 ? 'opacity-100' : 'opacity-0'}`}></div>
+          <div className={`bg-orange-500/30 transition-opacity duration-75 ${(snare || pulse) > 0.5 ? 'opacity-100' : 'opacity-0'}`}></div>
+          <div className={`bg-yellow-500/30 transition-opacity duration-75 ${(kick || pulse) > 0.5 ? 'opacity-100' : 'opacity-0'}`}></div>
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-orange-900/50 to-transparent"></div>
+        {/* HiHat shaker overlay */}
+        <div className="absolute inset-0 bg-white/5 pointer-events-none transition-opacity duration-50" style={{ opacity: (hihat || pulse) * 0.2 }}></div>
+      </div>
+    )
   },
   {
     id: 5,
@@ -495,26 +662,31 @@ export const GAME_LEVELS = [
     xpReward: 150,
     icon: <Icons.Zap />,
     description: "Add melody and chords with the synthesizer!",
-    objective: "Create a beat using 4 different instruments including SYNTH",
-    requirements: {
-      instruments: ['kick', 'snare', 'hihat', 'synth'],
-      minNotes: 12,
-      mustInclude: { kick: 2, snare: 2, hihat: 4, synth: 2 }
-    },
-    hints: [
-      "Synth adds melody and harmony to your beat",
-      "Try placing synth notes on off-beats",
-      "Synth chords work well with bass lines",
-      "Less is more - don't overcrowd!"
-    ],
+    objective: "Create a beat using 4 instruments including SYNTH",
+    requirements: { instruments: ['kick', 'snare', 'hihat', 'synth'], minNotes: 12, mustInclude: { kick: 2, snare: 2, hihat: 4, synth: 2 } },
+    hints: ["Synth adds melody", "Use off-beats", "Don't overcrowd"],
     patternVariations: [
       { name: "Ambient Pad", pattern: { kick: [0, 16], snare: [8, 24], hihat: [0, 8, 16, 24], synth: [0] }, difficulty: "Easy" },
       { name: "Arpeggio Sequence", pattern: { kick: [0, 16], snare: [8, 24], hihat: [4, 12, 20, 28], synth: [0, 2, 4, 6, 8, 10, 12, 14] }, difficulty: "Medium" },
       { name: "Acid Bassline", pattern: { kick: [0, 6, 12, 18, 24, 30], snare: [8, 24], hihat: [0, 4, 8, 12, 16, 20, 24, 28], synth: [0, 3, 7, 10, 13, 16, 19, 23, 26, 29] }, difficulty: "Hard" }
     ],
-    tempo: 110,
-    unlocked: false,
-    themeId: 'forest'
+    tempo: 110, unlocked: false, themeId: 'forest',
+    renderScene: ({ pulse, synth, kick }) => (
+      <div className="absolute inset-0 overflow-hidden opacity-30 group-hover:opacity-50 transition-opacity">
+        {[...Array(8)].map((_, i) => (
+          <div key={i} className="absolute rounded-full bg-pink-400/40 blur-md transition-all duration-100"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              width: `${Math.random() * 20 + 10}px`,
+              height: `${Math.random() * 20 + 10}px`,
+              transform: `scale(${1 + (synth || pulse) * 0.8})`,
+              opacity: (synth || pulse) * 0.8
+            }}></div>
+        ))}
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/40 to-pink-900/40 transition-colors duration-200" style={{ filter: `brightness(${1 + (kick || pulse) * 0.3})` }}></div>
+      </div>
+    )
   },
   {
     id: 6,
@@ -526,25 +698,27 @@ export const GAME_LEVELS = [
     icon: <Icons.Layers />,
     description: "Layer percussion for complex rhythms!",
     objective: "Use 5 instruments including PERCUSSION",
-    requirements: {
-      instruments: ['kick', 'snare', 'hihat', 'perc', 'bass'],
-      minNotes: 16,
-      mustInclude: { kick: 2, snare: 2, hihat: 4, perc: 4, bass: 2 }
-    },
-    hints: [
-      "Percussion adds texture and fills gaps",
-      "Shakers and congas work great off the main beat",
-      "Try polyrhythms - patterns that contrast!",
-      "World music uses lots of percussion layers"
-    ],
+    requirements: { instruments: ['kick', 'snare', 'hihat', 'perc', 'bass'], minNotes: 16, mustInclude: { kick: 2, snare: 2, hihat: 4, perc: 4, bass: 2 } },
+    hints: ["Layer shakers and congas", "Try polyrhythms"],
     patternVariations: [
       { name: "Samba Brazilian", pattern: { kick: [0, 6, 12, 18, 24, 30], snare: [4, 20], hihat: [0, 4, 8, 12, 16, 20, 24, 28], perc: [0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30], bass: [0, 12, 24] }, difficulty: "Easy" },
       { name: "Middle Eastern Darbuka", pattern: { kick: [0, 8, 16, 24], snare: [6, 14, 22, 30], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], perc: [1, 5, 9, 13, 17, 21, 25, 29], bass: [0, 16] }, difficulty: "Medium" },
       { name: "West African Djembe", pattern: { kick: [0, 10, 20], snare: [8, 18, 28], hihat: [0, 4, 8, 12, 16, 20, 24, 28], perc: [0, 2, 5, 7, 10, 12, 15, 17, 20, 22, 25, 27, 30], bass: [0, 10, 20] }, difficulty: "Hard" }
     ],
-    tempo: 98,
-    unlocked: false,
-    themeId: 'sunset'
+    tempo: 98, unlocked: false, themeId: 'sunset',
+    renderScene: ({ pulse, perc, snare }) => (
+      <div className="absolute inset-0 overflow-hidden opacity-30 group-hover:opacity-50 transition-opacity">
+        <div className="absolute inset-0 flex items-center justify-center gap-1">
+          {[...Array(10)].map((_, i) => (
+            <div key={i} className="w-2 bg-orange-400/50 rounded-full transition-all duration-75"
+              style={{
+                height: `${20 + Math.random() * 60 * (perc || pulse)}%`,
+                transform: `scaleY(${1 + (snare || pulse)})`
+              }}></div>
+          ))}
+        </div>
+      </div>
+    )
   },
   {
     id: 7,
@@ -556,25 +730,28 @@ export const GAME_LEVELS = [
     icon: <Icons.Cloud />,
     description: "Create a relaxing lo-fi beat with keys!",
     objective: "Make a chill beat with KEYS and slow tempo",
-    requirements: {
-      instruments: ['kick', 'snare', 'hihat', 'keys', 'bass'],
-      minNotes: 14,
-      mustInclude: { kick: 2, snare: 2, hihat: 4, keys: 2, bass: 2 }
-    },
-    hints: [
-      "Lo-fi beats are SLOW - around 70-85 BPM",
-      "Keys add that jazzy, nostalgic feel",
-      "Leave SPACE in your beat - silence is powerful",
-      "Ghost notes (quiet hits) add human feel"
-    ],
+    requirements: { instruments: ['kick', 'snare', 'hihat', 'keys', 'bass'], minNotes: 14, mustInclude: { kick: 2, snare: 2, hihat: 4, keys: 2, bass: 2 } },
+    hints: ["Slow tempo (70-85 BPM)", "Leave SPACE", "Ghost notes"],
     patternVariations: [
       { name: "Vinyl Crackle Minimal", pattern: { kick: [0, 20], snare: [10, 26], hihat: [0, 6, 12, 18, 24, 30], keys: [0], bass: [0, 20] }, difficulty: "Easy" },
       { name: "Boom Bap Jazzy", pattern: { kick: [0, 11, 16, 27], snare: [8, 24], hihat: [0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30], keys: [0, 8, 16, 24], bass: [0, 11, 16, 27] }, difficulty: "Medium" },
       { name: "Anime Opening", pattern: { kick: [0, 6, 16, 22], snare: [8, 24], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], keys: [0, 4, 8, 12, 16, 20, 24, 28], bass: [0, 6, 12, 16, 22, 28] }, difficulty: "Hard" }
     ],
-    tempo: 75,
-    unlocked: false,
-    themeId: 'midnight'
+    tempo: 75, unlocked: false, themeId: 'midnight',
+    renderScene: ({ pulse, keys, kick, snare }) => (
+      <div className="absolute inset-0 overflow-hidden opacity-30 group-hover:opacity-50 transition-opacity">
+        <div className="absolute top-[-20%] right-[-20%] w-60 h-60 bg-indigo-300/20 rounded-full blur-3xl animate-pulse transition-transform duration-500" style={{ transform: `scale(${1 + (keys || pulse) * 0.2})` }}></div>
+        <div className="absolute bottom-[-20%] left-[-20%] w-60 h-60 bg-blue-300/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s', transform: `scale(${1 + (kick || pulse) * 0.2})` }}></div>
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="absolute w-20 h-1 bg-white/10 rotate-12 transition-opacity duration-200"
+            style={{
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              opacity: 0.2 + (snare || pulse) * 0.3
+            }}></div>
+        ))}
+      </div>
+    )
   },
   {
     id: 8,
@@ -586,25 +763,25 @@ export const GAME_LEVELS = [
     icon: <Icons.Music />,
     description: "Use ALL instruments to create a full track!",
     objective: "Create a complete beat using 6+ instruments",
-    requirements: {
-      instruments: ['kick', 'snare', 'hihat', 'bass', 'synth', 'keys'],
-      minNotes: 24,
-      mustInclude: { kick: 4, snare: 4, hihat: 8, bass: 4, synth: 2, keys: 2 }
-    },
-    hints: [
-      "Build in layers - start with drums, add bass, then melody",
-      "Make sure instruments don't clash - give each space",
-      "The best beats have contrast - loud and quiet parts",
-      "You're ready to be a producer!"
-    ],
+    requirements: { instruments: ['kick', 'snare', 'hihat', 'bass', 'synth', 'keys'], minNotes: 24, mustInclude: { kick: 4, snare: 4, hihat: 8, bass: 4, synth: 2, keys: 2 } },
+    hints: ["Build in layers", "Contrast loud and quiet", "Arrangement matters"],
     patternVariations: [
       { name: "Synthwave Retro", pattern: { kick: [0, 8, 16, 24], snare: [8, 24], hihat: [4, 12, 20, 28], bass: [0, 8, 16, 24], synth: [0, 16], keys: [4, 12, 20, 28] }, difficulty: "Easy" },
       { name: "Future Bass", pattern: { kick: [0, 16], snare: [8, 24], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], bass: [0, 6, 10, 16, 22, 26], synth: [0, 4, 8, 12, 16, 20, 24, 28], keys: [2, 10, 18, 26] }, difficulty: "Medium" },
       { name: "Industrial Dark", pattern: { kick: [0, 6, 12, 18, 24, 30], snare: [4, 10, 16, 22, 28], hihat: [0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30], bass: [0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30], synth: [0, 12, 24], keys: [6, 18, 30] }, difficulty: "Hard" }
     ],
-    tempo: 105,
-    unlocked: false,
-    themeId: 'midnight'
+    tempo: 105, unlocked: false, themeId: 'midnight',
+    renderScene: ({ pulse, bass, synth, kick }) => (
+      <div className="absolute inset-0 overflow-hidden opacity-30 group-hover:opacity-50 transition-opacity">
+        <div className="absolute inset-0 bg-gradient-to-r from-violet-900/40 via-fuchsia-900/40 to-violet-900/40 transition-colors duration-100" style={{ filter: `brightness(${1 + (kick || pulse) * 0.5})` }}></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 border border-white/20 rounded-full transition-transform duration-100" style={{ transform: `translate(-50%, -50%) rotate(${pulse * 360}deg) scale(${1 + (bass || pulse) * 0.3})` }}>
+          <div className="absolute top-0 left-1/2 w-2 h-2 bg-white/50 rounded-full"></div>
+        </div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-60 h-60 border border-white/10 rounded-full transition-transform duration-100" style={{ transform: `translate(-50%, -50%) rotate(-${pulse * 180}deg) scale(${1 + (synth || pulse) * 0.2})` }}>
+          <div className="absolute bottom-0 left-1/2 w-2 h-2 bg-white/50 rounded-full"></div>
+        </div>
+      </div>
+    )
   },
   {
     id: 9,
@@ -616,25 +793,30 @@ export const GAME_LEVELS = [
     icon: <Icons.Zap />,
     description: "Fast tempo challenge - can you keep up?",
     objective: "Create a high-energy beat at 140+ BPM",
-    requirements: {
-      instruments: ['kick', 'snare', 'hihat', 'bass', 'synth'],
-      minNotes: 20,
-      mustInclude: { kick: 4, snare: 4, hihat: 8, bass: 2, synth: 2 }
-    },
-    hints: [
-      "Fast tempos need simpler patterns",
-      "Drum & Bass and Jungle run at 160-180 BPM!",
-      "Keep the rhythm tight and punchy",
-      "Less notes per bar at high speeds"
-    ],
+    requirements: { instruments: ['kick', 'snare', 'hihat', 'bass', 'synth'], minNotes: 20, mustInclude: { kick: 4, snare: 4, hihat: 8, bass: 2, synth: 2 } },
+    hints: ["Simpler patterns for high speed", "Tight and punchy"],
     patternVariations: [
       { name: "Amen Break Classic", pattern: { kick: [0, 10, 16], snare: [4, 12, 20, 28], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], bass: [0, 10, 16], synth: [0, 16] }, difficulty: "Easy" },
       { name: "Halftime Dubstep", pattern: { kick: [0, 16], snare: [8], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], bass: [0, 1, 2, 3, 8, 9, 10, 11, 16, 17, 18, 19, 24, 25, 26, 27], synth: [8, 24] }, difficulty: "Medium" },
       { name: "Footwork/Juke", pattern: { kick: [0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30], snare: [4, 8, 12, 16, 20, 24, 28], hihat: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31], bass: [0, 6, 12, 18, 24, 30], synth: [0, 8, 16, 24] }, difficulty: "Hard" }
     ],
-    tempo: 145,
-    unlocked: false,
-    themeId: 'neon'
+    tempo: 145, unlocked: false, themeId: 'neon',
+    renderScene: ({ pulse, kick, hihat }) => (
+      <div className="absolute inset-0 overflow-hidden opacity-30 group-hover:opacity-50 transition-opacity">
+        <div className={`absolute inset-0 bg-black/40 transition-colors duration-50 ${(kick || pulse) > 0.5 ? 'bg-cyan-900/20' : ''}`}></div>
+        {[...Array(12)].map((_, i) => (
+          <div key={i} className="absolute h-[1px] bg-cyan-400/80 transition-transform duration-75"
+            style={{
+              left: 0,
+              right: 0,
+              top: `${Math.random() * 100}%`,
+              transform: `translateX(${Math.sin((pulse || 0) * 10 + i) * 50}px) scaleX(${1 + (hihat || pulse)})`,
+              opacity: Math.random()
+            }}></div>
+        ))}
+        <div className="absolute inset-0 border-2 border-cyan-500/30 transition-opacity duration-50" style={{ opacity: 0.3 + (kick || pulse) * 0.7 }}></div>
+      </div>
+    )
   },
   {
     id: 10,
@@ -645,25 +827,31 @@ export const GAME_LEVELS = [
     xpReward: 500,
     icon: <Icons.Activity />,
     description: "The ultimate challenge - prove your mastery!",
-    objective: "Create a complex beat with 7 instruments and 30+ notes",
-    requirements: {
-      instruments: ['kick', 'snare', 'hihat', 'bass', 'synth', 'keys', 'perc'],
-      minNotes: 30,
-      mustInclude: { kick: 4, snare: 4, hihat: 8, bass: 4, synth: 4, keys: 2, perc: 4 }
-    },
-    hints: [
-      "This is everything you've learned combined!",
-      "Think like a real producer - arrangement matters",
-      "Use dynamics - vary the intensity",
-      "You've mastered Rhythm Realm!"
-    ],
+    objective: "Create a complex beat with 7 instruments",
+    requirements: { instruments: ['kick', 'snare', 'hihat', 'bass', 'synth', 'keys', 'perc'], minNotes: 30, mustInclude: { kick: 4, snare: 4, hihat: 8, bass: 4, synth: 4, keys: 2, perc: 4 } },
+    hints: ["Use everything you've learned", "Dynamics!", "Arrangement!"],
     patternVariations: [
       { name: "Cinematic Epic", pattern: { kick: [0, 8, 16, 24], snare: [12, 28], hihat: [0, 4, 8, 12, 16, 20, 24, 28], bass: [0, 8, 16, 24], synth: [0, 16], keys: [0, 8, 16, 24], perc: [4, 12, 20, 28] }, difficulty: "Easy" },
       { name: "Glitch Hop Experimental", pattern: { kick: [0, 7, 14, 16, 23, 30], snare: [6, 10, 22, 26], hihat: [0, 1, 3, 4, 6, 7, 9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 25, 27, 28, 30, 31], bass: [0, 2, 7, 9, 14, 16, 18, 23, 25, 30], synth: [0, 7, 14, 16, 23, 30], keys: [3, 10, 19, 26], perc: [1, 5, 9, 13, 17, 21, 25, 29] }, difficulty: "Medium" },
       { name: "Tribal Fusion", pattern: { kick: [0, 5, 10, 15, 20, 25, 30], snare: [8, 18, 28], hihat: [0, 2, 5, 7, 10, 12, 15, 17, 20, 22, 25, 27, 30], bass: [0, 5, 10, 15, 20, 25, 30], synth: [0, 10, 20, 30], keys: [5, 15, 25], perc: [0, 2, 3, 5, 7, 8, 10, 12, 13, 15, 17, 18, 20, 22, 23, 25, 27, 28, 30] }, difficulty: "Hard" }
     ],
-    tempo: 115,
-    unlocked: false,
-    themeId: 'golden'
+    tempo: 115, unlocked: false, themeId: 'golden',
+    renderScene: ({ pulse, kick, snare, bass, synth }) => (
+      <div className="absolute inset-0 overflow-hidden opacity-30 group-hover:opacity-50 transition-opacity">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-amber-200/20 via-amber-900/40 to-black transition-all duration-100" style={{ filter: `brightness(${1 + (kick || pulse) * 0.4})` }}></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border border-amber-500/30 rounded-full transition-transform duration-100"
+              style={{
+                width: `${30 + i * 15}%`,
+                height: `${30 + i * 15}%`,
+                transform: `translate(-50%, -50%) rotate(${(pulse || 0) * (i % 2 === 0 ? 90 : -90)}deg) scale(${1 + (bass || pulse) * 0.1})`,
+                borderWidth: `${1 + (synth || pulse) * 2}px`,
+                borderColor: `rgba(245, 158, 11, ${0.3 + (snare || pulse) * 0.4})`
+              }}></div>
+          ))}
+        </div>
+      </div>
+    )
   }
 ];

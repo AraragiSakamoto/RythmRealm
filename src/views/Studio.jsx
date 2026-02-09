@@ -4,6 +4,9 @@ import AchievementNotification from './components/AchievementNotification';
 import AudioEngine from '../utils/AudioEngine';
 import { SoundLab } from './components/SoundLab';
 import BeatGrid from './components/BeatGrid';
+import TutorialOverlay from './components/TutorialOverlay';
+import LevelBackground from './components/LevelBackground';
+import { STUDIO_SCENES } from '../utils/constants';
 
 export default function Studio({
     grid,
@@ -22,9 +25,24 @@ export default function Studio({
     currentStep,
     tempo,
     setTempo,
-    instrumentConfig
+  instrumentConfig,
+  setInstrumentConfig,
+  soundSettings,
+  setSoundSettings,
+  setCurrentStep
 }) {
+  const [showTutorial, setShowTutorial] = React.useState(false);
+  const [activeSceneIndex, setActiveSceneIndex] = React.useState(0);
   const fileInputRef = useRef(null);
+
+  // Auto-show tutorial on first mount of Studio (mock logic for now, could use localStorage)
+  React.useEffect(() => {
+    const hasSeenTutorial = localStorage.getItem('hasSeenStudioTutorial');
+    if (!hasSeenTutorial) {
+      setShowTutorial(true);
+      // localStorage.setItem('hasSeenStudioTutorial', 'true'); // Uncomment to persist
+    }
+  }, []);
 
   const handleToggleStep = (trackId, step) => {
         setGrid(prev => {
@@ -145,6 +163,31 @@ export default function Studio({
               <Icons.Download className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" />
             </button>
 
+            <div className="glass-button px-4 py-2 rounded-xl text-slate-300 flex items-center gap-3 border-purple-500/30">
+              <span className="text-xs font-bold text-purple-400 tracking-widest hidden lg:block">SCENE</span>
+              <button
+                onClick={() => setActiveSceneIndex(prev => (prev - 1 + STUDIO_SCENES.length) % STUDIO_SCENES.length)}
+                className="hover:text-white transition-colors"
+              >
+                <Icons.ChevronLeft className="w-4 h-4" />
+              </button>
+              <span className="text-white font-display text-sm min-w-[100px] text-center">{STUDIO_SCENES[activeSceneIndex].name}</span>
+              <button
+                onClick={() => setActiveSceneIndex(prev => (prev + 1) % STUDIO_SCENES.length)}
+                className="hover:text-white transition-colors"
+              >
+                <Icons.ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+
+            <button
+              onClick={() => setShowTutorial(true)}
+              className="glass-button w-10 h-10 rounded-xl text-slate-300 hover:text-white hover:border-yellow-400/50 flex items-center justify-center font-bold text-lg"
+              title="Help / Tutorial"
+            >
+              ?
+            </button>
+
             <div className="h-8 w-px bg-white/10 mx-4"></div>
 
             {/* Play Button */}
@@ -166,11 +209,47 @@ export default function Studio({
         </div>
 
         {/* Studio Workspace */}
-        <div className="flex-1 relative overflow-y-auto overflow-x-hidden bg-gradient-to-b from-surface-dark to-[#02020a]">
-          {/* Background Grid Lines */}
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none"></div>
+        <div className="flex-1 relative overflow-y-auto overflow-x-hidden bg-transparent">
+          {/* Animated Background */}
+          <LevelBackground
+            renderScene={STUDIO_SCENES[activeSceneIndex].renderScene}
+            isPlaying={isPlaying}
+            grid={grid}
+            activeTracks={activeTracks}
+            currentStep={currentStep}
+          />
 
-          <div className="relative z-10 p-6 min-h-full flex flex-col justify-center">
+          {/* Background Grid Lines */}
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none z-0"></div>
+
+          {/* Timeline / Playback Slider */}
+          <div className="px-6 pb-2 pt-4 relative z-20">
+            <div className="flex items-center gap-4 text-xs font-mono text-neon-blue/70 mb-1">
+              <span>START</span>
+              <div className="flex-1 h-px bg-white/5 relative">
+                {/* Progress Bar */}
+                <div
+                  className="absolute top-0 left-0 h-full bg-neon-blue shadow-[0_0_10px_#00f3ff]"
+                  style={{ width: `${(currentStep / 32) * 100}%` }}
+                ></div>
+              </div>
+              <span>9.1.1</span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="31"
+              value={currentStep}
+              onChange={(e) => {
+                if (setCurrentStep) setCurrentStep(parseInt(e.target.value));
+                if (!isPlaying) AudioEngine.init(); // Init audio if scrubbing interaction
+              }}
+              className="w-full h-2 bg-slate-800 rounded-full appearance-none cursor-pointer accent-neon-cyan hover:accent-white transition-all"
+            />
+          </div>
+
+          {/* BeatGrid Container */}
+          <div className="relative z-10 px-6 min-h-full flex flex-col justify-start pb-20">
                 <BeatGrid 
                     grid={grid}
               activeTracks={activeTracks}
@@ -203,14 +282,38 @@ export default function Studio({
         {/* Sound Lab Modal */}
         {activeSoundLab && (
           <div className="absolute inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
-                 <SoundLab 
-              instKey={activeSoundLab}
-              config={instrumentConfig?.[activeSoundLab] || {}} 
-                    onClose={() => setActiveSoundLab(null)}
-              onChange={() => { }} // TODO: Implement state update
-                 />
+            <SoundLab 
+              instKey={activeSoundLab} // This is now the track ID (e.g., 'kick-1')
+              config={soundSettings?.[activeSoundLab] || {}}
+              instrumentConfig={instrumentConfig}
+              setInstrumentConfig={setInstrumentConfig}
+              activeTracks={activeTracks}
+              setActiveTracks={setActiveTracks}
+              onClose={() => setActiveSoundLab(null)}
+              onChange={(key, value) => {
+                setSoundSettings(prev => ({
+                  ...prev,
+                  [activeSoundLab]: {
+                    ...prev[activeSoundLab],
+                    [key]: value
+                  }
+                }));
+              }}
+            />
             </div>
         )}
+
+        {/* Tutorial Overlay */}
+        {
+          showTutorial && (
+            <TutorialOverlay
+              onClose={() => {
+                setShowTutorial(false);
+                localStorage.setItem('hasSeenStudioTutorial', 'true');
+              }}
+            />
+          )
+        }
 
       </div>
     );
