@@ -1574,32 +1574,28 @@ const AudioEngine = {
 
   init: () => {
     if (typeof window === 'undefined') return;
-    try {
-      if (!AudioEngine.ctx) {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        if (AudioContext) {
-          AudioEngine.ctx = new AudioContext();
-          AudioEngine.masterGain = AudioEngine.ctx.createGain();
-          AudioEngine.masterGain.gain.value = 0.7;
-          AudioEngine.compressor = AudioEngine.ctx.createDynamicsCompressor();
-          AudioEngine.compressor.threshold.value = -20;
-          AudioEngine.compressor.knee.value = 10;
-          AudioEngine.compressor.ratio.value = 4;
-          AudioEngine.compressor.attack.value = 0.003;
-          AudioEngine.compressor.release.value = 0.1;
-          // Create analyser for waveform visualization
-          AudioEngine.analyser = AudioEngine.ctx.createAnalyser();
-          AudioEngine.analyser.fftSize = 256;
-          AudioEngine.masterGain.connect(AudioEngine.compressor);
-          AudioEngine.compressor.connect(AudioEngine.analyser);
-          AudioEngine.analyser.connect(AudioEngine.ctx.destination);
-        }
+    if (!AudioEngine.ctx) {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (AudioContext) {
+        AudioEngine.ctx = new AudioContext();
+        AudioEngine.masterGain = AudioEngine.ctx.createGain();
+        AudioEngine.masterGain.gain.value = 0.7;
+        AudioEngine.compressor = AudioEngine.ctx.createDynamicsCompressor();
+        AudioEngine.compressor.threshold.value = -20;
+        AudioEngine.compressor.knee.value = 10;
+        AudioEngine.compressor.ratio.value = 4;
+        AudioEngine.compressor.attack.value = 0.003;
+        AudioEngine.compressor.release.value = 0.1;
+        // Create analyser for waveform visualization
+        AudioEngine.analyser = AudioEngine.ctx.createAnalyser();
+        AudioEngine.analyser.fftSize = 256;
+        AudioEngine.masterGain.connect(AudioEngine.compressor);
+        AudioEngine.compressor.connect(AudioEngine.analyser);
+        AudioEngine.analyser.connect(AudioEngine.ctx.destination);
       }
-      if (AudioEngine.ctx && AudioEngine.ctx.state === 'suspended') {
-        AudioEngine.ctx.resume().catch(e => console.warn('AudioContext resume failed:', e));
-      }
-    } catch (e) {
-      console.error('AudioEngine init error:', e);
+    }
+    if (AudioEngine.ctx && AudioEngine.ctx.state === 'suspended') {
+      AudioEngine.ctx.resume();
     }
   },
 
@@ -1647,672 +1643,663 @@ const AudioEngine = {
   },
 
   trigger: (variant, time = 0, config = { pitch: 0, chord: null, bend: 0, volume: 100, muted: false, attack: 0, decay: 100, filter: 100, reverb: 0, distortion: 0, pan: 0 }) => {
-    // Skip if muted or no variant
-    if (!variant || config.muted) return;
-
-    // Ensure AudioContext is initialized and running
-    if (!AudioEngine.ctx) AudioEngine.init();
-    if (AudioEngine.ctx.state === 'suspended') AudioEngine.ctx.resume().catch(() => { });
+    // Skip if muted
+    if (config.muted) return;
 
     if (!AudioEngine.ctx || !AudioEngine.masterGain) return;
+    const t = time || AudioEngine.ctx.currentTime;
+    const pitchMult = Math.pow(2, config.pitch / 12);
+    const baseFreq = variant.freq * pitchMult;
+    const soundType = variant.type || 'default';
 
-    try {
-      const t = time || AudioEngine.ctx.currentTime;
-      const pitchMult = Math.pow(2, (config.pitch || 0) / 12);
-      const baseFreq = (variant.freq || 440) * pitchMult;
-      const soundType = variant.type || 'default';
+    // Volume multiplier (0-1)
+    const volumeMult = (config.volume !== undefined ? config.volume : 100) / 100;
 
-      // Volume multiplier (0-1)
-      const volumeMult = (config.volume !== undefined ? config.volume : 100) / 100;
+    // Create a volume gain node for this sound
+    const volumeGain = AudioEngine.ctx.createGain();
+    volumeGain.gain.value = volumeMult;
 
-      // Create a volume gain node for this sound
-      const volumeGain = AudioEngine.ctx.createGain();
-      volumeGain.gain.value = volumeMult;
+    // Create panner node
+    const panner = AudioEngine.ctx.createStereoPanner();
+    panner.pan.value = (config.pan || 0) / 50; // Convert -50 to 50 to -1 to 1
 
-      // Create panner node
-      const panner = AudioEngine.ctx.createStereoPanner();
-      panner.pan.value = (config.pan || 0) / 50; // Convert -50 to 50 to -1 to 1
+    // Connect: sound -> volumeGain -> panner -> masterGain
+    volumeGain.connect(panner);
+    panner.connect(AudioEngine.masterGain);
 
-      // Connect: sound -> volumeGain -> panner -> masterGain
-      volumeGain.connect(panner);
-      panner.connect(AudioEngine.masterGain);
+    // === KICK DRUMS ===
+    if (soundType.startsWith('kick')) {
+      const osc = AudioEngine.ctx.createOscillator();
+      const gain = AudioEngine.ctx.createGain();
+      osc.type = 'sine';
 
-      // === KICK DRUMS ===
-      if (soundType.startsWith('kick')) {
-        const osc = AudioEngine.ctx.createOscillator();
-        const gain = AudioEngine.ctx.createGain();
-        osc.type = 'sine';
+      // Variables for different kick characters
+      let clickFreq = 4000;
+      let clickVol = 0.5;
+      let clickDecay = 0.02;
+      let noiseVol = 0.3;
+      let noiseFilterFreq = 200;
 
-        // Variables for different kick characters
-        let clickFreq = 4000;
-        let clickVol = 0.5;
-        let clickDecay = 0.02;
-        let noiseVol = 0.3;
-        let noiseFilterFreq = 200;
-
-        if (soundType === 'kick808') {
-          // Classic 808 - DEEP sub bass, long sustain, iconic boom
-          osc.frequency.setValueAtTime(120, t);
-          osc.frequency.exponentialRampToValueAtTime(45, t + 0.12);
-          osc.frequency.exponentialRampToValueAtTime(28, t + 0.6);
-          gain.gain.setValueAtTime(1.0, t);
-          gain.gain.exponentialRampToValueAtTime(0.7, t + 0.15);
-          gain.gain.exponentialRampToValueAtTime(0.01, t + 0.9);
-          clickFreq = 2500;
-          clickVol = 0.3;
-          clickDecay = 0.015;
-          noiseVol = 0.15;
-          noiseFilterFreq = 150;
-        } else if (soundType === 'kickPunch') {
-          // Punchy kick - TIGHT attack, SHORT decay, snappy
-          osc.frequency.setValueAtTime(220, t);
-          osc.frequency.exponentialRampToValueAtTime(65, t + 0.03);
-          osc.frequency.exponentialRampToValueAtTime(45, t + 0.08);
-          gain.gain.setValueAtTime(1.0, t);
-          gain.gain.exponentialRampToValueAtTime(0.2, t + 0.04);
-          gain.gain.exponentialRampToValueAtTime(0.01, t + 0.18);
-          clickFreq = 6000;
-          clickVol = 0.8;
-          clickDecay = 0.008;
-          noiseVol = 0.5;
-          noiseFilterFreq = 350;
-        } else if (soundType === 'kickSub') {
-          // Sub kick - ULTRA deep, long tail, rumbling bass
-          osc.frequency.setValueAtTime(80, t);
-          osc.frequency.exponentialRampToValueAtTime(32, t + 0.15);
-          osc.frequency.exponentialRampToValueAtTime(22, t + 0.5);
-          gain.gain.setValueAtTime(1.0, t);
-          gain.gain.linearRampToValueAtTime(0.8, t + 0.2);
-          gain.gain.exponentialRampToValueAtTime(0.01, t + 1.2);
-          clickFreq = 1500;
-          clickVol = 0.15;
-          clickDecay = 0.02;
-          noiseVol = 0.1;
-          noiseFilterFreq = 100;
-        } else {
-          // Acoustic kick - realistic drum, mid punch, natural resonance
-          osc.frequency.setValueAtTime(180, t);
-          osc.frequency.exponentialRampToValueAtTime(85, t + 0.025);
-          osc.frequency.exponentialRampToValueAtTime(55, t + 0.12);
-          gain.gain.setValueAtTime(0.9, t);
-          gain.gain.exponentialRampToValueAtTime(0.35, t + 0.06);
-          gain.gain.exponentialRampToValueAtTime(0.01, t + 0.4);
-          clickFreq = 5000;
-          clickVol = 0.7;
-          clickDecay = 0.012;
-          noiseVol = 0.6;
-          noiseFilterFreq = 400;
-        }
-
-        // Click/attack transient - varies per kick type
-        const click = AudioEngine.ctx.createOscillator();
-        const clickGain = AudioEngine.ctx.createGain();
-        click.type = 'triangle';
-        click.frequency.setValueAtTime(clickFreq, t);
-        click.frequency.exponentialRampToValueAtTime(150, t + clickDecay);
-        clickGain.gain.setValueAtTime(clickVol, t);
-        clickGain.gain.exponentialRampToValueAtTime(0.01, t + clickDecay + 0.005);
-        click.connect(clickGain);
-        clickGain.connect(volumeGain);
-        click.start(t);
-        click.stop(t + 0.05);
-
-        // Noise for body/thump - varies per kick type
-        const noiseBuffer = AudioEngine.ctx.createBuffer(1, AudioEngine.ctx.sampleRate * 0.1, AudioEngine.ctx.sampleRate);
-        const noiseData = noiseBuffer.getChannelData(0);
-        for (let i = 0; i < noiseData.length; i++) {
-          noiseData[i] = (Math.random() * 2 - 1) * Math.exp(-i / (AudioEngine.ctx.sampleRate * 0.015));
-        }
-        const noiseSource = AudioEngine.ctx.createBufferSource();
-        noiseSource.buffer = noiseBuffer;
-        const noiseFilter = AudioEngine.ctx.createBiquadFilter();
-        noiseFilter.type = 'lowpass';
-        noiseFilter.frequency.value = noiseFilterFreq;
-        const noiseGainNode = AudioEngine.ctx.createGain();
-        noiseGainNode.gain.setValueAtTime(noiseVol, t);
-        noiseGainNode.gain.exponentialRampToValueAtTime(0.01, t + 0.06);
-        noiseSource.connect(noiseFilter);
-        noiseFilter.connect(noiseGainNode);
-        noiseGainNode.connect(volumeGain);
-        noiseSource.start(t);
-        noiseSource.stop(t + 0.1);
-
-        osc.connect(gain);
-        gain.connect(volumeGain);
-        osc.start(t);
-        osc.stop(t + 1.5);
+      if (soundType === 'kick808') {
+        // Classic 808 - DEEP sub bass, long sustain, iconic boom
+        osc.frequency.setValueAtTime(120, t);
+        osc.frequency.exponentialRampToValueAtTime(45, t + 0.12);
+        osc.frequency.exponentialRampToValueAtTime(28, t + 0.6);
+        gain.gain.setValueAtTime(1.0, t);
+        gain.gain.exponentialRampToValueAtTime(0.7, t + 0.15);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.9);
+        clickFreq = 2500;
+        clickVol = 0.3;
+        clickDecay = 0.015;
+        noiseVol = 0.15;
+        noiseFilterFreq = 150;
+      } else if (soundType === 'kickPunch') {
+        // Punchy kick - TIGHT attack, SHORT decay, snappy
+        osc.frequency.setValueAtTime(220, t);
+        osc.frequency.exponentialRampToValueAtTime(65, t + 0.03);
+        osc.frequency.exponentialRampToValueAtTime(45, t + 0.08);
+        gain.gain.setValueAtTime(1.0, t);
+        gain.gain.exponentialRampToValueAtTime(0.2, t + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.18);
+        clickFreq = 6000;
+        clickVol = 0.8;
+        clickDecay = 0.008;
+        noiseVol = 0.5;
+        noiseFilterFreq = 350;
+      } else if (soundType === 'kickSub') {
+        // Sub kick - ULTRA deep, long tail, rumbling bass
+        osc.frequency.setValueAtTime(80, t);
+        osc.frequency.exponentialRampToValueAtTime(32, t + 0.15);
+        osc.frequency.exponentialRampToValueAtTime(22, t + 0.5);
+        gain.gain.setValueAtTime(1.0, t);
+        gain.gain.linearRampToValueAtTime(0.8, t + 0.2);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 1.2);
+        clickFreq = 1500;
+        clickVol = 0.15;
+        clickDecay = 0.02;
+        noiseVol = 0.1;
+        noiseFilterFreq = 100;
+      } else {
+        // Acoustic kick - realistic drum, mid punch, natural resonance
+        osc.frequency.setValueAtTime(180, t);
+        osc.frequency.exponentialRampToValueAtTime(85, t + 0.025);
+        osc.frequency.exponentialRampToValueAtTime(55, t + 0.12);
+        gain.gain.setValueAtTime(0.9, t);
+        gain.gain.exponentialRampToValueAtTime(0.35, t + 0.06);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.4);
+        clickFreq = 5000;
+        clickVol = 0.7;
+        clickDecay = 0.012;
+        noiseVol = 0.6;
+        noiseFilterFreq = 400;
       }
-      // === SNARE / CLAP ===
-      // === SNARE / CLAP ===
-      else if (soundType.startsWith('snare') || soundType === 'clap' || soundType === 'rim') {
-        const osc = AudioEngine.ctx.createOscillator();
-        const oscGain = AudioEngine.ctx.createGain();
+
+      // Click/attack transient - varies per kick type
+      const click = AudioEngine.ctx.createOscillator();
+      const clickGain = AudioEngine.ctx.createGain();
+      click.type = 'triangle';
+      click.frequency.setValueAtTime(clickFreq, t);
+      click.frequency.exponentialRampToValueAtTime(150, t + clickDecay);
+      clickGain.gain.setValueAtTime(clickVol, t);
+      clickGain.gain.exponentialRampToValueAtTime(0.01, t + clickDecay + 0.005);
+      click.connect(clickGain);
+      clickGain.connect(volumeGain);
+      click.start(t);
+      click.stop(t + 0.05);
+
+      // Noise for body/thump - varies per kick type
+      const noiseBuffer = AudioEngine.ctx.createBuffer(1, AudioEngine.ctx.sampleRate * 0.1, AudioEngine.ctx.sampleRate);
+      const noiseData = noiseBuffer.getChannelData(0);
+      for (let i = 0; i < noiseData.length; i++) {
+        noiseData[i] = (Math.random() * 2 - 1) * Math.exp(-i / (AudioEngine.ctx.sampleRate * 0.015));
+      }
+      const noiseSource = AudioEngine.ctx.createBufferSource();
+      noiseSource.buffer = noiseBuffer;
+      const noiseFilter = AudioEngine.ctx.createBiquadFilter();
+      noiseFilter.type = 'lowpass';
+      noiseFilter.frequency.value = noiseFilterFreq;
+      const noiseGainNode = AudioEngine.ctx.createGain();
+      noiseGainNode.gain.setValueAtTime(noiseVol, t);
+      noiseGainNode.gain.exponentialRampToValueAtTime(0.01, t + 0.06);
+      noiseSource.connect(noiseFilter);
+      noiseFilter.connect(noiseGainNode);
+      noiseGainNode.connect(volumeGain);
+      noiseSource.start(t);
+      noiseSource.stop(t + 0.1);
+
+      osc.connect(gain);
+      gain.connect(volumeGain);
+      osc.start(t);
+      osc.stop(t + 1.5);
+    }
+    // === SNARE / CLAP ===
+    // === SNARE / CLAP ===
+    else if (soundType.startsWith('snare') || soundType === 'clap' || soundType === 'rim') {
+      const osc = AudioEngine.ctx.createOscillator();
+      const oscGain = AudioEngine.ctx.createGain();
+      osc.type = 'triangle';
+
+      // Noise component for snare/clap match
+      const noise = AudioEngine.ctx.createBufferSource();
+      noise.buffer = AudioEngine.createNoise(0.4);
+      const noiseFilter = AudioEngine.ctx.createBiquadFilter();
+      const noiseGain = AudioEngine.ctx.createGain();
+
+      if (soundType === 'clap') {
+        // Multi-trigger noise for clap effect
+        noiseFilter.type = 'bandpass';
+        noiseFilter.frequency.value = 1500;
+        noiseFilter.Q.value = 1;
+
+        // Clap tone
         osc.type = 'triangle';
+        osc.frequency.value = 150;
+        oscGain.gain.setValueAtTime(0.1, t);
+        oscGain.gain.exponentialRampToValueAtTime(0.01, t + 0.05);
 
-        // Noise component for snare/clap match
-        const noise = AudioEngine.ctx.createBufferSource();
-        noise.buffer = AudioEngine.createNoise(0.4);
-        const noiseFilter = AudioEngine.ctx.createBiquadFilter();
-        const noiseGain = AudioEngine.ctx.createGain();
+        // We trigger noise manually 3 times for clap
+        // Disconnect main noise graph for custom clap logic
+        for (let i = 0; i < 3; i++) {
+          const delay = i * 0.012;
+          const clapSource = AudioEngine.ctx.createBufferSource();
+          clapSource.buffer = noise.buffer;
+          const clapFilter = AudioEngine.ctx.createBiquadFilter();
+          clapFilter.type = 'bandpass';
+          clapFilter.frequency.value = 1500;
+          const clapGain = AudioEngine.ctx.createGain();
 
-        if (soundType === 'clap') {
-          // Multi-trigger noise for clap effect
-          noiseFilter.type = 'bandpass';
-          noiseFilter.frequency.value = 1500;
-          noiseFilter.Q.value = 1;
+          clapGain.gain.setValueAtTime(0.6, t + delay);
+          clapGain.gain.exponentialRampToValueAtTime(0.01, t + delay + 0.1);
 
-          // Clap tone
-          osc.type = 'triangle';
-          osc.frequency.value = 150;
-          oscGain.gain.setValueAtTime(0.1, t);
-          oscGain.gain.exponentialRampToValueAtTime(0.01, t + 0.05);
-
-          // We trigger noise manually 3 times for clap
-          // Disconnect main noise graph for custom clap logic
-          for (let i = 0; i < 3; i++) {
-            const delay = i * 0.012;
-            const clapSource = AudioEngine.ctx.createBufferSource();
-            clapSource.buffer = noise.buffer;
-            const clapFilter = AudioEngine.ctx.createBiquadFilter();
-            clapFilter.type = 'bandpass';
-            clapFilter.frequency.value = 1500;
-            const clapGain = AudioEngine.ctx.createGain();
-
-            clapGain.gain.setValueAtTime(0.6, t + delay);
-            clapGain.gain.exponentialRampToValueAtTime(0.01, t + delay + 0.1);
-
-            clapSource.connect(clapFilter);
-            clapFilter.connect(clapGain);
-            clapGain.connect(volumeGain);
-            clapSource.start(t + delay);
-            clapSource.stop(t + delay + 0.15);
-          }
-        }
-        else if (soundType === 'rim') {
-          osc.frequency.value = baseFreq || 800;
-          osc.type = 'square';
-          oscGain.gain.setValueAtTime(0.3, t);
-          oscGain.gain.exponentialRampToValueAtTime(0.01, t + 0.04);
-          // Minimal click noise for rim
-          noiseFilter.type = 'highpass';
-          noiseFilter.frequency.value = 5000;
-          noiseGain.gain.setValueAtTime(0.1, t);
-          noiseGain.gain.exponentialRampToValueAtTime(0.01, t + 0.02);
-
-          noise.connect(noiseFilter);
-          noiseFilter.connect(noiseGain);
-          noiseGain.connect(volumeGain);
-          noise.start(t);
-        }
-        else {
-          // Standard Snare (Crack, Trap, etc)
-          // 1. Tonal Body (Oscillator)
-          osc.frequency.setValueAtTime(baseFreq || 200, t);
-          osc.frequency.exponentialRampToValueAtTime(100, t + 0.15);
-
-          // 2. Snap (Noise) - Using Highpass for crisp sound
-          noiseFilter.type = 'highpass';
-          noiseFilter.frequency.value = 2000; // Let the highs through
-
-          // Envelope
-          oscGain.gain.setValueAtTime(0.5, t);
-          oscGain.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
-
-          const noiseVol = soundType === 'snareTrap' ? 0.8 : 0.6;
-          noiseGain.gain.setValueAtTime(noiseVol, t);
-          noiseGain.gain.exponentialRampToValueAtTime(0.01, t + 0.25);
-
-          // Connect Noise Graph
-          noise.connect(noiseFilter);
-          noiseFilter.connect(noiseGain);
-          noiseGain.connect(volumeGain);
-          noise.start(t);
-        }
-
-        // Connect Tone Graph (except for clap which handles it differently/minimally)
-        if (soundType !== 'clap') {
-          osc.connect(oscGain);
-          oscGain.connect(volumeGain);
-          osc.start(t);
-          osc.stop(t + 0.4);
+          clapSource.connect(clapFilter);
+          clapFilter.connect(clapGain);
+          clapGain.connect(volumeGain);
+          clapSource.start(t + delay);
+          clapSource.stop(t + delay + 0.15);
         }
       }
-      // === HI-HATS / SHAKER ===
-      else if (soundType.startsWith('hihat') || soundType === 'shaker') {
-        const { source, output } = AudioEngine.createFilteredNoise(
-          soundType === 'hihatOpen' ? 6000 : soundType === 'shaker' ? 12000 : 10000,
-          soundType === 'hihatClosed' ? 3 : 1.5,
-          soundType === 'hihatOpen' ? 0.4 : 0.15,
-          t
-        );
-        const gain = AudioEngine.ctx.createGain();
-        const highpass = AudioEngine.ctx.createBiquadFilter();
-        highpass.type = 'highpass';
-        highpass.frequency.value = soundType === 'hihatPedal' ? 3000 : 7000;
-        const duration = soundType === 'hihatOpen' ? 0.35 : soundType === 'shaker' ? 0.1 : 0.06;
-        gain.gain.setValueAtTime(0.25, t);
-        gain.gain.exponentialRampToValueAtTime(0.01, t + duration);
-        output.connect(highpass);
-        highpass.connect(gain);
-        gain.connect(volumeGain);
-        source.start(t);
-        source.stop(t + duration + 0.1);
-      }
-      // === TOMS / TAIKO ===
-      else if (soundType.startsWith('tom') || soundType === 'taiko') {
-        const osc = AudioEngine.ctx.createOscillator();
-        const gain = AudioEngine.ctx.createGain();
-        osc.type = 'sine';
-        const freq = soundType === 'tomLow' ? 80 : soundType === 'tomMid' ? 150 : soundType === 'tomHigh' ? 250 : 60;
-        osc.frequency.setValueAtTime(freq * pitchMult * 1.5, t);
-        osc.frequency.exponentialRampToValueAtTime(freq * pitchMult, t + 0.02);
-        osc.frequency.exponentialRampToValueAtTime(freq * pitchMult * 0.7, t + 0.3);
-        const vol = soundType === 'taiko' ? 0.8 : 0.6;
-        const decay = soundType === 'taiko' ? 0.8 : 0.4;
-        gain.gain.setValueAtTime(vol, t);
-        gain.gain.exponentialRampToValueAtTime(0.01, t + decay);
-        osc.connect(gain);
-        gain.connect(volumeGain);
-        osc.start(t);
-        osc.stop(t + decay + 0.1);
-      }
-      // === PERCUSSION ===
-      else if (['conga', 'bongo', 'cowbell', 'woodblock'].includes(soundType)) {
-        const osc = AudioEngine.ctx.createOscillator();
-        const osc2 = AudioEngine.ctx.createOscillator();
-        const gain = AudioEngine.ctx.createGain();
-        if (soundType === 'cowbell') {
-          osc.type = 'square';
-          osc2.type = 'square';
-          osc.frequency.value = 800 * pitchMult;
-          osc2.frequency.value = 540 * pitchMult;
-          gain.gain.setValueAtTime(0.3, t);
-          gain.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
-          osc2.connect(gain);
-          osc2.start(t);
-          osc2.stop(t + 0.2);
-        } else if (soundType === 'woodblock') {
-          osc.type = 'sine';
-          osc.frequency.value = 1200 * pitchMult;
-          gain.gain.setValueAtTime(0.4, t);
-          gain.gain.exponentialRampToValueAtTime(0.01, t + 0.04);
-        } else {
-          osc.type = 'sine';
-          const freq = soundType === 'conga' ? 200 : 350;
-          osc.frequency.setValueAtTime(freq * pitchMult * 1.3, t);
-          osc.frequency.exponentialRampToValueAtTime(freq * pitchMult, t + 0.02);
-          gain.gain.setValueAtTime(0.5, t);
-          gain.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
-        }
-        osc.connect(gain);
-        gain.connect(volumeGain);
-        osc.start(t);
-        osc.stop(t + 0.3);
-      }
-      // === BASS ===
-      else if (soundType.startsWith('bass')) {
-        const notes = [baseFreq];
-        if (config.chord === 'maj') { notes.push(baseFreq * 1.2599, baseFreq * 1.4983); }
-        else if (config.chord === 'min') { notes.push(baseFreq * 1.1892, baseFreq * 1.4983); }
+      else if (soundType === 'rim') {
+        osc.frequency.value = baseFreq || 800;
+        osc.type = 'square';
+        oscGain.gain.setValueAtTime(0.3, t);
+        oscGain.gain.exponentialRampToValueAtTime(0.01, t + 0.04);
+        // Minimal click noise for rim
+        noiseFilter.type = 'highpass';
+        noiseFilter.frequency.value = 5000;
+        noiseGain.gain.setValueAtTime(0.1, t);
+        noiseGain.gain.exponentialRampToValueAtTime(0.01, t + 0.02);
 
-        // Special handling for Sub Bass - needs to be loud and clean
-        if (soundType === 'bassSub') {
-          notes.forEach((freq) => {
-            const osc = AudioEngine.ctx.createOscillator();
-            const osc2 = AudioEngine.ctx.createOscillator();
-            const gain = AudioEngine.ctx.createGain();
-
-            // Pure sine waves for deep sub bass
-            osc.type = 'sine';
-            osc2.type = 'sine';
-            osc.frequency.value = freq || 55;
-            osc2.frequency.value = (freq || 55) * 2; // Add octave for presence
-
-            // Much louder volume for sub bass
-            const vol = 0.7 / notes.length;
-            gain.gain.setValueAtTime(vol, t);
-            gain.gain.exponentialRampToValueAtTime(0.01, t + (variant.decay || 0.5));
-
-            // Connect directly without filter for clean sub
-            osc.connect(gain);
-            osc2.connect(gain);
-            gain.connect(volumeGain);
-
-            osc.start(t);
-            osc2.start(t);
-            osc.stop(t + 0.7);
-            osc2.stop(t + 0.7);
-          });
-        } else {
-          // Other bass types
-          notes.forEach((freq) => {
-            const osc = AudioEngine.ctx.createOscillator();
-            const osc2 = AudioEngine.ctx.createOscillator();
-            const gain = AudioEngine.ctx.createGain();
-            const filter = AudioEngine.ctx.createBiquadFilter();
-            filter.type = 'lowpass';
-            filter.frequency.value = soundType === 'bassWobble' ? 400 : 800;
-            filter.Q.value = 5;
-            if (soundType === 'bassWobble') {
-              const lfo = AudioEngine.ctx.createOscillator();
-              const lfoGain = AudioEngine.ctx.createGain();
-              lfo.frequency.value = 4;
-              lfoGain.gain.value = 300;
-              lfo.connect(lfoGain);
-              lfoGain.connect(filter.frequency);
-              lfo.start(t);
-              lfo.stop(t + 0.6);
-            }
-            osc.type = 'sawtooth';
-            osc2.type = 'sine';
-            osc.frequency.value = freq || 110;
-            osc2.frequency.value = freq || 110;
-            const vol = 0.6 / notes.length;
-            gain.gain.setValueAtTime(vol, t);
-            gain.gain.exponentialRampToValueAtTime(0.01, t + (variant.decay || 0.3));
-            osc.connect(filter);
-            osc2.connect(gain);
-            filter.connect(gain);
-            gain.connect(volumeGain);
-            osc.start(t);
-            osc2.start(t);
-            osc.stop(t + 0.6);
-            osc2.stop(t + 0.6);
-          });
-        }
+        noise.connect(noiseFilter);
+        noiseFilter.connect(noiseGain);
+        noiseGain.connect(volumeGain);
+        noise.start(t);
       }
-      // === SYNTHS ===
-      else if (soundType.startsWith('synth')) {
-        const notes = [baseFreq];
-        if (config.chord === 'maj') { notes.push(baseFreq * 1.2599, baseFreq * 1.4983); }
-        else if (config.chord === 'min') { notes.push(baseFreq * 1.1892, baseFreq * 1.4983); }
-        notes.forEach((freq) => {
-          const osc = AudioEngine.ctx.createOscillator();
-          const gain = AudioEngine.ctx.createGain();
-          const filter = AudioEngine.ctx.createBiquadFilter();
-          if (soundType === 'synthPad') {
-            osc.type = 'sawtooth';
-            filter.type = 'lowpass';
-            filter.frequency.setValueAtTime(200, t);
-            filter.frequency.linearRampToValueAtTime(2000, t + 0.3);
-            filter.frequency.linearRampToValueAtTime(800, t + 1.0);
-            gain.gain.setValueAtTime(0, t);
-            gain.gain.linearRampToValueAtTime(0.4 / notes.length, t + 0.1);
-            gain.gain.linearRampToValueAtTime(0.01, t + 1.0);
-          } else if (soundType === 'synthPluck') {
-            osc.type = 'sawtooth';
-            filter.type = 'lowpass';
-            filter.frequency.setValueAtTime(5000, t);
-            filter.frequency.exponentialRampToValueAtTime(500, t + 0.15);
-            gain.gain.setValueAtTime(0.5 / notes.length, t);
-            gain.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
-          } else if (soundType === 'synthStab') {
-            osc.type = 'square';
-            filter.type = 'lowpass';
-            filter.frequency.value = 2000;
-            gain.gain.setValueAtTime(0.45 / notes.length, t);
-            gain.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
-          } else {
-            osc.type = 'square';
-            filter.type = 'lowpass';
-            filter.frequency.value = 3000;
-            gain.gain.setValueAtTime(0.2 / notes.length, t);
-            gain.gain.exponentialRampToValueAtTime(0.01, t + 0.08);
-          }
-          osc.frequency.value = freq;
-          if (config.bend > 0) osc.frequency.linearRampToValueAtTime(freq * (1 + config.bend / 50), t + 0.1);
-          osc.connect(filter);
-          filter.connect(gain);
-          gain.connect(volumeGain);
-          osc.start(t);
-          osc.stop(t + 1.2);
-        });
-      }
-      // === KEYS ===
-      else if (soundType.startsWith('keys')) {
-        const notes = [baseFreq];
-        if (config.chord === 'maj') { notes.push(baseFreq * 1.2599, baseFreq * 1.4983); }
-        else if (config.chord === 'min') { notes.push(baseFreq * 1.1892, baseFreq * 1.4983); }
-        notes.forEach((freq) => {
-          const osc = AudioEngine.ctx.createOscillator();
-          const osc2 = AudioEngine.ctx.createOscillator();
-          const gain = AudioEngine.ctx.createGain();
-          if (soundType === 'keysPiano') {
-            osc.type = 'triangle';
-            osc2.type = 'sine';
-            osc2.frequency.value = freq * 2;
-            gain.gain.setValueAtTime(0.35 / notes.length, t);
-            gain.gain.exponentialRampToValueAtTime(0.15 / notes.length, t + 0.1);
-            gain.gain.exponentialRampToValueAtTime(0.01, t + 0.8);
-          } else if (soundType === 'keysRhodes') {
-            osc.type = 'sine';
-            osc2.type = 'sine';
-            osc2.frequency.value = freq * 3;
-            gain.gain.setValueAtTime(0.25 / notes.length, t);
-            gain.gain.exponentialRampToValueAtTime(0.01, t + 1.0);
-          } else if (soundType === 'keysOrgan') {
-            osc.type = 'sine';
-            osc2.type = 'sine';
-            osc2.frequency.value = freq * 2;
-            gain.gain.setValueAtTime(0.2 / notes.length, t);
-            gain.gain.setValueAtTime(0.2 / notes.length, t + 0.4);
-            gain.gain.exponentialRampToValueAtTime(0.01, t + 0.5);
-          } else {
-            osc.type = 'sine';
-            osc2.type = 'sine';
-            osc2.frequency.value = freq * 4;
-            gain.gain.setValueAtTime(0.2 / notes.length, t);
-            gain.gain.exponentialRampToValueAtTime(0.01, t + 1.2);
-          }
-          osc.frequency.value = freq;
-          osc.connect(gain);
-          osc2.connect(gain);
-          gain.connect(volumeGain);
-          osc.start(t);
-          osc2.start(t);
-          osc.stop(t + 1.5);
-          osc2.stop(t + 1.5);
-        });
-      }
-      // === VOX ===
-      else if (soundType.startsWith('vox')) {
-        const osc = AudioEngine.ctx.createOscillator();
-        const gain = AudioEngine.ctx.createGain();
-        const filter = AudioEngine.ctx.createBiquadFilter();
-        const filter2 = AudioEngine.ctx.createBiquadFilter();
-        osc.type = 'sawtooth';
-        osc.frequency.value = baseFreq;
-        filter.type = 'bandpass';
-        filter2.type = 'bandpass';
-        filter.Q.value = 10;
-        filter2.Q.value = 10;
-        if (soundType === 'voxOoh') {
-          filter.frequency.value = 400;
-          filter2.frequency.value = 800;
-        } else if (soundType === 'voxAah') {
-          filter.frequency.value = 700;
-          filter2.frequency.value = 1200;
-        } else if (soundType === 'voxHey') {
-          filter.frequency.setValueAtTime(600, t);
-          filter.frequency.linearRampToValueAtTime(400, t + 0.1);
-          filter2.frequency.value = 2000;
-        } else {
-          filter.frequency.value = 500;
-          filter2.frequency.value = 1500;
-          const osc2 = AudioEngine.ctx.createOscillator();
-          osc2.type = 'sawtooth';
-          osc2.frequency.value = baseFreq * 1.005;
-          osc2.connect(filter);
-          osc2.start(t);
-          osc2.stop(t + 1.0);
-        }
-        gain.gain.setValueAtTime(0, t);
-        gain.gain.linearRampToValueAtTime(0.25, t + 0.05);
-        gain.gain.linearRampToValueAtTime(0.01, t + (variant.decay || 0.5));
-        osc.connect(filter);
-        filter.connect(filter2);
-        filter2.connect(gain);
-        gain.connect(volumeGain);
-        osc.start(t);
-        osc.stop(t + 1.0);
-      }
-      // === LEAD ===
-      else if (soundType.startsWith('lead')) {
-        const notes = [baseFreq];
-        if (config.chord === 'maj') { notes.push(baseFreq * 1.2599, baseFreq * 1.4983); }
-        else if (config.chord === 'min') { notes.push(baseFreq * 1.1892, baseFreq * 1.4983); }
-        notes.forEach((freq) => {
-          const osc = AudioEngine.ctx.createOscillator();
-          const gain = AudioEngine.ctx.createGain();
-          const filter = AudioEngine.ctx.createBiquadFilter();
-          if (soundType === 'leadSaw') {
-            osc.type = 'sawtooth';
-            filter.type = 'lowpass';
-            filter.frequency.value = 4000;
-          } else if (soundType === 'leadSquare') {
-            osc.type = 'square';
-            filter.type = 'lowpass';
-            filter.frequency.value = 3000;
-          } else if (soundType === 'leadPluck') {
-            osc.type = 'sawtooth';
-            filter.type = 'lowpass';
-            filter.frequency.setValueAtTime(8000, t);
-            filter.frequency.exponentialRampToValueAtTime(500, t + 0.1);
-          } else {
-            osc.type = 'sawtooth';
-            filter.type = 'lowpass';
-            filter.frequency.value = 6000;
-            filter.Q.value = 5;
-          }
-          osc.frequency.value = freq;
-          if (config.bend > 0) osc.frequency.linearRampToValueAtTime(freq * (1 + config.bend / 30), t + 0.15);
-          gain.gain.setValueAtTime(0.2 / notes.length, t);
-          gain.gain.exponentialRampToValueAtTime(0.01, t + (variant.decay || 0.3));
-          osc.connect(filter);
-          filter.connect(gain);
-          gain.connect(volumeGain);
-          osc.start(t);
-          osc.stop(t + 0.5);
-        });
-      }
-      // === ORCHESTRA ===
-      else if (soundType.startsWith('orch')) {
-        const notes = [baseFreq];
-        if (config.chord === 'maj') { notes.push(baseFreq * 1.2599, baseFreq * 1.4983); }
-        else if (config.chord === 'min') { notes.push(baseFreq * 1.1892, baseFreq * 1.4983); }
-        notes.forEach((freq) => {
-          const osc = AudioEngine.ctx.createOscillator();
-          const osc2 = AudioEngine.ctx.createOscillator();
-          const gain = AudioEngine.ctx.createGain();
-          const filter = AudioEngine.ctx.createBiquadFilter();
-          if (soundType === 'orchStrings') {
-            osc.type = 'sawtooth';
-            osc2.type = 'sawtooth';
-            osc2.frequency.value = freq * 1.003;
-            filter.type = 'lowpass';
-            filter.frequency.value = 3000;
-            gain.gain.setValueAtTime(0, t);
-            gain.gain.linearRampToValueAtTime(0.15 / notes.length, t + 0.15);
-            gain.gain.linearRampToValueAtTime(0.01, t + 1.0);
-          } else if (soundType === 'orchBrass') {
-            osc.type = 'sawtooth';
-            osc2.type = 'square';
-            osc2.frequency.value = freq;
-            filter.type = 'lowpass';
-            filter.frequency.setValueAtTime(500, t);
-            filter.frequency.linearRampToValueAtTime(3000, t + 0.1);
-            gain.gain.setValueAtTime(0, t);
-            gain.gain.linearRampToValueAtTime(0.25 / notes.length, t + 0.05);
-            gain.gain.exponentialRampToValueAtTime(0.01, t + 0.4);
-          } else if (soundType === 'orchTimpani') {
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq * 1.5, t);
-            osc.frequency.exponentialRampToValueAtTime(freq, t + 0.05);
-            filter.type = 'lowpass';
-            filter.frequency.value = 500;
-            gain.gain.setValueAtTime(0.6 / notes.length, t);
-            gain.gain.exponentialRampToValueAtTime(0.01, t + 0.8);
-          } else {
-            osc.type = 'triangle';
-            osc2.type = 'sine';
-            osc2.frequency.value = freq * 2;
-            filter.type = 'lowpass';
-            filter.frequency.value = 4000;
-            gain.gain.setValueAtTime(0.25 / notes.length, t);
-            gain.gain.exponentialRampToValueAtTime(0.01, t + 0.6);
-          }
-          osc.frequency.value = freq;
-          osc.connect(filter);
-          if (osc2.frequency.value) {
-            osc2.connect(filter);
-            osc2.start(t);
-            osc2.stop(t + 1.2);
-          }
-          filter.connect(gain);
-          gain.connect(volumeGain);
-          osc.start(t);
-          osc.stop(t + 1.2);
-        });
-      }
-      // === FX ===
-      else if (soundType.startsWith('fx')) {
-        const osc = AudioEngine.ctx.createOscillator();
-        const gain = AudioEngine.ctx.createGain();
-        if (soundType === 'fxRiser') {
-          osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(baseFreq, t);
-          osc.frequency.exponentialRampToValueAtTime(baseFreq * 8, t + 1.5);
-          gain.gain.setValueAtTime(0.05, t);
-          gain.gain.linearRampToValueAtTime(0.4, t + 1.4);
-          gain.gain.exponentialRampToValueAtTime(0.01, t + 1.5);
-        } else if (soundType === 'fxImpact') {
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(baseFreq * 4, t);
-          osc.frequency.exponentialRampToValueAtTime(20, t + 0.5);
-          gain.gain.setValueAtTime(0.8, t);
-          gain.gain.exponentialRampToValueAtTime(0.01, t + 0.8);
-          const { source, output } = AudioEngine.createFilteredNoise(1000, 0.5, 0.3, t);
-          const noiseGain = AudioEngine.ctx.createGain();
-          noiseGain.gain.setValueAtTime(0.4, t);
-          noiseGain.gain.exponentialRampToValueAtTime(0.01, t + 0.3);
-          output.connect(noiseGain);
-          noiseGain.connect(volumeGain);
-          source.start(t);
-          source.stop(t + 0.3);
-        } else if (soundType === 'fxLaser') {
-          osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(baseFreq * 2, t);
-          osc.frequency.exponentialRampToValueAtTime(baseFreq / 4, t + 0.2);
-          gain.gain.setValueAtTime(0.3, t);
-          gain.gain.exponentialRampToValueAtTime(0.01, t + 0.3);
-        } else {
-          osc.type = 'square';
-          osc.frequency.setValueAtTime(baseFreq / 2, t);
-          osc.frequency.exponentialRampToValueAtTime(baseFreq * 2, t + 0.05);
-          osc.frequency.exponentialRampToValueAtTime(baseFreq / 2, t + 0.1);
-          gain.gain.setValueAtTime(0.3, t);
-          gain.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
-        }
-        osc.connect(gain);
-        gain.connect(volumeGain);
-        osc.start(t);
-        osc.stop(t + 1.6);
-      }
-      // === DEFAULT ===
       else {
-        const osc = AudioEngine.ctx.createOscillator();
-        const gain = AudioEngine.ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.value = baseFreq;
-        gain.gain.setValueAtTime(0.2, t);
-        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.3);
-        osc.connect(gain);
-        gain.connect(volumeGain);
+        // Standard Snare (Crack, Trap, etc)
+        // 1. Tonal Body (Oscillator)
+        osc.frequency.setValueAtTime(baseFreq || 200, t);
+        osc.frequency.exponentialRampToValueAtTime(100, t + 0.15);
+
+        // 2. Snap (Noise) - Using Highpass for crisp sound
+        noiseFilter.type = 'highpass';
+        noiseFilter.frequency.value = 2000; // Let the highs through
+
+        // Envelope
+        oscGain.gain.setValueAtTime(0.5, t);
+        oscGain.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
+
+        const noiseVol = soundType === 'snareTrap' ? 0.8 : 0.6;
+        noiseGain.gain.setValueAtTime(noiseVol, t);
+        noiseGain.gain.exponentialRampToValueAtTime(0.01, t + 0.25);
+
+        // Connect Noise Graph
+        noise.connect(noiseFilter);
+        noiseFilter.connect(noiseGain);
+        noiseGain.connect(volumeGain);
+        noise.start(t);
+      }
+
+      // Connect Tone Graph (except for clap which handles it differently/minimally)
+      if (soundType !== 'clap') {
+        osc.connect(oscGain);
+        oscGain.connect(volumeGain);
         osc.start(t);
         osc.stop(t + 0.4);
       }
-    } catch (e) {
-      console.error('AudioEngine trigger error:', e);
+    }
+    // === HI-HATS / SHAKER ===
+    else if (soundType.startsWith('hihat') || soundType === 'shaker') {
+      const { source, output } = AudioEngine.createFilteredNoise(
+        soundType === 'hihatOpen' ? 6000 : soundType === 'shaker' ? 12000 : 10000,
+        soundType === 'hihatClosed' ? 3 : 1.5,
+        soundType === 'hihatOpen' ? 0.4 : 0.15,
+        t
+      );
+      const gain = AudioEngine.ctx.createGain();
+      const highpass = AudioEngine.ctx.createBiquadFilter();
+      highpass.type = 'highpass';
+      highpass.frequency.value = soundType === 'hihatPedal' ? 3000 : 7000;
+      const duration = soundType === 'hihatOpen' ? 0.35 : soundType === 'shaker' ? 0.1 : 0.06;
+      gain.gain.setValueAtTime(0.25, t);
+      gain.gain.exponentialRampToValueAtTime(0.01, t + duration);
+      output.connect(highpass);
+      highpass.connect(gain);
+      gain.connect(volumeGain);
+      source.start(t);
+      source.stop(t + duration + 0.1);
+    }
+    // === TOMS / TAIKO ===
+    else if (soundType.startsWith('tom') || soundType === 'taiko') {
+      const osc = AudioEngine.ctx.createOscillator();
+      const gain = AudioEngine.ctx.createGain();
+      osc.type = 'sine';
+      const freq = soundType === 'tomLow' ? 80 : soundType === 'tomMid' ? 150 : soundType === 'tomHigh' ? 250 : 60;
+      osc.frequency.setValueAtTime(freq * pitchMult * 1.5, t);
+      osc.frequency.exponentialRampToValueAtTime(freq * pitchMult, t + 0.02);
+      osc.frequency.exponentialRampToValueAtTime(freq * pitchMult * 0.7, t + 0.3);
+      const vol = soundType === 'taiko' ? 0.8 : 0.6;
+      const decay = soundType === 'taiko' ? 0.8 : 0.4;
+      gain.gain.setValueAtTime(vol, t);
+      gain.gain.exponentialRampToValueAtTime(0.01, t + decay);
+      osc.connect(gain);
+      gain.connect(volumeGain);
+      osc.start(t);
+      osc.stop(t + decay + 0.1);
+    }
+    // === PERCUSSION ===
+    else if (['conga', 'bongo', 'cowbell', 'woodblock'].includes(soundType)) {
+      const osc = AudioEngine.ctx.createOscillator();
+      const osc2 = AudioEngine.ctx.createOscillator();
+      const gain = AudioEngine.ctx.createGain();
+      if (soundType === 'cowbell') {
+        osc.type = 'square';
+        osc2.type = 'square';
+        osc.frequency.value = 800 * pitchMult;
+        osc2.frequency.value = 540 * pitchMult;
+        gain.gain.setValueAtTime(0.3, t);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
+        osc2.connect(gain);
+        osc2.start(t);
+        osc2.stop(t + 0.2);
+      } else if (soundType === 'woodblock') {
+        osc.type = 'sine';
+        osc.frequency.value = 1200 * pitchMult;
+        gain.gain.setValueAtTime(0.4, t);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.04);
+      } else {
+        osc.type = 'sine';
+        const freq = soundType === 'conga' ? 200 : 350;
+        osc.frequency.setValueAtTime(freq * pitchMult * 1.3, t);
+        osc.frequency.exponentialRampToValueAtTime(freq * pitchMult, t + 0.02);
+        gain.gain.setValueAtTime(0.5, t);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
+      }
+      osc.connect(gain);
+      gain.connect(volumeGain);
+      osc.start(t);
+      osc.stop(t + 0.3);
+    }
+    // === BASS ===
+    else if (soundType.startsWith('bass')) {
+      const notes = [baseFreq];
+      if (config.chord === 'maj') { notes.push(baseFreq * 1.2599, baseFreq * 1.4983); }
+      else if (config.chord === 'min') { notes.push(baseFreq * 1.1892, baseFreq * 1.4983); }
+
+      // Special handling for Sub Bass - needs to be loud and clean
+      if (soundType === 'bassSub') {
+        notes.forEach((freq) => {
+          const osc = AudioEngine.ctx.createOscillator();
+          const osc2 = AudioEngine.ctx.createOscillator();
+          const gain = AudioEngine.ctx.createGain();
+
+          // Pure sine waves for deep sub bass
+          osc.type = 'sine';
+          osc2.type = 'sine';
+          osc.frequency.value = freq || 55;
+          osc2.frequency.value = (freq || 55) * 2; // Add octave for presence
+
+          // Much louder volume for sub bass
+          const vol = 0.7 / notes.length;
+          gain.gain.setValueAtTime(vol, t);
+          gain.gain.exponentialRampToValueAtTime(0.01, t + (variant.decay || 0.5));
+
+          // Connect directly without filter for clean sub
+          osc.connect(gain);
+          osc2.connect(gain);
+          gain.connect(volumeGain);
+
+          osc.start(t);
+          osc2.start(t);
+          osc.stop(t + 0.7);
+          osc2.stop(t + 0.7);
+        });
+      } else {
+        // Other bass types
+        notes.forEach((freq) => {
+          const osc = AudioEngine.ctx.createOscillator();
+          const osc2 = AudioEngine.ctx.createOscillator();
+          const gain = AudioEngine.ctx.createGain();
+          const filter = AudioEngine.ctx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.value = soundType === 'bassWobble' ? 400 : 800;
+          filter.Q.value = 5;
+          if (soundType === 'bassWobble') {
+            const lfo = AudioEngine.ctx.createOscillator();
+            const lfoGain = AudioEngine.ctx.createGain();
+            lfo.frequency.value = 4;
+            lfoGain.gain.value = 300;
+            lfo.connect(lfoGain);
+            lfoGain.connect(filter.frequency);
+            lfo.start(t);
+            lfo.stop(t + 0.6);
+          }
+          osc.type = 'sawtooth';
+          osc2.type = 'sine';
+          osc.frequency.value = freq || 110;
+          osc2.frequency.value = freq || 110;
+          const vol = 0.6 / notes.length;
+          gain.gain.setValueAtTime(vol, t);
+          gain.gain.exponentialRampToValueAtTime(0.01, t + (variant.decay || 0.3));
+          osc.connect(filter);
+          osc2.connect(gain);
+          filter.connect(gain);
+          gain.connect(volumeGain);
+          osc.start(t);
+          osc2.start(t);
+          osc.stop(t + 0.6);
+          osc2.stop(t + 0.6);
+        });
+      }
+    }
+    // === SYNTHS ===
+    else if (soundType.startsWith('synth')) {
+      const notes = [baseFreq];
+      if (config.chord === 'maj') { notes.push(baseFreq * 1.2599, baseFreq * 1.4983); }
+      else if (config.chord === 'min') { notes.push(baseFreq * 1.1892, baseFreq * 1.4983); }
+      notes.forEach((freq) => {
+        const osc = AudioEngine.ctx.createOscillator();
+        const gain = AudioEngine.ctx.createGain();
+        const filter = AudioEngine.ctx.createBiquadFilter();
+        if (soundType === 'synthPad') {
+          osc.type = 'sawtooth';
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(200, t);
+          filter.frequency.linearRampToValueAtTime(2000, t + 0.3);
+          filter.frequency.linearRampToValueAtTime(800, t + 1.0);
+          gain.gain.setValueAtTime(0, t);
+          gain.gain.linearRampToValueAtTime(0.4 / notes.length, t + 0.1);
+          gain.gain.linearRampToValueAtTime(0.01, t + 1.0);
+        } else if (soundType === 'synthPluck') {
+          osc.type = 'sawtooth';
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(5000, t);
+          filter.frequency.exponentialRampToValueAtTime(500, t + 0.15);
+          gain.gain.setValueAtTime(0.5 / notes.length, t);
+          gain.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
+        } else if (soundType === 'synthStab') {
+          osc.type = 'square';
+          filter.type = 'lowpass';
+          filter.frequency.value = 2000;
+          gain.gain.setValueAtTime(0.45 / notes.length, t);
+          gain.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
+        } else {
+          osc.type = 'square';
+          filter.type = 'lowpass';
+          filter.frequency.value = 3000;
+          gain.gain.setValueAtTime(0.2 / notes.length, t);
+          gain.gain.exponentialRampToValueAtTime(0.01, t + 0.08);
+        }
+        osc.frequency.value = freq;
+        if (config.bend > 0) osc.frequency.linearRampToValueAtTime(freq * (1 + config.bend / 50), t + 0.1);
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(volumeGain);
+        osc.start(t);
+        osc.stop(t + 1.2);
+      });
+    }
+    // === KEYS ===
+    else if (soundType.startsWith('keys')) {
+      const notes = [baseFreq];
+      if (config.chord === 'maj') { notes.push(baseFreq * 1.2599, baseFreq * 1.4983); }
+      else if (config.chord === 'min') { notes.push(baseFreq * 1.1892, baseFreq * 1.4983); }
+      notes.forEach((freq) => {
+        const osc = AudioEngine.ctx.createOscillator();
+        const osc2 = AudioEngine.ctx.createOscillator();
+        const gain = AudioEngine.ctx.createGain();
+        if (soundType === 'keysPiano') {
+          osc.type = 'triangle';
+          osc2.type = 'sine';
+          osc2.frequency.value = freq * 2;
+          gain.gain.setValueAtTime(0.35 / notes.length, t);
+          gain.gain.exponentialRampToValueAtTime(0.15 / notes.length, t + 0.1);
+          gain.gain.exponentialRampToValueAtTime(0.01, t + 0.8);
+        } else if (soundType === 'keysRhodes') {
+          osc.type = 'sine';
+          osc2.type = 'sine';
+          osc2.frequency.value = freq * 3;
+          gain.gain.setValueAtTime(0.25 / notes.length, t);
+          gain.gain.exponentialRampToValueAtTime(0.01, t + 1.0);
+        } else if (soundType === 'keysOrgan') {
+          osc.type = 'sine';
+          osc2.type = 'sine';
+          osc2.frequency.value = freq * 2;
+          gain.gain.setValueAtTime(0.2 / notes.length, t);
+          gain.gain.setValueAtTime(0.2 / notes.length, t + 0.4);
+          gain.gain.exponentialRampToValueAtTime(0.01, t + 0.5);
+        } else {
+          osc.type = 'sine';
+          osc2.type = 'sine';
+          osc2.frequency.value = freq * 4;
+          gain.gain.setValueAtTime(0.2 / notes.length, t);
+          gain.gain.exponentialRampToValueAtTime(0.01, t + 1.2);
+        }
+        osc.frequency.value = freq;
+        osc.connect(gain);
+        osc2.connect(gain);
+        gain.connect(volumeGain);
+        osc.start(t);
+        osc2.start(t);
+        osc.stop(t + 1.5);
+        osc2.stop(t + 1.5);
+      });
+    }
+    // === VOX ===
+    else if (soundType.startsWith('vox')) {
+      const osc = AudioEngine.ctx.createOscillator();
+      const gain = AudioEngine.ctx.createGain();
+      const filter = AudioEngine.ctx.createBiquadFilter();
+      const filter2 = AudioEngine.ctx.createBiquadFilter();
+      osc.type = 'sawtooth';
+      osc.frequency.value = baseFreq;
+      filter.type = 'bandpass';
+      filter2.type = 'bandpass';
+      filter.Q.value = 10;
+      filter2.Q.value = 10;
+      if (soundType === 'voxOoh') {
+        filter.frequency.value = 400;
+        filter2.frequency.value = 800;
+      } else if (soundType === 'voxAah') {
+        filter.frequency.value = 700;
+        filter2.frequency.value = 1200;
+      } else if (soundType === 'voxHey') {
+        filter.frequency.setValueAtTime(600, t);
+        filter.frequency.linearRampToValueAtTime(400, t + 0.1);
+        filter2.frequency.value = 2000;
+      } else {
+        filter.frequency.value = 500;
+        filter2.frequency.value = 1500;
+        const osc2 = AudioEngine.ctx.createOscillator();
+        osc2.type = 'sawtooth';
+        osc2.frequency.value = baseFreq * 1.005;
+        osc2.connect(filter);
+        osc2.start(t);
+        osc2.stop(t + 1.0);
+      }
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.25, t + 0.05);
+      gain.gain.linearRampToValueAtTime(0.01, t + (variant.decay || 0.5));
+      osc.connect(filter);
+      filter.connect(filter2);
+      filter2.connect(gain);
+      gain.connect(volumeGain);
+      osc.start(t);
+      osc.stop(t + 1.0);
+    }
+    // === LEAD ===
+    else if (soundType.startsWith('lead')) {
+      const notes = [baseFreq];
+      if (config.chord === 'maj') { notes.push(baseFreq * 1.2599, baseFreq * 1.4983); }
+      else if (config.chord === 'min') { notes.push(baseFreq * 1.1892, baseFreq * 1.4983); }
+      notes.forEach((freq) => {
+        const osc = AudioEngine.ctx.createOscillator();
+        const gain = AudioEngine.ctx.createGain();
+        const filter = AudioEngine.ctx.createBiquadFilter();
+        if (soundType === 'leadSaw') {
+          osc.type = 'sawtooth';
+          filter.type = 'lowpass';
+          filter.frequency.value = 4000;
+        } else if (soundType === 'leadSquare') {
+          osc.type = 'square';
+          filter.type = 'lowpass';
+          filter.frequency.value = 3000;
+        } else if (soundType === 'leadPluck') {
+          osc.type = 'sawtooth';
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(8000, t);
+          filter.frequency.exponentialRampToValueAtTime(500, t + 0.1);
+        } else {
+          osc.type = 'sawtooth';
+          filter.type = 'lowpass';
+          filter.frequency.value = 6000;
+          filter.Q.value = 5;
+        }
+        osc.frequency.value = freq;
+        if (config.bend > 0) osc.frequency.linearRampToValueAtTime(freq * (1 + config.bend / 30), t + 0.15);
+        gain.gain.setValueAtTime(0.2 / notes.length, t);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + (variant.decay || 0.3));
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(volumeGain);
+        osc.start(t);
+        osc.stop(t + 0.5);
+      });
+    }
+    // === ORCHESTRA ===
+    else if (soundType.startsWith('orch')) {
+      const notes = [baseFreq];
+      if (config.chord === 'maj') { notes.push(baseFreq * 1.2599, baseFreq * 1.4983); }
+      else if (config.chord === 'min') { notes.push(baseFreq * 1.1892, baseFreq * 1.4983); }
+      notes.forEach((freq) => {
+        const osc = AudioEngine.ctx.createOscillator();
+        const osc2 = AudioEngine.ctx.createOscillator();
+        const gain = AudioEngine.ctx.createGain();
+        const filter = AudioEngine.ctx.createBiquadFilter();
+        if (soundType === 'orchStrings') {
+          osc.type = 'sawtooth';
+          osc2.type = 'sawtooth';
+          osc2.frequency.value = freq * 1.003;
+          filter.type = 'lowpass';
+          filter.frequency.value = 3000;
+          gain.gain.setValueAtTime(0, t);
+          gain.gain.linearRampToValueAtTime(0.15 / notes.length, t + 0.15);
+          gain.gain.linearRampToValueAtTime(0.01, t + 1.0);
+        } else if (soundType === 'orchBrass') {
+          osc.type = 'sawtooth';
+          osc2.type = 'square';
+          osc2.frequency.value = freq;
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(500, t);
+          filter.frequency.linearRampToValueAtTime(3000, t + 0.1);
+          gain.gain.setValueAtTime(0, t);
+          gain.gain.linearRampToValueAtTime(0.25 / notes.length, t + 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.01, t + 0.4);
+        } else if (soundType === 'orchTimpani') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq * 1.5, t);
+          osc.frequency.exponentialRampToValueAtTime(freq, t + 0.05);
+          filter.type = 'lowpass';
+          filter.frequency.value = 500;
+          gain.gain.setValueAtTime(0.6 / notes.length, t);
+          gain.gain.exponentialRampToValueAtTime(0.01, t + 0.8);
+        } else {
+          osc.type = 'triangle';
+          osc2.type = 'sine';
+          osc2.frequency.value = freq * 2;
+          filter.type = 'lowpass';
+          filter.frequency.value = 4000;
+          gain.gain.setValueAtTime(0.25 / notes.length, t);
+          gain.gain.exponentialRampToValueAtTime(0.01, t + 0.6);
+        }
+        osc.frequency.value = freq;
+        osc.connect(filter);
+        if (osc2.frequency.value) {
+          osc2.connect(filter);
+          osc2.start(t);
+          osc2.stop(t + 1.2);
+        }
+        filter.connect(gain);
+        gain.connect(volumeGain);
+        osc.start(t);
+        osc.stop(t + 1.2);
+      });
+    }
+    // === FX ===
+    else if (soundType.startsWith('fx')) {
+      const osc = AudioEngine.ctx.createOscillator();
+      const gain = AudioEngine.ctx.createGain();
+      if (soundType === 'fxRiser') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(baseFreq, t);
+        osc.frequency.exponentialRampToValueAtTime(baseFreq * 8, t + 1.5);
+        gain.gain.setValueAtTime(0.05, t);
+        gain.gain.linearRampToValueAtTime(0.4, t + 1.4);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 1.5);
+      } else if (soundType === 'fxImpact') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(baseFreq * 4, t);
+        osc.frequency.exponentialRampToValueAtTime(20, t + 0.5);
+        gain.gain.setValueAtTime(0.8, t);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.8);
+        const { source, output } = AudioEngine.createFilteredNoise(1000, 0.5, 0.3, t);
+        const noiseGain = AudioEngine.ctx.createGain();
+        noiseGain.gain.setValueAtTime(0.4, t);
+        noiseGain.gain.exponentialRampToValueAtTime(0.01, t + 0.3);
+        output.connect(noiseGain);
+        noiseGain.connect(volumeGain);
+        source.start(t);
+        source.stop(t + 0.3);
+      } else if (soundType === 'fxLaser') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(baseFreq * 2, t);
+        osc.frequency.exponentialRampToValueAtTime(baseFreq / 4, t + 0.2);
+        gain.gain.setValueAtTime(0.3, t);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.3);
+      } else {
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(baseFreq / 2, t);
+        osc.frequency.exponentialRampToValueAtTime(baseFreq * 2, t + 0.05);
+        osc.frequency.exponentialRampToValueAtTime(baseFreq / 2, t + 0.1);
+        gain.gain.setValueAtTime(0.3, t);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
+      }
+      osc.connect(gain);
+      gain.connect(volumeGain);
+      osc.start(t);
+      osc.stop(t + 1.6);
+    }
+    // === DEFAULT ===
+    else {
+      const osc = AudioEngine.ctx.createOscillator();
+      const gain = AudioEngine.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = baseFreq;
+      gain.gain.setValueAtTime(0.2, t);
+      gain.gain.exponentialRampToValueAtTime(0.01, t + 0.3);
+      osc.connect(gain);
+      gain.connect(volumeGain);
+      osc.start(t);
+      osc.stop(t + 0.4);
     }
   }
 };
@@ -2320,47 +2307,6 @@ const AudioEngine = {
 // ==========================================
 // 6. MAIN APP
 // ==========================================
-
-// Helper: Compress grid for storage (indices only)
-const compressGrid = (grid) => {
-  const compressed = {};
-  Object.keys(grid).forEach(inst => {
-    compressed[inst] = (grid[inst] || []).reduce((acc, val, idx) => {
-      if (val) acc.push(idx);
-      return acc;
-    }, []);
-  });
-  return compressed;
-};
-
-// Helper: Decompress grid from storage (full arrays)
-const decompressGrid = (gridData) => {
-  if (!gridData) return {};
-
-  // Check if already expanded (values are arrays of length STEPS with 0/1/boolean)
-  const firstKey = Object.keys(gridData)[0];
-  const isOldFormat = firstKey &&
-    Array.isArray(gridData[firstKey]) &&
-    gridData[firstKey].length === STEPS &&
-    gridData[firstKey].every(v => v === 0 || v === 1 || v === true || v === false);
-
-  if (isOldFormat) {
-    return gridData;
-  }
-
-  // Decompress
-  const decompressed = {};
-  INSTRUMENTS_DATA.forEach(inst => {
-    decompressed[inst.id] = Array(STEPS).fill(0);
-    if (gridData && gridData[inst.id]) {
-      gridData[inst.id].forEach(idx => {
-        if (idx >= 0 && idx < STEPS) decompressed[inst.id][idx] = 1;
-      });
-    }
-  });
-  return decompressed;
-};
-
 export default function RhythmRealm() {
   const [view, setView] = useState('splash');
   const [previousView, setPreviousView] = useState('splash'); // Track where user came from
@@ -3869,12 +3815,11 @@ export default function RhythmRealm() {
 
   // Save beat function - saves to database if logged in, otherwise localStorage
   const saveBeat = async (name) => {
-    const compressedGrid = compressGrid(grid);
     const beat = {
       id: Date.now(),
       name: name || `Beat ${savedBeats.length + 1}`,
       date: new Date().toLocaleDateString(),
-      grid: compressedGrid,
+      grid: grid,
       tempo: tempo,
       activeInstrumentIds: activeInstrumentIds,
       instrumentConfig: instrumentConfig,
@@ -3926,7 +3871,7 @@ export default function RhythmRealm() {
 
   // Load beat function
   const loadBeat = (beat) => {
-    setGrid(decompressGrid(beat.grid));
+    setGrid(beat.grid);
     setTempo(beat.tempo);
     setActiveInstrumentIds(beat.activeInstrumentIds);
     setInstrumentConfig(beat.instrumentConfig);
@@ -6244,277 +6189,2180 @@ export default function RhythmRealm() {
 
               // Clear the grid for step-by-step learning
               const newGrid = {};
+              Object.keys(SOUND_VARIANTS).forEach(key => newGrid[key] = Array(STEPS).fill(false));
 
-              // 2. Add tracks from Premade Pattern and populate Grid
-              if (level.premadePattern) {
-                Object.entries(level.premadePattern).forEach(([type, steps]) => {
-                  const trackId = `${type}-1`;
-                  // Avoid duplicates if multiple tracks of same type allowed in future, 
-                  // but for now 1 per type is safe assumption for levels.
-                  if (!levelTracks.find(t => t.id === trackId)) {
-                    levelTracks.push({ id: trackId, type });
-                  }
+              // Get all instruments used in the tutorial
+              const tutorialInstruments = selectedScenario.tutorial
+                .filter(step => step.targetInstrument)
+                .map(step => step.targetInstrument);
+              const uniqueInstruments = [...new Set(tutorialInstruments)];
+              console.log('Instruments:', uniqueInstruments);
 
-                  // Initialize row
-                  newGrid[trackId] = Array(32).fill(false);
+              // Update all states
+              setGrid(newGrid);
+              setCurrentScenario(selectedScenario);
+              setTempo(selectedScenario.bpm);
+              setIsPlaying(false);
+              setActiveInstrumentIds(uniqueInstruments);
+              setTutorialActive(true);
+              setTutorialStep(0);
+              setActiveGuide(null);
+              setLockedInstruments({});
+              setPreviousView('tutorials');
+              setView('studio');
+            };
 
-                  // Set active steps
-                  if (Array.isArray(steps)) {
-                    steps.forEach(stepIndex => {
-                      if (stepIndex >= 0 && stepIndex < 32) {
-                        newGrid[trackId][stepIndex] = true;
-                      }
+            return (
+              <button
+                key={tutorial.name}
+                onClick={handleTutorialSelect}
+                className={`w-full p-3 sm:p-5 bg-gradient-to-br ${tutorial.theme} backdrop-blur-sm rounded-2xl sm:rounded-3xl text-left border-b-6 ${tutorial.borderColor} active:border-b-0 active:translate-y-1 transition-all hover:scale-[1.01] shadow-xl`}
+              >
+                <div className="flex items-start gap-2 sm:gap-4">
+                  <div className="w-10 h-10 sm:w-14 sm:h-14 bg-white/20 rounded-xl sm:rounded-2xl flex items-center justify-center text-xl sm:text-3xl shrink-0">{tutorial.icon}</div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
+                      <div className="text-sm sm:text-xl font-black">{tutorial.name}</div>
+                      <span className={`text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full font-bold ${tutorial.difficulty === 'Beginner' ? 'bg-green-500/50 text-green-100' : 'bg-yellow-500/50 text-yellow-100'}`}>
+                        {tutorial.difficulty === 'Beginner' ? '🟢' : '🟡'} {tutorial.difficulty}
+                      </span>
+                    </div>
+                    <div className="text-sm opacity-90 mt-1">{tutorial.desc}</div>
+                    <div className="mt-2 flex gap-2 flex-wrap">
+                      <span className="inline-block bg-black/20 px-2 py-1 rounded-lg text-xs font-bold">
+                        📝 {scenario.tutorial?.length || 5} Steps
+                      </span>
+                      <span className="inline-block bg-black/20 px-2 py-1 rounded-lg text-xs font-bold">
+                        🎵 {scenario.bpm} BPM
+                      </span>
+                    </div>
+                    <div className="mt-2 flex gap-1 flex-wrap">
+                      {tutorial.concepts.map((concept, i) => (
+                        <span key={i} className="text-[10px] bg-white/10 px-2 py-0.5 rounded-full">{concept}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <Icons.ChevronRight />
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  if (view === 'library') {
+    return (
+      <div className="h-screen w-full text-white flex flex-col overflow-hidden font-sans relative">
+        <style>{cssStyles}</style>
+        <PixelMusicBackground theme={currentTheme} />
+
+        {/* Achievement Notification */}
+        <AchievementNotification />
+
+        <div className="relative z-10 px-4 sm:px-6 py-4 sm:py-6 flex items-center justify-between border-b border-white/10 bg-black/30 backdrop-blur-sm">
+          <button onClick={() => setView('modes')} className="p-2 sm:p-3 bg-white/10 hover:bg-white/20 rounded-xl sm:rounded-2xl shadow-lg transition-all active:scale-95"><Icons.ChevronLeft /></button>
+          <h2 className="text-xl sm:text-3xl font-black bg-gradient-to-r from-amber-400 via-orange-400 to-pink-400 bg-clip-text text-transparent">🎵 BEAT LIBRARY</h2>
+          <div className="w-10 sm:w-12"></div>
+        </div>
+
+        <div className="relative z-10 flex-1 overflow-y-auto p-6 space-y-4">
+          {BEAT_GUIDES.map((guide, index) => (
+            <button
+              key={guide.name}
+              onClick={() => {
+                AudioEngine.init();
+                // Load the beat pattern into the grid
+                const newGrid = {};
+                Object.keys(SOUND_VARIANTS).forEach(key => {
+                  newGrid[key] = Array(STEPS).fill(false);
+                  if (guide.pattern[key]) {
+                    guide.pattern[key].forEach(step => {
+                      newGrid[key][step] = true;
                     });
                   }
                 });
-              }
+                setGrid(newGrid);
+                // Make sure required instruments are active
+                const requiredInsts = Object.keys(guide.pattern).filter(k => guide.pattern[k].length > 0);
+                setActiveInstrumentIds(prev => {
+                  const newSet = new Set([...prev, ...requiredInsts]);
+                  return Array.from(newSet);
+                });
+                // Clear guide/tutorial locks so user can edit freely
+                setActiveGuide(null);
+                setTutorialActive(false);
+                setCurrentScenario(SCENARIOS[1]);
+                setPreviousView('library');
+                setView('studio');
+              }}
+              className="w-full p-5 bg-white/10 backdrop-blur-md hover:bg-white/20 rounded-2xl text-left flex items-center gap-4 transition-all border border-white/10 hover:border-white/30 hover:scale-[1.01]"
+            >
+              <div className="w-14 h-14 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center text-2xl shadow-lg">
+                {index + 1}
+              </div>
+              <div className="flex-1">
+                <div className="text-xl font-black">{guide.name}</div>
+                <div className="text-sm opacity-70 mt-1">{guide.desc}</div>
+                <div className="flex gap-2 mt-2 flex-wrap">
+                  {Object.keys(guide.pattern).filter(k => guide.pattern[k].length > 0).map(inst => (
+                    <span key={inst} className="text-xs bg-white/20 px-2 py-1 rounded-full capitalize">{inst}</span>
+                  ))}
+                </div>
+              </div>
+              <Icons.ChevronRight />
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
-              // 3. Ensure tracks exist for all Required Instruments (even if empty pattern)
-              if (level.requirements?.instruments) {
-                level.requirements.instruments.forEach(type => {
-                  // Check if we already have a track for this type
-                  const existing = levelTracks.find(t => t.type === type);
-                  if (!existing) {
-                    const trackId = `${type}-1`;
-                    levelTracks.push({ id: trackId, type });
-                    newGrid[trackId] = Array(32).fill(false);
+  if (view === 'settings') {
+    return (
+      <div className="h-screen w-full text-white flex flex-col overflow-hidden font-sans relative">
+        <style>{cssStyles}</style>
+        <PixelMusicBackground theme={currentTheme} />
+
+        {/* Achievement Notification */}
+        <AchievementNotification />
+
+        <div className="relative z-10 px-4 sm:px-6 py-4 sm:py-6 flex items-center justify-between border-b border-white/10 bg-black/30 backdrop-blur-sm">
+          <button onClick={() => setView('splash')} className="p-2 sm:p-3 bg-white/10 hover:bg-white/20 rounded-xl sm:rounded-2xl shadow-lg transition-all active:scale-95" aria-label={t('back')}><Icons.ChevronLeft /></button>
+          <h2 className="text-xl sm:text-3xl font-black bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">⚙️ {t('settings').toUpperCase()}</h2>
+          <div className="w-10 sm:w-12"></div>
+        </div>
+
+        <div className="relative z-10 flex-1 overflow-y-auto p-6 space-y-6">
+          {/* Volume Control */}
+          <div className="bg-black/40 backdrop-blur-md rounded-3xl p-6 border border-purple-500/30">
+            <h3 className="text-xl font-black mb-4 flex items-center gap-3">
+              <span className="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center">🔊</span>
+              {t('masterVolume')}
+            </h3>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              defaultValue="70"
+              className="w-full h-3 bg-white/20 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+            />
+          </div>
+
+          {/* Background Music Toggle */}
+          <div className="bg-black/40 backdrop-blur-md rounded-3xl p-6 border border-purple-500/30">
+            <h3 className="text-xl font-black mb-4 flex items-center gap-3">
+              <span className="w-10 h-10 bg-gradient-to-br from-pink-400 to-rose-500 rounded-xl flex items-center justify-center">🎵</span>
+              {t('backgroundMusic')}
+            </h3>
+            <div className="flex items-center justify-between">
+              <span className="text-white/80">Ambient music on menus</span>
+              <button
+                onClick={() => setBgMusicEnabled(!bgMusicEnabled)}
+                className={`w-16 h-8 rounded-full transition-all duration-300 ${bgMusicEnabled ? 'bg-gradient-to-r from-cyan-400 to-purple-500' : 'bg-white/20'}`}
+              >
+                <div className={`w-6 h-6 bg-white rounded-full shadow-lg transition-all duration-300 ${bgMusicEnabled ? 'translate-x-9' : 'translate-x-1'}`}></div>
+              </button>
+            </div>
+            <p className="text-xs text-white/50 mt-2">Music automatically stops during beat creation and tutorials</p>
+          </div>
+
+          {/* Visual Themes */}
+          <div className="bg-black/40 backdrop-blur-md rounded-3xl p-6 border border-purple-500/30">
+            <h3 className="text-xl font-black mb-4 flex items-center gap-3">
+              <span className="w-10 h-10 bg-gradient-to-br from-violet-400 to-purple-500 rounded-xl flex items-center justify-center">🎨</span>
+              {t('visualThemes')}
+            </h3>
+            <div className="grid grid-cols-3 gap-3">
+              {VISUAL_THEMES.map((theme) => (
+                <button
+                  key={theme.id}
+                  onClick={() => setCurrentTheme(theme)}
+                  className={`p-3 rounded-2xl bg-gradient-to-br ${theme.primary} hover:scale-105 transition-all flex flex-col items-center gap-2 ${currentTheme.id === theme.id ? 'ring-4 ring-white shadow-lg scale-105' : 'opacity-70 hover:opacity-100'}`}
+                >
+                  <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                    {theme.id === 'ocean' && '🌊'}
+                    {theme.id === 'sunset' && '🌦'}
+                    {theme.id === 'golden' && '✨'}
+                    {theme.id === 'forest' && '🌲'}
+                    {theme.id === 'neon' && '🎧'}
+                    {theme.id === 'midnight' && '🌙'}
+                  </div>
+                  <span className="text-xs font-bold">{theme.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Accessibility Settings */}
+          <div className="bg-gradient-to-br from-yellow-500/20 to-orange-500/20 backdrop-blur-md rounded-3xl p-6 border-2 border-yellow-500/50">
+            <h3 className="text-xl font-black mb-4 flex items-center gap-3">
+              <span className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center">♿</span>
+              {t('accessibility')}
+            </h3>
+            <p className="text-sm text-white/70 mb-4">Make the app easier to use for everyone</p>
+
+            <div className="space-y-4">
+              {/* Text-to-Speech */}
+              <div className="flex items-center justify-between p-3 bg-black/30 rounded-2xl">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">🔊</span>
+                  <div>
+                    <div className="font-bold">{t('textToSpeech')}</div>
+                    <div className="text-xs opacity-70">{t('textToSpeechDesc')}</div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    setTextToSpeechEnabled(!textToSpeechEnabled);
+                    if (!textToSpeechEnabled) {
+                      const utterance = new SpeechSynthesisUtterance('Text to speech enabled. Hover over buttons to hear descriptions.');
+                      window.speechSynthesis.speak(utterance);
+                    }
+                  }}
+                  aria-label={textToSpeechEnabled ? 'Disable text to speech' : 'Enable text to speech'}
+                  className={`w-16 h-8 rounded-full transition-all duration-300 ${textToSpeechEnabled ? 'bg-gradient-to-r from-yellow-400 to-orange-500' : 'bg-white/20'}`}
+                >
+                  <div className={`w-6 h-6 bg-white rounded-full shadow-lg transition-all duration-300 ${textToSpeechEnabled ? 'translate-x-9' : 'translate-x-1'}`}></div>
+                </button>
+              </div>
+
+              {/* High Contrast Mode */}
+              <div className="flex items-center justify-between p-3 bg-black/30 rounded-2xl">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">🔆</span>
+                  <div>
+                    <div className="font-bold">{t('highContrast')}</div>
+                    <div className="text-xs opacity-70">{t('highContrastDesc')}</div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setHighContrastMode(!highContrastMode)}
+                  aria-label={highContrastMode ? 'Disable high contrast mode' : 'Enable high contrast mode'}
+                  className={`w-16 h-8 rounded-full transition-all duration-300 ${highContrastMode ? 'bg-gradient-to-r from-yellow-400 to-orange-500' : 'bg-white/20'}`}
+                >
+                  <div className={`w-6 h-6 bg-white rounded-full shadow-lg transition-all duration-300 ${highContrastMode ? 'translate-x-9' : 'translate-x-1'}`}></div>
+                </button>
+              </div>
+
+              {/* Large Text Mode */}
+              <div className="flex items-center justify-between p-3 bg-black/30 rounded-2xl">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">🔤</span>
+                  <div>
+                    <div className="font-bold">{t('largeText')}</div>
+                    <div className="text-xs opacity-70">{t('largeTextDesc')}</div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setLargeTextMode(!largeTextMode)}
+                  aria-label={largeTextMode ? 'Disable large text mode' : 'Enable large text mode'}
+                  className={`w-16 h-8 rounded-full transition-all duration-300 ${largeTextMode ? 'bg-gradient-to-r from-yellow-400 to-orange-500' : 'bg-white/20'}`}
+                >
+                  <div className={`w-6 h-6 bg-white rounded-full shadow-lg transition-all duration-300 ${largeTextMode ? 'translate-x-9' : 'translate-x-1'}`}></div>
+                </button>
+              </div>
+
+              {/* Keyboard Navigation */}
+              <div className="flex items-center justify-between p-3 bg-black/30 rounded-2xl">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">⌨️</span>
+                  <div>
+                    <div className="font-bold">{t('keyboardNav')}</div>
+                    <div className="text-xs opacity-70">{t('keyboardNavDesc')}</div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setKeyboardNavMode(!keyboardNavMode)}
+                  aria-label={keyboardNavMode ? 'Disable keyboard navigation mode' : 'Enable keyboard navigation mode'}
+                  className={`w-16 h-8 rounded-full transition-all duration-300 ${keyboardNavMode ? 'bg-gradient-to-r from-yellow-400 to-orange-500' : 'bg-white/20'}`}
+                >
+                  <div className={`w-6 h-6 bg-white rounded-full shadow-lg transition-all duration-300 ${keyboardNavMode ? 'translate-x-9' : 'translate-x-1'}`}></div>
+                </button>
+              </div>
+
+              {/* Voice Control - Hands Free */}
+              <div className="flex items-center justify-between p-3 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-2xl border border-purple-400/30">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">🎙️</span>
+                  <div>
+                    <div className="font-bold">{t('voiceControl')}</div>
+                    <div className="text-xs opacity-70">{t('voiceControlDesc')}</div>
+                  </div>
+                </div>
+                <button
+                  onClick={async () => {
+                    if (!voiceControlEnabled) {
+                      // Request microphone permission first
+                      try {
+                        await navigator.mediaDevices.getUserMedia({ audio: true });
+                        setVoiceControlEnabled(true);
+                        const utterance = new SpeechSynthesisUtterance('Microphone enabled. Voice control is now active. Say help to hear available commands.');
+                        window.speechSynthesis.speak(utterance);
+                      } catch (err) {
+                        const utterance = new SpeechSynthesisUtterance('Microphone access denied. Please allow microphone access in your browser to use voice control.');
+                        window.speechSynthesis.speak(utterance);
+                        alert('🎙️ Microphone access required!\n\nPlease allow microphone access in your browser to use voice control.\n\nClick the microphone icon in your browser\'s address bar to enable it.');
+                      }
+                    } else {
+                      setVoiceControlEnabled(false);
+                    }
+                  }}
+                  aria-label={voiceControlEnabled ? 'Disable voice control' : 'Enable voice control for hands-free use'}
+                  className={`w-16 h-8 rounded-full transition-all duration-300 ${voiceControlEnabled ? 'bg-gradient-to-r from-purple-400 to-pink-500' : 'bg-white/20'}`}
+                >
+                  <div className={`w-6 h-6 bg-white rounded-full shadow-lg transition-all duration-300 ${voiceControlEnabled ? 'translate-x-9' : 'translate-x-1'}`}></div>
+                </button>
+              </div>
+
+              {/* Voice Control Status & Commands */}
+              {voiceControlEnabled && (
+                <div className="p-4 bg-purple-500/20 rounded-2xl border border-purple-400/30">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className={`w-3 h-3 rounded-full ${isListening ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`}></div>
+                    <span className="font-bold text-sm">{isListening ? '🎤 Listening...' : '🔇 Not listening'}</span>
+                  </div>
+                  {lastVoiceCommand && (
+                    <div className="text-xs opacity-70 mb-3">Last command: "{lastVoiceCommand}"</div>
+                  )}
+                  <div className="text-xs opacity-80">
+                    <div className="font-bold mb-2">🗣️ Say these commands:</div>
+                    <div className="grid grid-cols-2 gap-1">
+                      <span>• "Play" / "Stop"</span>
+                      <span>• "Go home"</span>
+                      <span>• "DJ mode"</span>
+                      <span>• "Free play"</span>
+                      <span>• "Faster" / "Slower"</span>
+                      <span>• "Clear"</span>
+                      <span>• "Go back"</span>
+                      <span>• "Help"</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Language Selector */}
+              <div className="p-4 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-2xl border border-blue-400/30">
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="text-2xl">🌐</span>
+                  <div>
+                    <div className="font-bold">{t('language')}</div>
+                    <div className="text-xs opacity-70">{t('languageDesc')}</div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  {Object.entries(LANGUAGES).map(([code, lang]) => (
+                    <button
+                      key={code}
+                      onClick={() => {
+                        setCurrentLanguage(code);
+                        localStorage.setItem('rhythmRealm_language', code);
+                        if (textToSpeechEnabled) {
+                          const utterance = new SpeechSynthesisUtterance(`Language changed to ${lang.name}`);
+                          utterance.lang = lang.code;
+                          window.speechSynthesis.speak(utterance);
+                        }
+                      }}
+                      className={`p-2 rounded-xl text-xs font-bold transition-all flex flex-col items-center gap-1 ${currentLanguage === code
+                        ? 'bg-gradient-to-r from-blue-400 to-cyan-500 text-black'
+                        : 'bg-white/10 hover:bg-white/20'
+                        }`}
+                      aria-label={`Change language to ${lang.name}`}
+                    >
+                      <span className="text-lg">{lang.flag}</span>
+                      <span>{lang.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Enable All Accessibility */}
+              <button
+                onClick={() => {
+                  const enableAll = !accessibilityMode;
+                  setAccessibilityMode(enableAll);
+                  setTextToSpeechEnabled(enableAll);
+                  setHighContrastMode(enableAll);
+                  setLargeTextMode(enableAll);
+                  setKeyboardNavMode(enableAll);
+                  setVoiceControlEnabled(enableAll);
+                  if (enableAll) {
+                    const utterance = new SpeechSynthesisUtterance('All accessibility features enabled including voice control. Say help to hear voice commands.');
+                    window.speechSynthesis.speak(utterance);
                   }
-                });
-              } else if (level.requirements?.mustInclude) {
-                // Fallback if 'instruments' array is missing but 'mustInclude' exists
-                Object.keys(level.requirements.mustInclude).forEach(type => {
-                  const existing = levelTracks.find(t => t.type === type);
-                  if (!existing) {
-                    const trackId = `${type}-1`;
-                    levelTracks.push({ id: trackId, type });
-                    newGrid[trackId] = Array(32).fill(false);
-                  }
-                });
-              }
+                }}
+                className={`w-full p-4 rounded-2xl font-bold text-lg transition-all ${accessibilityMode ? 'bg-gradient-to-r from-green-400 to-emerald-500 text-black' : 'bg-gradient-to-r from-yellow-400 to-orange-500 text-black hover:from-yellow-300 hover:to-orange-400'}`}
+                aria-label={accessibilityMode ? 'Disable all accessibility features' : 'Enable all accessibility features'}
+              >
+                {accessibilityMode ? `✔ ${t('allEnabled')}` : `☑️ ${t('enableAll')}`}
+              </button>
 
-              // 4. Default Fallback
-              if (levelTracks.length === 0) {
-                ['kick', 'snare', 'hihat'].forEach(type => {
-                  const id = `${type}-1`;
-                  levelTracks.push({ id, type });
-                  newGrid[id] = Array(32).fill(false);
-                });
-              }
+              {/* Screen Reader Info */}
+              <div className="p-3 bg-blue-500/20 rounded-2xl border border-blue-400/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">💡</span>
+                  <span className="font-bold text-sm">Screen Reader Tips</span>
+                </div>
+                <ul className="text-xs opacity-80 space-y-1 ml-6">
+                  <li>• Use Tab to navigate between buttons</li>
+                  <li>• Press Enter or Space to activate</li>
+                  <li>• Arrow keys work in grid areas</li>
+                  <li>• Escape closes popups and modals</li>
+                </ul>
+              </div>
+            </div>
+          </div>
 
-              app.setActiveTracks(levelTracks);
-              app.setGrid(newGrid); // Apply the premade pattern to state
-              app.setView('levelPlay');
+          {/* Sound Packs */}
+          <div className="bg-black/40 backdrop-blur-md rounded-3xl p-6 border border-purple-500/30">
+            <h3 className="text-xl font-black mb-4 flex items-center gap-3">
+              <span className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center">🎵</span>
+              Sound Packs
+            </h3>
+            <div className="space-y-2">
+              <button
+                onClick={() => applySoundPack('classic')}
+                className={`w-full p-4 rounded-2xl text-left flex items-center gap-4 transition-all ${activeSoundPack === 'classic' ? 'bg-indigo-500/20 border-2 border-indigo-400 shadow-lg shadow-indigo-500/20' : 'bg-white/10 hover:bg-white/20 border border-white/10'}`}
+              >
+                <span className="text-2xl">🥁 </span>
+                <div className="flex-1">
+                  <div className={`font-bold ${activeSoundPack === 'classic' ? 'text-white' : 'text-slate-300'}`}>Classic Kit</div>
+                  <div className="text-xs opacity-60">Acoustic drums & piano</div>
+                </div>
+                {activeSoundPack === 'classic' && <span className="text-indigo-400 font-bold text-xs bg-indigo-500/20 px-2 py-1 rounded-lg">ACTIVE</span>}
+              </button>
+
+              <button
+                onClick={() => applySoundPack('electronic')}
+                className={`w-full p-4 rounded-2xl text-left flex items-center gap-4 transition-all ${activeSoundPack === 'electronic' ? 'bg-cyan-500/20 border-2 border-cyan-400 shadow-lg shadow-cyan-500/20' : 'bg-white/10 hover:bg-white/20 border border-white/10'}`}
+              >
+                <span className="text-2xl">🎹</span>
+                <div className="flex-1">
+                  <div className={`font-bold ${activeSoundPack === 'electronic' ? 'text-white' : 'text-slate-300'}`}>Electronic</div>
+                  <div className="text-xs opacity-60">Synth, 808s & Trap</div>
+                </div>
+                {activeSoundPack === 'electronic' && <span className="text-cyan-400 font-bold text-xs bg-cyan-500/20 px-2 py-1 rounded-lg">ACTIVE</span>}
+              </button>
+
+              <button
+                onClick={() => applySoundPack('rock')}
+                className={`w-full p-4 rounded-2xl text-left flex items-center gap-4 transition-all ${activeSoundPack === 'rock' ? 'bg-red-500/20 border-2 border-red-400 shadow-lg shadow-red-500/20' : 'bg-white/10 hover:bg-white/20 border border-white/10'}`}
+              >
+                <span className="text-2xl">🎸</span>
+                <div className="flex-1">
+                  <div className={`font-bold ${activeSoundPack === 'rock' ? 'text-white' : 'text-slate-300'}`}>Rock Band</div>
+                  <div className="text-xs opacity-60">Punchy drums & organ</div>
+                </div>
+                {activeSoundPack === 'rock' && <span className="text-red-400 font-bold text-xs bg-red-500/20 px-2 py-1 rounded-lg">ACTIVE</span>}
+              </button>
+            </div>
+          </div>
+
+          {/* App Info */}
+          <div className="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20">
+            <h3 className="text-xl font-black mb-4 flex items-center gap-3">
+              <span className="w-10 h-10 bg-gradient-to-br from-slate-400 to-slate-500 rounded-xl flex items-center justify-center">ℹ️</span>
+              {t('about')}
+            </h3>
+            <div className="space-y-2 text-sm opacity-80">
+              <p><strong>{t('appTitle')}</strong> v1.0.0</p>
+              <p>A creative music-making experience</p>
+              <p className="text-xs opacity-60 mt-4">Made with ❤️ using React & Web Audio API</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // --- DJ MODE VIEW ---
+  if (view === 'djmode') {
+    // DJ Mode Preloaded Beats - Basic Patterns
+    const DJ_BEATS = [
+      { id: 'house', name: 'House', icon: '🏠', bpm: 128, pattern: { kick: [0, 4, 8, 12, 16, 20, 24, 28], snare: [4, 12, 20, 28], hihat: [2, 6, 10, 14, 18, 22, 26, 30] } },
+      { id: 'hiphop', name: 'Hip Hop', icon: '🎤', bpm: 90, pattern: { kick: [0, 10, 16, 26], snare: [4, 12, 20, 28], hihat: [0, 4, 8, 12, 16, 20, 24, 28] } },
+      { id: 'trap', name: 'Trap', icon: '👑', bpm: 140, pattern: { kick: [0, 14, 16, 30], snare: [4, 12, 20, 28], hihat: [0, 2, 4, 5, 6, 8, 10, 12, 13, 14, 16, 18, 20, 21, 22, 24, 26, 28, 29, 30] } },
+      { id: 'techno', name: 'Techno', icon: '🤖', bpm: 130, pattern: { kick: [0, 4, 8, 12, 16, 20, 24, 28], snare: [4, 12, 20, 28], hihat: [2, 6, 10, 14, 18, 22, 26, 30] } },
+      { id: 'reggaeton', name: 'Reggaeton', icon: '🔥', bpm: 95, pattern: { kick: [0, 6, 16, 22], snare: [4, 10, 12, 20, 26, 28], hihat: [0, 4, 8, 12, 16, 20, 24, 28] } },
+      { id: 'dnb', name: 'Drum & Bass', icon: '⚡', bpm: 170, pattern: { kick: [0, 12, 14, 16, 28, 30], snare: [8, 24], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30] } },
+      { id: 'lofi', name: 'Lo-Fi', icon: '🌙', bpm: 80, pattern: { kick: [0, 10, 16, 26], snare: [4, 20], hihat: [0, 4, 8, 12, 16, 20, 24, 28] } },
+      { id: 'rock', name: 'Rock', icon: '🎸', bpm: 120, pattern: { kick: [0, 8, 16, 24], snare: [4, 12, 20, 28], hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30] } },
+    ];
+
+    // TRENDING MUSIC PRESETS - Full song patterns with multiple instruments
+    const DJ_TRACKS = [
+      {
+        id: 'blinding_lights',
+        name: 'Blinding Lights',
+        artist: 'The Weeknd Style',
+        icon: '🌟',
+        bpm: 171,
+        genre: 'Synthwave Pop',
+        color: 'from-purple-500 to-pink-500',
+        // Signature 80s synth-wave with driving beat, arpeggiated synth, punchy snare
+        pattern: {
+          kick: [0, 4, 8, 12, 16, 20, 24, 28], // Four-on-the-floor driving beat
+          snare: [4, 12, 20, 28], // Gated reverb snare on 2 & 4
+          hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], // Constant 8th notes
+          synth: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], // Signature synth arpeggio running throughout
+          bass: [0, 0, 8, 8, 16, 16, 24, 24], // Pulsing octave bass pattern
+          keys: [0, 6, 8, 14, 16, 22, 24, 30] // Synth stabs on offbeats
+        }
+      },
+      {
+        id: 'bad_guy',
+        name: 'Bad Guy',
+        artist: 'Billie Eilish Style',
+        icon: '😈',
+        bpm: 135,
+        genre: 'Dark Pop',
+        color: 'from-green-400 to-emerald-600',
+        // Minimalist, bass-heavy with sparse percussion, signature bouncy bass
+        pattern: {
+          kick: [0, 3, 8, 11, 16, 19, 24, 27], // Syncopated kick matching the "duh" pattern
+          snare: [6, 14, 22, 30], // Offbeat finger snaps
+          hihat: [], // Very minimal - the song has almost no hi-hats
+          bass: [0, 3, 4, 7, 8, 11, 12, 15, 16, 19, 20, 23, 24, 27, 28, 31], // Heavy bouncing bass riff
+          synth: [0, 8, 16, 24], // Sparse synth hits
+          perc: [2, 6, 10, 14, 18, 22, 26, 30] // Mouth clicks/percussion
+        }
+      },
+      {
+        id: 'industry_baby',
+        name: 'Industry Baby',
+        artist: 'Lil Nas X Style',
+        icon: '🏆',
+        bpm: 150,
+        genre: 'Hip Hop Pop',
+        color: 'from-yellow-400 to-orange-500',
+        // Marching band inspired with brass hits, hard-hitting trap drums
+        pattern: {
+          kick: [0, 6, 8, 12, 16, 22, 24, 28], // Trap-style kick with variations
+          snare: [4, 12, 20, 28], // Hard snare on 2 & 4
+          hihat: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31], // Rapid hi-hat rolls
+          bass: [0, 0, 6, 8, 8, 14, 16, 16, 22, 24, 24, 30], // Sliding 808 bass
+          synth: [0, 4, 8, 12, 16, 20, 24, 28], // Brass section stabs
+          perc: [4, 5, 12, 13, 20, 21, 28, 29] // Marching snare rolls
+        }
+      },
+      {
+        id: 'stay',
+        name: 'Stay',
+        artist: 'Kid Laroi Style',
+        icon: '💖',
+        bpm: 170,
+        genre: 'Pop/EDM',
+        color: 'from-red-400 to-rose-600',
+        // High energy with guitar riff, emotional synths, driving drums
+        pattern: {
+          kick: [0, 4, 8, 12, 16, 20, 24, 28], // Straight four-on-the-floor
+          snare: [4, 12, 20, 28], // Punchy snare
+          hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], // Driving 8th notes
+          synth: [0, 1, 4, 5, 8, 9, 12, 13, 16, 17, 20, 21, 24, 25, 28, 29], // Emotional synth chords pulsing
+          bass: [0, 4, 8, 12, 16, 20, 24, 28], // Following the kick
+          keys: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30] // Guitar-like strumming pattern
+        }
+      },
+      {
+        id: 'heat_waves',
+        name: 'Heat Waves',
+        artist: 'Glass Animals Style',
+        icon: '🌊',
+        bpm: 81,
+        genre: 'Indie Pop',
+        color: 'from-orange-400 to-amber-600',
+        // Dreamy, wavy synths, relaxed groove with psychedelic feel
+        pattern: {
+          kick: [0, 6, 8, 14, 16, 22, 24, 30], // Laid-back syncopated kick
+          snare: [8, 24], // Sparse snare on 3 only
+          hihat: [4, 12, 20, 28], // Minimal closed hi-hat
+          synth: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], // Dreamy wavering synth
+          bass: [0, 3, 8, 11, 16, 19, 24, 27], // Groovy bass line
+          keys: [0, 8, 16, 24], // Warm pad chords
+          perc: [2, 6, 10, 14, 18, 22, 26, 30] // Shaker pattern
+        }
+      },
+      {
+        id: 'levitating',
+        name: 'Levitating',
+        artist: 'Dua Lipa Style',
+        icon: '🚀',
+        bpm: 103,
+        genre: 'Disco Pop',
+        color: 'from-violet-400 to-purple-600',
+        // Nu-disco with funky bass, four-on-the-floor, string stabs
+        pattern: {
+          kick: [0, 4, 8, 12, 16, 20, 24, 28], // Classic disco four-on-the-floor
+          snare: [4, 12, 20, 28], // Crisp snare
+          hihat: [2, 6, 10, 14, 18, 22, 26, 30], // Offbeat disco hi-hats
+          bass: [0, 3, 4, 6, 8, 11, 12, 14, 16, 19, 20, 22, 24, 27, 28, 30], // Funky disco bass line
+          synth: [0, 4, 8, 12, 16, 20, 24, 28], // String stabs
+          keys: [2, 6, 10, 14, 18, 22, 26, 30], // Funky rhythm guitar/keys
+          perc: [0, 4, 8, 12, 16, 20, 24, 28] // Handclaps
+        }
+      },
+      {
+        id: 'peaches',
+        name: 'Peaches',
+        artist: 'Justin Bieber Style',
+        icon: '🍑',
+        bpm: 90,
+        genre: 'R&B Pop',
+        color: 'from-pink-400 to-rose-500',
+        // Smooth R&B with guitar, laid-back drums, mellow vibes
+        pattern: {
+          kick: [0, 10, 16, 26], // Sparse, laid-back kick
+          snare: [8, 24], // Relaxed snare hits
+          hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], // Soft hi-hat
+          bass: [0, 4, 8, 10, 16, 20, 24, 26], // Smooth bass groove
+          keys: [0, 3, 6, 8, 11, 14, 16, 19, 22, 24, 27, 30], // Guitar strumming pattern
+          synth: [0, 8, 16, 24] // Mellow pad
+        }
+      },
+      {
+        id: 'montero',
+        name: 'Montero',
+        artist: 'Lil Nas X Style',
+        icon: '🎸',
+        bpm: 178,
+        genre: 'Pop Trap',
+        color: 'from-amber-400 to-red-500',
+        // Spanish guitar inspired with flamenco rhythm, trap drums
+        pattern: {
+          kick: [0, 3, 8, 11, 16, 19, 24, 27], // Reggaeton-influenced kick
+          snare: [4, 12, 20, 28], // Hard snare
+          hihat: [0, 1, 2, 4, 5, 6, 8, 9, 10, 12, 13, 14, 16, 17, 18, 20, 21, 22, 24, 25, 26, 28, 29, 30], // Rolling hi-hats with gaps
+          bass: [0, 3, 6, 8, 11, 14, 16, 19, 22, 24, 27, 30], // Deep 808 following guitar
+          synth: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], // Spanish guitar arpeggios
+          lead: [0, 8, 16, 24] // Guitar chord stabs
+        }
+      },
+      {
+        id: 'save_your_tears',
+        name: 'Save Your Tears',
+        artist: 'The Weeknd Style',
+        icon: '😢',
+        bpm: 118,
+        genre: 'Synth Pop',
+        color: 'from-blue-400 to-indigo-600',
+        // 80s inspired with gated drums, atmospheric synths
+        pattern: {
+          kick: [0, 8, 16, 24], // Half-time feel kick
+          snare: [4, 12, 20, 28], // Gated reverb snare
+          hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], // Steady closed hi-hat
+          synth: [0, 4, 6, 8, 12, 14, 16, 20, 22, 24, 28, 30], // Emotional synth melody
+          bass: [0, 4, 8, 12, 16, 20, 24, 28], // Solid bass foundation
+          keys: [0, 2, 8, 10, 16, 18, 24, 26] // Atmospheric pad swells
+        }
+      },
+      {
+        id: 'drivers_license',
+        name: 'Drivers License',
+        artist: 'Olivia Rodrigo Style',
+        icon: '🚗',
+        bpm: 72,
+        genre: 'Sad Pop',
+        color: 'from-slate-400 to-gray-600',
+        // Piano ballad building to emotional climax, sparse production
+        pattern: {
+          kick: [0, 16], // Very sparse kick, building tension
+          snare: [8, 24], // Minimal snare
+          hihat: [], // No hi-hat - raw emotional feel
+          keys: [0, 2, 4, 8, 10, 12, 16, 18, 20, 24, 26, 28], // Piano arpeggios
+          bass: [0, 8, 16, 24], // Sparse bass notes
+          synth: [0, 4, 8, 12, 16, 20, 24, 28] // String swells
+        }
+      },
+      {
+        id: 'as_it_was',
+        name: 'As It Was',
+        artist: 'Harry Styles Style',
+        icon: '🌈',
+        bpm: 174,
+        genre: 'Synth Pop',
+        color: 'from-cyan-400 to-teal-500',
+        // Bright synth-pop with distinctive synth riff, upbeat energy
+        pattern: {
+          kick: [0, 4, 8, 12, 16, 20, 24, 28], // Driving four-on-the-floor
+          snare: [4, 12, 20, 28], // Crisp snare
+          hihat: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], // Bright hi-hats
+          synth: [0, 3, 4, 7, 8, 11, 12, 15, 16, 19, 20, 23, 24, 27, 28, 31], // Signature synth melody riff
+          bass: [0, 4, 8, 12, 16, 20, 24, 28], // Following the kick
+          keys: [0, 8, 12, 16, 24, 28] // Synth pad accents
+        }
+      },
+      {
+        id: 'watermelon_sugar',
+        name: 'Watermelon Sugar',
+        artist: 'Harry Styles Style',
+        icon: '🍉',
+        bpm: 95,
+        genre: 'Funk Pop',
+        color: 'from-green-400 to-lime-500',
+        // Funky, groovy with wah guitar, tight drums, summer vibes
+        pattern: {
+          kick: [0, 6, 8, 14, 16, 22, 24, 30], // Funky syncopated kick
+          snare: [4, 12, 20, 28], // Tight snare
+          hihat: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31], // 16th note hi-hats for funky feel
+          bass: [0, 3, 6, 8, 11, 14, 16, 19, 22, 24, 27, 30], // Funky bass line
+          keys: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30], // Wah guitar rhythm
+          perc: [4, 12, 20, 28] // Handclaps
+        }
+      }
+    ];
+
+    // Effect Pads
+    const EFFECT_PADS = [
+      { id: 'airhorn', name: 'Air Horn', icon: '📣', color: 'from-yellow-400 to-orange-500' },
+      { id: 'scratch', name: 'Scratch', icon: '💿', color: 'from-cyan-400 to-blue-500' },
+      { id: 'siren', name: 'Siren', icon: '🚨', color: 'from-red-400 to-pink-500' },
+      { id: 'laser', name: 'Laser', icon: '⚡', color: 'from-purple-400 to-indigo-500' },
+      { id: 'bomb', name: 'Bomb Drop', icon: '💣', color: 'from-gray-600 to-gray-800' },
+      { id: 'yeah', name: 'Yeah!', icon: '🎤', color: 'from-green-400 to-emerald-500' },
+      { id: 'reverse', name: 'Reverse', icon: '🔁', color: 'from-pink-400 to-rose-500' },
+      { id: 'buildup', name: 'Build Up', icon: '🚀', color: 'from-amber-400 to-yellow-500' },
+    ];
+
+    const triggerDjEffect = (effectId) => {
+      AudioEngine.init();
+      const t = AudioEngine.ctx.currentTime;
+
+      if (effectId === 'airhorn') {
+        const osc = AudioEngine.ctx.createOscillator();
+        const gain = AudioEngine.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(400, t);
+        osc.frequency.exponentialRampToValueAtTime(600, t + 0.1);
+        osc.frequency.setValueAtTime(600, t + 0.1);
+        osc.frequency.exponentialRampToValueAtTime(400, t + 0.3);
+        gain.gain.setValueAtTime(0.4, t);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.5);
+        osc.connect(gain);
+        gain.connect(AudioEngine.masterGain);
+        osc.start(t);
+        osc.stop(t + 0.5);
+      } else if (effectId === 'scratch') {
+        const osc = AudioEngine.ctx.createOscillator();
+        const gain = AudioEngine.ctx.createGain();
+        const noise = AudioEngine.ctx.createBufferSource();
+        const noiseBuffer = AudioEngine.ctx.createBuffer(1, AudioEngine.ctx.sampleRate * 0.3, AudioEngine.ctx.sampleRate);
+        const data = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+        noise.buffer = noiseBuffer;
+        const noiseGain = AudioEngine.ctx.createGain();
+        const filter = AudioEngine.ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(1000, t);
+        filter.frequency.exponentialRampToValueAtTime(3000, t + 0.1);
+        filter.frequency.exponentialRampToValueAtTime(500, t + 0.2);
+        filter.Q.value = 2;
+        noiseGain.gain.setValueAtTime(0.3, t);
+        noiseGain.gain.exponentialRampToValueAtTime(0.01, t + 0.3);
+        noise.connect(filter);
+        filter.connect(noiseGain);
+        noiseGain.connect(AudioEngine.masterGain);
+        noise.start(t);
+        noise.stop(t + 0.3);
+      } else if (effectId === 'siren') {
+        const osc = AudioEngine.ctx.createOscillator();
+        const gain = AudioEngine.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(600, t);
+        for (let i = 0; i < 4; i++) {
+          osc.frequency.exponentialRampToValueAtTime(1200, t + i * 0.25 + 0.125);
+          osc.frequency.exponentialRampToValueAtTime(600, t + i * 0.25 + 0.25);
+        }
+        gain.gain.setValueAtTime(0.25, t);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 1);
+        osc.connect(gain);
+        gain.connect(AudioEngine.masterGain);
+        osc.start(t);
+        osc.stop(t + 1);
+      } else if (effectId === 'laser') {
+        const osc = AudioEngine.ctx.createOscillator();
+        const gain = AudioEngine.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(2000, t);
+        osc.frequency.exponentialRampToValueAtTime(100, t + 0.3);
+        gain.gain.setValueAtTime(0.3, t);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.3);
+        osc.connect(gain);
+        gain.connect(AudioEngine.masterGain);
+        osc.start(t);
+        osc.stop(t + 0.3);
+      } else if (effectId === 'bomb') {
+        const osc = AudioEngine.ctx.createOscillator();
+        const gain = AudioEngine.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(150, t);
+        osc.frequency.exponentialRampToValueAtTime(30, t + 0.8);
+        gain.gain.setValueAtTime(0.5, t);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.8);
+        osc.connect(gain);
+        gain.connect(AudioEngine.masterGain);
+        osc.start(t);
+        osc.stop(t + 0.8);
+        // Add noise impact
+        const noise = AudioEngine.ctx.createBufferSource();
+        const noiseBuffer = AudioEngine.ctx.createBuffer(1, AudioEngine.ctx.sampleRate * 0.2, AudioEngine.ctx.sampleRate);
+        const data = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+        noise.buffer = noiseBuffer;
+        const noiseGain = AudioEngine.ctx.createGain();
+        noiseGain.gain.setValueAtTime(0.4, t);
+        noiseGain.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
+        noise.connect(noiseGain);
+        noiseGain.connect(AudioEngine.masterGain);
+        noise.start(t);
+        noise.stop(t + 0.2);
+      } else if (effectId === 'yeah') {
+        const osc = AudioEngine.ctx.createOscillator();
+        const gain = AudioEngine.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(200, t);
+        osc.frequency.exponentialRampToValueAtTime(400, t + 0.2);
+        osc.frequency.setValueAtTime(400, t + 0.2);
+        osc.frequency.exponentialRampToValueAtTime(350, t + 0.5);
+        gain.gain.setValueAtTime(0.3, t);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.5);
+        osc.connect(gain);
+        gain.connect(AudioEngine.masterGain);
+        osc.start(t);
+        osc.stop(t + 0.5);
+      } else if (effectId === 'reverse') {
+        const osc = AudioEngine.ctx.createOscillator();
+        const gain = AudioEngine.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(100, t);
+        osc.frequency.exponentialRampToValueAtTime(800, t + 0.4);
+        gain.gain.setValueAtTime(0.01, t);
+        gain.gain.linearRampToValueAtTime(0.3, t + 0.3);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.4);
+        osc.connect(gain);
+        gain.connect(AudioEngine.masterGain);
+        osc.start(t);
+        osc.stop(t + 0.4);
+      } else if (effectId === 'buildup') {
+        const noise = AudioEngine.ctx.createBufferSource();
+        const noiseBuffer = AudioEngine.ctx.createBuffer(1, AudioEngine.ctx.sampleRate * 2, AudioEngine.ctx.sampleRate);
+        const data = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+        noise.buffer = noiseBuffer;
+        const filter = AudioEngine.ctx.createBiquadFilter();
+        filter.type = 'highpass';
+        filter.frequency.setValueAtTime(100, t);
+        filter.frequency.exponentialRampToValueAtTime(5000, t + 1.5);
+        const gain = AudioEngine.ctx.createGain();
+        gain.gain.setValueAtTime(0.1, t);
+        gain.gain.linearRampToValueAtTime(0.4, t + 1.5);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 2);
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(AudioEngine.masterGain);
+        noise.start(t);
+        noise.stop(t + 2);
+      }
+    };
+
+    const loadDeckBeat = (deck, beat) => {
+      // If same beat is already loaded, unload it (toggle off)
+      if (djDecks[deck]?.id === beat.id) {
+        unloadDeck(deck);
+        return;
+      }
+
+      setDjDecks(prev => ({ ...prev, [deck]: beat }));
+      setTempo(beat.bpm);
+      // Load the pattern into the grid
+      const newGrid = {};
+      Object.keys(SOUND_VARIANTS).forEach(key => newGrid[key] = Array(STEPS).fill(false));
+      Object.entries(beat.pattern).forEach(([inst, steps]) => {
+        if (newGrid[inst]) {
+          steps.forEach(step => {
+            if (step < STEPS) newGrid[inst][step] = true;
+          });
+        }
+      });
+      setGrid(newGrid);
+      setActiveInstrumentIds(Object.keys(beat.pattern));
+
+      // Auto-advance DJ tutorial
+      if (djTutorialActive) {
+        if (djTutorialStep === 0 && deck === 'left') {
+          setTimeout(() => setDjTutorialStep(1), 500);
+        } else if (djTutorialStep === 2 && deck === 'right') {
+          setTimeout(() => setDjTutorialStep(3), 500);
+        }
+      }
+    };
+
+    const unloadDeck = (deck) => {
+      setDjDecks(prev => ({ ...prev, [deck]: null }));
+      setDjLooping(prev => ({ ...prev, [deck]: false }));
+      // Clear the grid if no decks are loaded
+      const otherDeck = deck === 'left' ? 'right' : 'left';
+      if (!djDecks[otherDeck]) {
+        const newGrid = {};
+        Object.keys(SOUND_VARIANTS).forEach(key => newGrid[key] = Array(STEPS).fill(false));
+        setGrid(newGrid);
+      }
+    };
+
+    // DJ Tutorial Steps
+    const DJ_TUTORIAL_STEPS = [
+      {
+        title: "Welcome to DJ Mode! 🎧",
+        text: "Let's learn to mix like a pro! First, load a track on DECK A. Tap any track in the TRENDING TRACKS section above!",
+        target: "tracks",
+        action: "load_left"
+      },
+      {
+        title: "Great Choice! 🎵",
+        text: "Now hit the PLAY button to start the beat! The turntable will spin when playing.",
+        target: "play",
+        action: "play"
+      },
+      {
+        title: "Load Deck B! 💿",
+        text: "Real DJs mix between TWO decks! Load a different track on DECK B using the quick beats below the right turntable.",
+        target: "deck_right",
+        action: "load_right"
+      },
+      {
+        title: "Try the Crossfader! 🎚️",
+        text: "The CROSSFADER blends between Deck A and Deck B. Slide it left for Deck A, right for Deck B!",
+        target: "crossfader",
+        action: "crossfader"
+      },
+      {
+        title: "FX Pads! 🎛️",
+        text: "Tap the FX PADS to trigger sound effects! Try the AIR HORN or SCRATCH - these are classic DJ moves!",
+        target: "fx",
+        action: "fx"
+      },
+      {
+        title: "Control the BPM! ⚡",
+        text: "Use the BPM controls to speed up or slow down the beat. Try to match tempos between decks!",
+        target: "bpm",
+        action: "bpm"
+      },
+      {
+        title: "Loop It! 🔁",
+        text: "Press LOOP on either deck to keep a section repeating. Great for building energy!",
+        target: "loop",
+        action: "loop"
+      },
+      {
+        title: "You're a DJ Now! 🎉",
+        text: "You've learned the basics! Experiment with mixing tracks, effects, and creating your own style. HAVE FUN!",
+        target: null,
+        action: "complete"
+      }
+    ];
+
+    const currentDjTutorial = DJ_TUTORIAL_STEPS[djTutorialStep];
+
+    // Handle tutorial progression based on actions
+    const handleDjTutorialAction = (action) => {
+      if (!djTutorialActive) return;
+
+      if (djTutorialStep === 1 && action === 'play') {
+        setTimeout(() => setDjTutorialStep(2), 500);
+      } else if (djTutorialStep === 3 && action === 'crossfader') {
+        setTimeout(() => setDjTutorialStep(4), 500);
+      } else if (djTutorialStep === 4 && action === 'fx') {
+        setTimeout(() => setDjTutorialStep(5), 500);
+      } else if (djTutorialStep === 5 && action === 'bpm') {
+        setTimeout(() => setDjTutorialStep(6), 500);
+      } else if (djTutorialStep === 6 && action === 'loop') {
+        setTimeout(() => setDjTutorialStep(7), 500);
+      }
+    };
+
+    return (
+      <div className={`h-screen w-full text-white flex flex-col overflow-hidden font-sans relative bg-gradient-to-b from-gray-900 via-slate-900 to-black ${highContrastMode ? 'high-contrast' : ''} ${largeTextMode ? 'large-text' : ''}`} role="main" aria-label="DJ Mode - Live Performance Studio">
+        {/* Landscape Mode Hint Overlay */}
+        <div className="landscape-hint hidden fixed inset-0 z-[9999] bg-black/95 flex flex-col items-center justify-center p-8 text-center backdrop-blur-xl">
+          <div className="text-6xl mb-6 animate-bounce">📱</div>
+          <h2 className="text-3xl font-black text-white mb-4">Please Rotate Your Device</h2>
+          <p className="text-xl text-slate-400">Rhythm Realm is best experienced in landscape mode for the full studio experience.</p>
+          <div className="mt-8 w-16 h-16 border-4 border-slate-600 rounded-xl animate-spin-slow"></div>
+        </div>
+        <style>{cssStyles}</style>
+        <a href="#dj-decks" className="skip-link" onFocus={() => speak('Skip to DJ decks')}>Skip to DJ controls</a>
+        <VoiceControlIndicator />
+
+        {/* DJ Tutorial Overlay */}
+        {djTutorialActive && currentDjTutorial && (
+          <div className="absolute top-16 left-1/2 -translate-x-1/2 z-50 max-w-sm w-[90%] animate-bounce-in" role="dialog" aria-modal="true" aria-label="DJ Tutorial">
+            <div className="bg-gradient-to-r from-cyan-600 to-purple-600 rounded-2xl p-4 shadow-2xl border-2 border-white/30">
+              <div className="flex items-start gap-3">
+                <div className="text-3xl animate-bounce" aria-hidden="true">
+                  {djTutorialStep === 0 && '👠'}
+                  {djTutorialStep === 1 && '▶️'}
+                  {djTutorialStep === 2 && '💿'}
+                  {djTutorialStep === 3 && '🎚️'}
+                  {djTutorialStep === 4 && '🎛️'}
+                  {djTutorialStep === 5 && '⚡'}
+                  {djTutorialStep === 6 && '🔁'}
+                  {djTutorialStep === 7 && '🎉'}
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-bold bg-white/20 px-2 py-0.5 rounded-full">
+                      Step {djTutorialStep + 1}/{DJ_TUTORIAL_STEPS.length}
+                    </span>
+                    <button
+                      onClick={() => setDjTutorialActive(false)}
+                      className="text-white/60 hover:text-white text-xs"
+                    >
+                      Skip ✔️
+                    </button>
+                  </div>
+                  <h3 className="font-black text-lg mb-1">{currentDjTutorial.title}</h3>
+                  <p className="text-sm text-white/90 leading-snug">{currentDjTutorial.text}</p>
+                  {djTutorialStep === 7 && (
+                    <button
+                      onClick={() => setDjTutorialActive(false)}
+                      className="mt-3 w-full py-2 bg-white text-purple-600 font-bold rounded-xl hover:bg-white/90 transition-all"
+                    >
+                      Start Mixing! 🎧
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+            {/* Arrow pointing to target */}
+            {currentDjTutorial.target && (
+              <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-purple-600"></div>
+            )}
+          </div>
+        )}
+
+        {/* DJ Header */}
+        <div className="relative z-10 px-4 py-3 flex items-center justify-between border-b border-cyan-500/30 bg-black/60 backdrop-blur-md">
+          <button onClick={() => { setIsPlaying(false); setDjTutorialActive(false); setView('modes'); }} className="p-2 bg-white/10 hover:bg-white/20 rounded-xl text-white transition-all">
+            <Icons.ChevronLeft />
+          </button>
+          <div className="flex items-center gap-3">
+            <span className="text-3xl animate-pulse">🎧</span>
+            <div>
+              <h1 className="text-xl font-black bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">DJ MODE</h1>
+              <div className="text-xs text-cyan-400/70">Live Performance</div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => { setDjTutorialActive(!djTutorialActive); setDjTutorialStep(0); }}
+              className={`p-2 rounded-xl transition-all ${djTutorialActive ? 'bg-purple-500 text-white' : 'bg-white/10 hover:bg-white/20 text-white'}`}
+              title="DJ Tutorial"
+            >
+              <Icons.GradCap />
+            </button>
+            <div className="bg-black/50 px-3 py-1.5 rounded-lg border border-cyan-500/30">
+              <span className="text-cyan-400 font-mono font-bold">{tempo} BPM</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Main DJ Interface */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+
+          {/* TRENDING TRACKS Section */}
+          <div className={`bg-gradient-to-r from-purple-900/40 via-slate-800/60 to-cyan-900/40 rounded-2xl p-4 border border-white/20 transition-all ${djTutorialActive && djTutorialStep === 0 ? 'ring-4 ring-yellow-400 animate-pulse' : ''}`}>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-lg font-black flex items-center gap-2">
+                <span className="text-2xl">🔥</span> TRENDING TRACKS
+              </h2>
+              <span className="text-xs text-white/50">Tap to load • {DJ_TRACKS.length} tracks</span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-40 overflow-y-auto">
+              {DJ_TRACKS.map(track => (
+                <button
+                  key={track.id}
+                  onClick={() => loadDeckBeat('left', track)}
+                  className={`p-2 bg-gradient-to-br ${track.color} rounded-xl text-left transition-all hover:scale-105 active:scale-95 shadow-lg`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">{track.icon}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-black truncate">{track.name}</div>
+                      <div className="text-[9px] opacity-70 truncate">{track.artist}</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1 mt-1">
+                    <span className="text-[8px] bg-black/30 px-1.5 py-0.5 rounded">{track.bpm} BPM</span>
+                    <span className="text-[8px] bg-black/30 px-1.5 py-0.5 rounded">{track.genre}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Turntables Section */}
+          <div className="grid grid-cols-2 gap-4">
+            {/* Left Deck */}
+            <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-4 border border-cyan-500/30 shadow-lg shadow-cyan-500/10">
+              <div className="text-center mb-3">
+                <span className="text-xs font-bold text-cyan-400 uppercase tracking-wider">Deck A</span>
+                <div className="text-lg font-black mt-1">{djDecks.left?.name || 'Empty'}</div>
+                {djDecks.left?.artist && <div className="text-xs text-cyan-400/70">{djDecks.left.artist}</div>}
+              </div>
+
+              {/* Turntable */}
+              <div className="relative w-full aspect-square max-w-[150px] mx-auto mb-3">
+                <div
+                  className={`w-full h-full rounded-full bg-gradient-to-br from-slate-700 to-slate-900 border-4 border-slate-600 shadow-inner flex items-center justify-center ${isPlaying && djDecks.left ? 'animate-spin-slow' : ''}`}
+                  style={{ animationDuration: '2s' }}
+                >
+                  <div className={`w-1/3 h-1/3 rounded-full bg-gradient-to-br ${djDecks.left?.color || 'from-cyan-500 to-blue-600'} flex items-center justify-center text-2xl shadow-lg`}>
+                    {djDecks.left?.icon || '💿'}
+                  </div>
+                  {/* Vinyl grooves */}
+                  <div className="absolute inset-4 rounded-full border border-slate-600/50"></div>
+                  <div className="absolute inset-8 rounded-full border border-slate-600/30"></div>
+                  <div className="absolute inset-12 rounded-full border border-slate-600/20"></div>
+                </div>
+                {/* Tonearm */}
+                <div className={`absolute -right-2 top-0 w-1 h-16 bg-gradient-to-b from-gray-400 to-gray-600 rounded-full origin-top transition-transform ${djDecks.left ? 'rotate-[30deg]' : 'rotate-0'}`}></div>
+              </div>
+
+              {/* Deck Controls */}
+              <div className={`flex justify-center gap-2 mb-3 transition-all ${djTutorialActive && djTutorialStep === 6 ? 'ring-2 ring-yellow-400 rounded-xl p-1' : ''}`}>
+                <button
+                  onClick={() => { if (djDecks.left) { setDjLooping(p => ({ ...p, left: !p.left })); handleDjTutorialAction('loop'); } }}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${djLooping.left ? 'bg-cyan-500 text-black' : 'bg-slate-700 hover:bg-slate-600'}`}
+                >
+                  🔁 LOOP
+                </button>
+                <button
+                  onClick={() => djDecks.left && triggerDjEffect('scratch')}
+                  className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-bold transition-all"
+                >
+                  💿 SCRATCH
+                </button>
+                {djDecks.left && (
+                  <button
+                    onClick={() => unloadDeck('left')}
+                    className="px-3 py-1.5 bg-red-600 hover:bg-red-500 rounded-lg text-xs font-bold transition-all"
+                    title="Eject track"
+                  >
+                    ⏏️ EJECT
+                  </button>
+                )}
+                <button
+                  onClick={() => djDecks.left && triggerDjEffect('scratch')}
+                  className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-bold transition-all"
+                >
+                  💿 SCRATCH
+                </button>
+              </div>
+
+              {/* Quick Beat Selector */}
+              <div className="grid grid-cols-2 gap-1.5">
+                {DJ_BEATS.slice(0, 4).map(beat => (
+                  <button
+                    key={beat.id}
+                    onClick={() => loadDeckBeat('left', beat)}
+                    className={`p-2 rounded-lg text-xs font-bold transition-all ${djDecks.left?.id === beat.id ? 'bg-cyan-500 text-black' : 'bg-slate-700 hover:bg-slate-600'}`}
+                  >
+                    {beat.icon} {beat.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Right Deck */}
+            <div className={`bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-4 border border-purple-500/30 shadow-lg shadow-purple-500/10 transition-all ${djTutorialActive && djTutorialStep === 2 ? 'ring-4 ring-yellow-400 animate-pulse' : ''}`}>
+              <div className="text-center mb-3">
+                <span className="text-xs font-bold text-purple-400 uppercase tracking-wider">Deck B</span>
+                <div className="text-lg font-black mt-1">{djDecks.right?.name || 'Empty'}</div>
+                {djDecks.right?.artist && <div className="text-xs text-purple-400/70">{djDecks.right.artist}</div>}
+              </div>
+
+              {/* Turntable */}
+              <div className="relative w-full aspect-square max-w-[150px] mx-auto mb-3">
+                <div
+                  className={`w-full h-full rounded-full bg-gradient-to-br from-slate-700 to-slate-900 border-4 border-slate-600 shadow-inner flex items-center justify-center ${isPlaying && djDecks.right ? 'animate-spin-slow' : ''}`}
+                  style={{ animationDuration: '2s' }}
+                >
+                  <div className={`w-1/3 h-1/3 rounded-full bg-gradient-to-br ${djDecks.right?.color || 'from-purple-500 to-pink-600'} flex items-center justify-center text-2xl shadow-lg`}>
+                    {djDecks.right?.icon || '💿'}
+                  </div>
+                  <div className="absolute inset-4 rounded-full border border-slate-600/50"></div>
+                  <div className="absolute inset-8 rounded-full border border-slate-600/30"></div>
+                  <div className="absolute inset-12 rounded-full border border-slate-600/20"></div>
+                </div>
+                <div className={`absolute -right-2 top-0 w-1 h-16 bg-gradient-to-b from-gray-400 to-gray-600 rounded-full origin-top transition-transform ${djDecks.right ? 'rotate-[30deg]' : 'rotate-0'}`}></div>
+              </div>
+
+              {/* Deck Controls */}
+              <div className={`flex justify-center gap-2 mb-3 transition-all ${djTutorialActive && djTutorialStep === 6 ? 'ring-2 ring-yellow-400 rounded-xl p-1' : ''}`}>
+                <button
+                  onClick={() => { if (djDecks.right) { setDjLooping(p => ({ ...p, right: !p.right })); handleDjTutorialAction('loop'); } }}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${djLooping.right ? 'bg-purple-500 text-black' : 'bg-slate-700 hover:bg-slate-600'}`}
+                >
+                  🔁 LOOP
+                </button>
+                <button
+                  onClick={() => djDecks.right && triggerDjEffect('scratch')}
+                  className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-bold transition-all"
+                >
+                  💿 SCRATCH
+                </button>
+                {djDecks.right && (
+                  <button
+                    onClick={() => unloadDeck('right')}
+                    className="px-3 py-1.5 bg-red-600 hover:bg-red-500 rounded-lg text-xs font-bold transition-all"
+                    title="Eject track"
+                  >
+                    ⏏️ EJECT
+                  </button>
+                )}
+              </div>
+
+              {/* Quick Beat Selector */}
+              <div className="grid grid-cols-2 gap-1.5">
+                {DJ_BEATS.slice(4, 8).map(beat => (
+                  <button
+                    key={beat.id}
+                    onClick={() => loadDeckBeat('right', beat)}
+                    className={`p-2 rounded-lg text-xs font-bold transition-all ${djDecks.right?.id === beat.id ? 'bg-purple-500 text-black' : 'bg-slate-700 hover:bg-slate-600'}`}
+                  >
+                    {beat.icon} {beat.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Crossfader */}
+          <div className={`bg-gradient-to-r from-cyan-900/30 via-slate-800 to-purple-900/30 rounded-2xl p-4 border border-white/10 transition-all ${djTutorialActive && djTutorialStep === 3 ? 'ring-4 ring-yellow-400 animate-pulse' : ''}`}>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-bold text-cyan-400">A</span>
+              <span className="text-sm font-black text-white/80">CROSSFADER</span>
+              <span className="text-xs font-bold text-purple-400">B</span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={djCrossfader}
+              onChange={(e) => { setDjCrossfader(Number(e.target.value)); handleDjTutorialAction('crossfader'); }}
+              className="w-full h-3 bg-gradient-to-r from-cyan-500 via-slate-600 to-purple-500 rounded-full appearance-none cursor-pointer"
+              style={{
+                background: `linear-gradient(to right, #06b6d4 0%, #06b6d4 ${djCrossfader}%, #a855f7 ${djCrossfader}%, #a855f7 100%)`
+              }}
+            />
+          </div>
+
+          {/* Transport & BPM */}
+          <div className="flex gap-4">
+            {/* Play Controls */}
+            <div className={`flex-1 bg-slate-800/80 rounded-2xl p-4 border border-white/10 flex items-center justify-center gap-4 transition-all ${djTutorialActive && djTutorialStep === 1 ? 'ring-4 ring-yellow-400 animate-pulse' : ''}`}>
+              <button
+                onClick={() => setCurrentStep(0)}
+                className="w-12 h-12 bg-slate-700 hover:bg-slate-600 rounded-xl flex items-center justify-center text-xl transition-all"
+              >
+                ⏮
+              </button>
+              <button
+                onClick={() => { AudioEngine.init(); setIsPlaying(!isPlaying); handleDjTutorialAction('play'); }}
+                className={`w-16 h-16 rounded-full flex items-center justify-center text-3xl transition-all shadow-lg ${isPlaying ? 'bg-red-500 hover:bg-red-600 animate-pulse' : 'bg-green-500 hover:bg-green-600'}`}
+              >
+                {isPlaying ? '⏸' : '▶'}
+              </button>
+              <button
+                onClick={() => setCurrentStep(0)}
+                className="w-12 h-12 bg-slate-700 hover:bg-slate-600 rounded-xl flex items-center justify-center text-xl transition-all"
+              >
+                ⏭
+              </button>
+            </div>
+
+            {/* BPM Control */}
+            <div className={`bg-slate-800/80 rounded-2xl p-4 border border-white/10 transition-all ${djTutorialActive && djTutorialStep === 5 ? 'ring-4 ring-yellow-400 animate-pulse' : ''}`}>
+              <div className="text-xs font-bold text-white/60 mb-2 text-center">BPM</div>
+              <div className="flex items-center gap-1">
+                <button onClick={() => { setTempo(t => Math.max(60, t - 5)); handleDjTutorialAction('bpm'); }} className="px-2 py-1 bg-slate-700 hover:bg-slate-600 rounded-lg font-bold text-sm">-5</button>
+                <button onClick={() => { setTempo(t => Math.max(60, t - 1)); handleDjTutorialAction('bpm'); }} className="px-2 py-1 bg-slate-600 hover:bg-slate-500 rounded-lg font-bold text-xs">-1</button>
+                <div className="w-12 text-center font-mono text-xl font-black text-cyan-400">{tempo}</div>
+                <button onClick={() => { setTempo(t => Math.min(200, t + 1)); handleDjTutorialAction('bpm'); }} className="px-2 py-1 bg-slate-600 hover:bg-slate-500 rounded-lg font-bold text-xs">+1</button>
+                <button onClick={() => { setTempo(t => Math.min(200, t + 5)); handleDjTutorialAction('bpm'); }} className="px-2 py-1 bg-slate-700 hover:bg-slate-600 rounded-lg font-bold text-sm">+5</button>
+              </div>
+            </div>
+          </div>
+
+          {/* Effect Pads */}
+          <div className={`bg-slate-800/80 rounded-2xl p-4 border border-white/10 transition-all ${djTutorialActive && djTutorialStep === 4 ? 'ring-4 ring-yellow-400 animate-pulse' : ''}`}>
+            <div className="text-sm font-black text-white/80 mb-3 flex items-center gap-2">
+              <span className="text-xl">🎛️</span> FX PADS
+            </div>
+            <div className="grid grid-cols-4 gap-2">
+              {EFFECT_PADS.map(pad => (
+                <button
+                  key={pad.id}
+                  onClick={() => { triggerDjEffect(pad.id); handleDjTutorialAction('fx'); }}
+                  className={`p-3 bg-gradient-to-br ${pad.color} rounded-xl text-center transition-all hover:scale-105 active:scale-95 shadow-lg`}
+                >
+                  <div className="text-2xl mb-1">{pad.icon}</div>
+                  <div className="text-[10px] font-bold text-white/90">{pad.name}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Effects Knobs */}
+          <div className="bg-slate-800/80 rounded-2xl p-4 border border-white/10">
+            <div className="text-sm font-black text-white/80 mb-3 flex items-center gap-2">
+              <span className="text-xl">🎚️</span> EFFECTS
+            </div>
+            <div className="grid grid-cols-4 gap-4">
+              {[
+                { id: 'filter', name: 'Filter', icon: '🌊', color: 'cyan' },
+                { id: 'echo', name: 'Echo', icon: '🔊', color: 'purple' },
+                { id: 'flanger', name: 'Flanger', icon: '🌀', color: 'pink' },
+                { id: 'reverb', name: 'Reverb', icon: '🏺️', color: 'amber' },
+              ].map(effect => (
+                <div key={effect.id} className="flex flex-col items-center">
+                  <div className="text-xl mb-1">{effect.icon}</div>
+                  <div
+                    className="w-12 h-12 rounded-full bg-slate-700 border-4 border-slate-600 relative cursor-pointer"
+                    style={{
+                      background: `conic-gradient(from 180deg, ${effect.color === 'cyan' ? '#06b6d4' : effect.color === 'purple' ? '#a855f7' : effect.color === 'pink' ? '#ec4899' : '#f59e0b'} ${djEffects[effect.id]}%, #374151 ${djEffects[effect.id]}%)`
+                    }}
+                    onClick={() => setDjEffects(p => ({ ...p, [effect.id]: (p[effect.id] + 25) % 125 }))}
+                  >
+                    <div className="absolute inset-2 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold">
+                      {djEffects[effect.id]}
+                    </div>
+                  </div>
+                  <div className="text-[10px] font-bold text-white/60 mt-1">{effect.name}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Beat Visualizer */}
+          <div className="bg-slate-800/80 rounded-2xl p-4 border border-white/10">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-black text-white/80">🎵 BEAT GRID</span>
+              <span className="text-xs font-mono text-cyan-400">Step: {currentStep + 1}/32</span>
+            </div>
+            <div className="flex gap-0.5">
+              {[...Array(32)].map((_, i) => (
+                <div
+                  key={i}
+                  className={`flex-1 h-8 rounded transition-all ${i === currentStep
+                    ? 'bg-gradient-to-t from-cyan-500 to-purple-500 shadow-lg shadow-cyan-500/50'
+                    : i % 4 === 0
+                      ? 'bg-slate-600'
+                      : 'bg-slate-700'
+                    }`}
+                ></div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Glow Effect */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-cyan-500/20 via-purple-500/10 to-transparent pointer-events-none"></div>
+      </div>
+    );
+  }
+
+  // --- STUDIO VIEW ---
+
+  // Raining Music Notes Component
+  const RainingNotes = () => {
+    const notes = ['♫', '♩', '♪', '🎵', '🎶', '🎹', '🎸', '🥁', '🎤'];
+    const colors = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#95e1d3', '#f38181', '#aa96da', '#fcbad3', '#a8d8ea', '#ff9a9e'];
+
+    return (
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-20">
+        {[...Array(20)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute text-2xl md:text-3xl"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: '-50px',
+              color: colors[i % colors.length],
+              animation: `note-rain ${3 + Math.random() * 4}s linear infinite`,
+              animationDelay: `${Math.random() * 5}s`,
+              filter: `drop-shadow(0 0 8px ${colors[i % colors.length]})`,
+              opacity: 0.8,
             }}
-            onLogout={auth.logout}
-            showProfileModal={app.showProfileModal}
-            setShowProfileModal={app.setShowProfileModal}
-          />
-        );
-
-      case 'levelPlay':
-        return (
-          <LevelPlay
-            currentLevel={app.currentLevel}
-            grid={app.grid}
-            setGrid={app.setGrid}
-            isPlaying={app.isPlaying}
-            setIsPlaying={app.setIsPlaying}
-            onSetView={app.setView}
-            highContrastMode={app.highContrastMode}
-            largeTextMode={app.largeTextMode}
-            achievementNotification={app.achievementNotification}
-            showNextHint={() => {
-              if (app.currentLevel?.hints) {
-                app.setCurrentHintIndex((app.currentHintIndex + 1) % app.currentLevel.hints.length);
-                app.setShowHint(true);
-                setTimeout(() => app.setShowHint(false), 3000);
-              }
-            }}
-            showHint={app.showHint}
-            currentHintIndex={app.currentHintIndex}
-            showLevelTutorial={app.showLevelTutorial}
-            setShowLevelTutorial={app.setShowLevelTutorial}
-            activeSoundLab={app.activeSoundLab}
-            setActiveSoundLab={app.setActiveSoundLab}
-            activeTracks={app.activeTracks}
-            instrumentConfig={app.instrumentConfig}
-            activeSoundPack={app.activeSoundPack}
-            currentStep={app.currentStep}
-            tutorialActive={app.tutorialActive}
-            onCompleteLevel={(score) => {
-              if (app.currentLevel) {
-                gameData.completeLevel(app.currentLevel.id, score, 100); // 100 accuracy placeholder
-                // Show success success notification or just confetti?
-                // For now, let's auto-navigate back after a delay or just let the LevelPlay UI handle the exit
-              }
-            }}
-          // Pass other props needed for grid rendering in LevelPlay
-          />
-        );
-
-      case 'studio':
-        return (
-          <Studio
-            grid={app.grid}
-            setGrid={app.setGrid}
-            isPlaying={app.isPlaying}
-            setIsPlaying={app.setIsPlaying}
-            onSetView={app.setView}
-            highContrastMode={app.highContrastMode}
-            largeTextMode={app.largeTextMode}
-            achievementNotification={app.achievementNotification}
-            activeSoundLab={app.activeSoundLab}
-            setActiveSoundLab={app.setActiveSoundLab}
-            activeTracks={app.activeTracks}
-            setActiveTracks={app.setActiveTracks}
-            activeSoundPack={app.activeSoundPack}
-            currentStep={app.currentStep}
-            setCurrentStep={app.setCurrentStep}
-            tempo={app.tempo}
-            setTempo={app.setTempo}
-            instrumentConfig={app.instrumentConfig}
-            setInstrumentConfig={app.setInstrumentConfig}
-            soundSettings={app.soundSettings}
-            setSoundSettings={app.setSoundSettings}
-          />
-        );
-
-      case 'dj':
-        // Helper function for SoundLab changes within DJMode
-        const handleSoundLabChange = (trackId, param, value) => {
-          app.setInstrumentConfig(prev => ({
-            ...prev,
-            [trackId]: {
-              ...prev[trackId],
-              [param]: value
-            }
-          }));
-        };
-
-        return (
-          <DJMode
-            djDecks={app.djDecks}
-            setDjDecks={app.setDjDecks}
-            djLooping={app.djLooping}
-            setDjLooping={app.setDjLooping}
-            djCrossfader={app.djCrossfader}
-            setDjCrossfader={app.setDjCrossfader}
-            djTutorialActive={app.djTutorialActive}
-            setDjTutorialActive={app.setDjTutorialActive}
-            djTutorialStep={app.djTutorialStep}
-            setDjTutorialStep={app.setDjTutorialStep}
-            tempo={app.tempo}
-            setTempo={app.setTempo}
-            isPlaying={app.isPlaying}
-            setIsPlaying={app.setIsPlaying}
-            onSetView={app.setView}
-            highContrastMode={app.highContrastMode}
-            largeTextMode={app.largeTextMode}
-            voiceControlEnabled={app.voiceControlEnabled}
-            isListening={app.isListening}
-            lastVoiceCommand={app.lastVoiceCommand}
-            currentStep={app.currentStep}
-            setGrid={app.setGrid}
-            activeTracks={app.activeTracks}
-            setCurrentStep={app.setCurrentStep}
-          />
-        );
-
-      case 'modes':
-        return <GameModes onSetView={app.setView} />;
-
-      case 'tutorial':
-        return <TutorialMode onSetView={app.setView} />;
-
-
-      case 'settings':
-        return (
-          <Settings
-            currentLanguage={app.currentLanguage}
-            setCurrentLanguage={app.setCurrentLanguage}
-            masterVolume={app.soundSettings?.masterVolume} // Assuming masterVolume is in soundSettings or app
-            setMasterVolume={(vol) => app.setSoundSettings(prev => ({ ...prev, masterVolume: vol }))} // Mock for now if not in controller
-            bgMusicEnabled={app.bgMusicEnabled}
-            setBgMusicEnabled={app.setBgMusicEnabled}
-            currentTheme={app.currentTheme}
-            setCurrentThemeId={app.setCurrentThemeId}
-            accessibilityMode={app.accessibilityMode}
-            setAccessibilityMode={app.setAccessibilityMode}
-            textToSpeechEnabled={app.textToSpeechEnabled}
-            setTextToSpeechEnabled={app.setTextToSpeechEnabled}
-            highContrastMode={app.highContrastMode}
-            setHighContrastMode={app.setHighContrastMode}
-            largeTextMode={app.largeTextMode}
-            setLargeTextMode={app.setLargeTextMode}
-            keyboardNavMode={app.keyboardNavMode}
-            setKeyboardNavMode={app.setKeyboardNavMode}
-            voiceControlEnabled={app.voiceControlEnabled}
-            setVoiceControlEnabled={app.setVoiceControlEnabled}
-            isListening={app.isListening}
-            lastVoiceCommand={app.lastVoiceCommand}
-            activeSoundPack={app.activeSoundPack}
-            applySoundPack={app.setActiveSoundPack}
-            onSetView={app.setView}
-          />
-        );
-
-      case 'splash':
-      default:
-        return (
-          <Splash
-            user={auth.user}
-            userProfile={auth.userProfile}
-            currentTheme={app.currentTheme}
-            achievementNotification={app.achievementNotification}
-            voiceControlEnabled={app.voiceControlEnabled}
-            isListening={app.isListening}
-            lastVoiceCommand={app.lastVoiceCommand}
-            onSetView={app.setView}
-            onLogin={auth.login}
-            onRegister={auth.register}
-            onLogout={auth.logout}
-            showNewPlayerModal={app.showNewPlayerModal}
-            setShowNewPlayerModal={app.setShowNewPlayerModal}
-            showProfileModal={app.showProfileModal}
-            setShowProfileModal={app.setShowProfileModal}
-            showAuthModal={app.showAuthModal}
-            setShowAuthModal={app.setShowAuthModal}
-            authMode={app.authMode}
-            setAuthMode={app.setAuthMode}
-            authEmail={app.authEmail}
-            setAuthEmail={app.setAuthEmail}
-            authPassword={app.authPassword}
-            setAuthPassword={app.setAuthPassword}
-            authUsername={app.authUsername}
-            setAuthUsername={app.setAuthUsername}
-            authError={auth.authError}
-            authLoading={auth.loading}
-            showLeaderboardModal={app.showLeaderboardModal}
-            setShowLeaderboardModal={app.setShowLeaderboardModal}
-            leaderboardData={gameData.leaderboardData}
-            leaderboardLoading={gameData.loading}
-            showAchievementsModal={app.showAchievementsModal}
-            setShowAchievementsModal={app.setShowAchievementsModal}
-            achievementsData={gameData.achievementsData}
-            achievementsLoading={gameData.loading}
-            userAchievements={gameData.userAchievements}
-            levelProgress={gameData.levelProgress}
-            onStartTutorial={() => {
-              app.setShowNewPlayerModal(false);
-              app.setView('levels');
-            }}
-            onSkipTutorial={() => {
-              app.setShowNewPlayerModal(false);
-              app.setView('studio'); // Assuming 'studio' exists or handled
-              // If studio is not implemented, default to levels
-              if (app.view !== 'studio') app.setView('levels');
-            }}
-            handleAuthLogin={() => auth.login(app.authEmail, app.authPassword)}
-            handleAuthRegister={() => auth.register(app.authEmail, app.authPassword, app.authUsername)}
-          />
-        );
-    }
+          >
+            {notes[i % notes.length]}
+          </div>
+        ))}
+      </div>
+    );
   };
 
-  return renderView();
+  return (
+    <div className={`h-screen w-full ${currentScenario ? currentScenario.bgClass : 'bg-slate-100'} text-slate-800 flex flex-col font-sans select-none transition-colors duration-500 relative ${bassShake ? 'bass-shake' : ''} ${highContrastMode ? 'high-contrast' : ''} ${largeTextMode ? 'large-text' : ''}`} role="main" aria-label="Music Studio - Beat Creation">
+      <style>{cssStyles}</style>
+      <a href="#beat-grid" className="skip-link" onFocus={() => speak('Skip to beat grid')}>Skip to beat grid</a>
+      <VoiceControlIndicator />
+
+      {/* Achievement Notification */}
+      <AchievementNotification />
+
+      {/* Raining Notes when playing */}
+      {isPlaying && <RainingNotes />}
+
+      {/* HEADER / VISUALS - Smaller on mobile */}
+      <div className={`${isMobile ? 'h-32' : 'h-64'} w-full shrink-0 relative z-0 bg-slate-900 overflow-hidden`} aria-hidden="true">
+        {currentScenario?.renderScene && currentScenario.renderScene(beatPulse, guideProgress)}
+
+        {/* NAVIGATION */}
+        <div className="absolute top-0 left-0 w-full p-2 sm:p-4 flex justify-between items-start z-10">
+          <button
+            onClick={() => { setIsPlaying(false); setView(previousView || 'splash'); }}
+            className="p-2 sm:p-3 bg-white/90 rounded-xl sm:rounded-2xl shadow-lg border-b-4 border-white/50 text-slate-600 hover:scale-105 active:scale-95 transition-all"
+            onMouseEnter={() => speak("Go back")}
+            onFocus={() => speak("Go back")}
+            onMouseLeave={stopSpeaking}
+            onBlur={stopSpeaking}
+            aria-label="Go back to previous screen"
+          ><Icons.ChevronLeft /></button>
+          <div className="flex gap-2" role="toolbar" aria-label="Studio controls">
+            <button
+              onClick={() => { setIsPlaying(false); setView('splash'); }}
+              className="p-2 sm:p-3 bg-white/90 rounded-xl sm:rounded-2xl shadow-lg border-b-4 border-white/50 text-slate-600 hover:scale-105 active:scale-95 transition-all"
+              onMouseEnter={() => speak("Home")}
+              onFocus={() => speak("Home")}
+              onMouseLeave={stopSpeaking}
+              onBlur={stopSpeaking}
+              aria-label="Go to home screen"
+            ><Icons.Home /></button>
+            <button
+              onClick={() => { setTutorialActive(!tutorialActive); setTutorialStep(0); }}
+              className={`p-2 sm:p-3 rounded-xl sm:rounded-2xl shadow-lg border-b-4 transition-all ${tutorialActive ? 'bg-indigo-500 text-white border-indigo-700' : 'bg-white/90 border-white/50 text-indigo-500'}`}
+              onMouseEnter={() => speak(tutorialActive ? "Turn off tutorial" : "Turn on tutorial guide")}
+              onFocus={() => speak(tutorialActive ? "Turn off tutorial" : "Turn on tutorial guide")}
+              onMouseLeave={stopSpeaking}
+              onBlur={stopSpeaking}
+              aria-label={tutorialActive ? "Disable tutorial" : "Enable tutorial"}
+              aria-pressed={tutorialActive}
+            ><Icons.GradCap /></button>
+            <button
+              onClick={() => { setShowOnboarding(true); setOnboardingStep(0); }}
+              className="p-2 sm:p-3 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl sm:rounded-2xl shadow-lg border-b-4 border-blue-600 text-white hover:scale-105 active:scale-95 transition-all"
+              onMouseEnter={() => speak("Open help tutorial")}
+              onFocus={() => speak("Open help tutorial")}
+              onMouseLeave={stopSpeaking}
+              onBlur={stopSpeaking}
+              aria-label="Open interactive help tutorial"
+              title="Help Tutorial"
+            >â“</button>
+            <button
+              onClick={() => setShowVictory(true)}
+              className={`p-2 sm:p-3 rounded-xl sm:rounded-2xl shadow-lg border-b-4 text-white hover:scale-105 active:scale-95 transition-all ${currentScore >= 50 ? 'bg-green-400 border-green-600' : 'bg-slate-400 border-slate-600 cursor-not-allowed'}`}
+              disabled={currentScore < 50}
+              onMouseEnter={() => speak(currentScore >= 50 ? "Complete and show victory" : "Need 50 percent score to complete")}
+              onFocus={() => speak(currentScore >= 50 ? "Complete and show victory" : "Need 50 percent score to complete")}
+              onMouseLeave={stopSpeaking}
+              onBlur={stopSpeaking}
+              aria-label={currentScore >= 50 ? "Complete and show victory screen" : "Victory unavailable - need 50% score"}
+            ><Icons.Star /></button>
+          </div>
+        </div>
+      </div>
+
+      {/* Tutorial Overlay - Mobile Responsive */}
+      {tutorialActive && currentScenario && currentScenario.tutorial && (
+        <div className="absolute top-2 sm:top-4 left-1/2 -translate-x-1/2 z-50 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-2 sm:px-4 py-2 sm:py-3 rounded-xl sm:rounded-2xl shadow-xl border-2 border-white animate-bounce-in flex flex-col items-center gap-1 max-w-[90%] sm:max-w-md w-full pointer-events-none">
+          <div className="flex items-center gap-2 w-full">
+            <div className="text-lg sm:text-2xl animate-bounce">👠</div>
+            <div className="flex-1 min-w-0">
+              <div className="font-bold uppercase tracking-wider text-[8px] sm:text-[10px] text-indigo-200 mb-0.5 flex flex-wrap items-center gap-1">
+                <span className="bg-white/20 px-1.5 py-0.5 rounded-full">Step {tutorialStep + 1}/{currentScenario.tutorial.length}</span>
+                {currentScenario.tutorial[tutorialStep].targetInstrument && (
+                  <span className="bg-green-500 px-1.5 py-0.5 rounded-full animate-pulse">
+                    {currentScenario.tutorial[tutorialStep].targetSteps.filter(s => !grid[currentScenario.tutorial[tutorialStep].targetInstrument][s]).length} left
+                  </span>
+                )}
+              </div>
+              <div className="font-bold text-sm sm:text-base leading-tight truncate">{currentScenario.tutorial[tutorialStep].text}</div>
+            </div>
+          </div>
+          {currentScenario.tutorial[tutorialStep].targetInstrument && (
+            <div className="w-full bg-white/10 rounded-lg p-2 mt-1">
+              <div className="text-[10px] sm:text-xs text-indigo-200 mb-1">Tap <span className="text-yellow-300 font-black">YELLOW</span> squares:</div>
+              <div className="flex gap-0.5 flex-wrap justify-center">
+                {currentScenario.tutorial[tutorialStep].targetSteps.map(step => (
+                  <div
+                    key={step}
+                    className={`w-5 h-5 sm:w-6 sm:h-6 rounded flex items-center justify-center text-[10px] sm:text-xs font-bold transition-all ${grid[currentScenario.tutorial[tutorialStep].targetInstrument]?.[step]
+                      ? 'bg-green-500 text-white'
+                      : 'bg-yellow-400 text-yellow-900 animate-pulse'
+                      }`}
+                  >
+                    {step + 1}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          {!currentScenario.tutorial[tutorialStep].targetInstrument && (
+            <button
+              onClick={() => { setTutorialActive(false); setIsPlaying(true); }}
+              className="mt-1 bg-green-500 hover:bg-green-400 text-white font-black px-4 py-2 rounded-full text-sm sm:text-base flex items-center gap-2 shadow-lg pointer-events-auto"
+            >
+              <Icons.Play /> PLAY YOUR BEAT!
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* MAIN CONTENT AREA */}
+      <div className="flex-1 overflow-hidden bg-slate-900 relative z-10 rounded-t-3xl shadow-[0_-20px_40px_rgba(0,0,0,0.3)] -mt-6 flex flex-col">
+
+        {/* Mobile Step Navigation */}
+        {isMobile && (
+          <div className="flex items-center justify-between px-4 py-2 bg-slate-800 border-b border-slate-700">
+            <button
+              onClick={() => scrollMobileSteps('left')}
+              disabled={mobileStepOffset === 0}
+              className={`p-2 rounded-lg ${mobileStepOffset === 0 ? 'opacity-30' : 'bg-slate-700 active:bg-slate-600'}`}
+            >
+              <Icons.ChevronLeft />
+            </button>
+            <span className="text-xs text-slate-400 font-bold">
+              Steps {mobileStepOffset + 1}-{Math.min(mobileStepOffset + mobileStepsVisible, STEPS)} of {STEPS}
+            </span>
+            <button
+              onClick={() => scrollMobileSteps('right')}
+              disabled={mobileStepOffset >= STEPS - mobileStepsVisible}
+              className={`p-2 rounded-lg ${mobileStepOffset >= STEPS - mobileStepsVisible ? 'opacity-30' : 'bg-slate-700 active:bg-slate-600'}`}
+            >
+              <Icons.ChevronRight />
+            </button>
+          </div>
+        )}
+
+        {/* --- COMPOSER GRID --- */}
+        <div className="flex-1 overflow-x-auto overflow-y-auto p-2 sm:p-4">
+          <div className={`${isMobile ? '' : 'min-w-max'} space-y-3 pb-24`}>
+            {/* Step indicators - hidden on mobile, clickable to seek */}
+            {!isMobile && (
+              <div className="flex items-center gap-4 mb-2 p-2 pl-3">
+                <div className="w-[280px] shrink-0 flex items-center justify-end gap-2 pr-6">
+                  <button
+                    onClick={() => {
+                      if (window.confirm("Reset tracks to level defaults?")) {
+                        const reqs = currentScenario?.requirements?.instruments;
+                        const must = currentScenario?.requirements?.mustInclude ? Object.keys(currentScenario.requirements.mustInclude) : [];
+                        const all = [...new Set([...(reqs || []), ...must])];
+                        if (all.length > 0) setActiveInstrumentIds(all);
+                        else setActiveInstrumentIds(['kick', 'snare', 'hihat', 'bass']);
+                      }
+                    }}
+                    className="p-1 hover:bg-slate-700 rounded text-slate-500 hover:text-white transition-colors"
+                    title="Fix Missing Instruments"
+                  >
+                    ↺
+                  </button>
+                  <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Timeline →</span>
+                </div>
+                <div className="grid gap-0.5 flex-1 p-1" style={{ gridTemplateColumns: 'repeat(32, minmax(24px, 1fr))' }}>
+                  {[...Array(STEPS)].map((_, i) => (
+                    <div
+                      key={i}
+                      onClick={() => seekToStep(i)}
+                      className={`h-3 rounded-full cursor-pointer transition-all hover:scale-y-150 ${currentStep === i
+                        ? 'bg-cyan-400 shadow-lg shadow-cyan-400/50'
+                        : i % 4 === 0
+                          ? 'bg-slate-500 hover:bg-slate-400'
+                          : 'bg-slate-800 hover:bg-slate-600'
+                        } relative`}
+                    >
+                      {(i % 4 === 0) && <span className="text-[10px] font-bold text-slate-500 absolute -top-4 left-1/2 -translate-x-1/2">{Math.floor(i / 4) + 1}</span>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* RENDER ACTIVE INSTRUMENTS */}
+            {activeInstrumentIds.map((instKey) => {
+              const variantIdx = typeof instrumentConfig[instKey] === 'number' ? instrumentConfig[instKey] : 0;
+              const currentVariant = SOUND_VARIANTS[instKey]?.[variantIdx] || SOUND_VARIANTS[instKey]?.[0];
+              const instrumentInfo = INSTRUMENTS_DATA.find(i => i.id === instKey);
+
+              let isTutorialTarget = false;
+              let notesToClick = [];
+              if (tutorialActive && currentScenario && currentScenario.tutorial) {
+                const currentTask = currentScenario.tutorial[tutorialStep];
+                if (currentTask && currentTask.targetInstrument === instKey) {
+                  isTutorialTarget = true;
+                  notesToClick = currentTask.targetSteps;
+                }
+              }
+
+              const rowOpacity = tutorialActive && !isTutorialTarget ? 'opacity-30 pointer-events-none grayscale' : 'opacity-100';
+
+              // Calculate visible steps for mobile
+              const visibleSteps = isMobile
+                ? [...Array(mobileStepsVisible)].map((_, i) => i + mobileStepOffset)
+                : [...Array(STEPS)].map((_, i) => i);
+
+              return (
+                <div key={instKey} className={`relative flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-6 group rounded-xl p-2 sm:p-3 transition-all ${rowOpacity} ${isTutorialTarget ? 'bg-indigo-500/20 ring-2 ring-indigo-400 shadow-lg z-20' : 'bg-slate-900/40 border border-white/5 hover:bg-slate-800/60 hover:border-white/10'}`}>
+                  {isTutorialTarget && !isMobile && <div className="absolute -left-10 top-1/2 -translate-y-1/2 animate-[bounce_1s_infinite] text-3xl z-50 filter drop-shadow-lg">👉</div>}
+                  <div className="flex items-center gap-2 w-full sm:w-[280px] shrink-0 relative pr-6 border-r border-white/5">
+                    {/* Remove Button */}
+                    <button
+                      onClick={() => removeTrack(instKey)}
+                      className={`${isMobile ? '' : 'opacity-0 group-hover:opacity-100'} bg-red-500 hover:bg-red-400 text-white rounded-full w-5 h-5 flex items-center justify-center transition-all z-10 shadow-md shrink-0 text-xs`}
+                      title="Remove Track"
+                    >
+                      <Icons.Minus />
+                    </button>
+
+                    <button onClick={() => setShowSoundPicker(showSoundPicker === instKey ? null : instKey)} className="flex-1 flex items-center gap-2 bg-slate-800/80 hover:bg-slate-700 p-2 pr-3 rounded-lg transition-all border border-slate-700/50 active:scale-95 relative group-hover/btn:border-slate-500/50 min-w-0">
+                      <div className={`w-8 h-8 rounded-md flex items-center justify-center text-base shadow-inner ${instrumentInfo.color} text-white shrink-0`}>{currentVariant.icon}</div>
+                      <div className="flex flex-col text-left min-w-0 flex-1">
+                        <span className="text-[10px] font-black text-slate-500 uppercase leading-tight">{instKey}</span>
+                        <span className="text-[11px] font-bold text-slate-300 truncate">{currentVariant.name}</span>
+                      </div>
+                      <span className="text-[10px] text-slate-500 shrink-0">▼</span>
+                    </button>
+
+                    {/* Sound Variant Picker Popup */}
+                    {showSoundPicker === instKey && (
+                      <div className="absolute top-full left-0 mt-1 z-50 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-2 min-w-[200px] animate-bounce-in" onClick={(e) => e.stopPropagation()}>
+                        <div className="text-[10px] font-black text-slate-400 uppercase mb-2 px-1">Select Sound for {instKey}</div>
+                        <div className="grid grid-cols-2 gap-1">
+                          {SOUND_VARIANTS[instKey].map((variant, idx) => (
+                            <button
+                              key={idx}
+                              onClick={() => {
+                                setInstrumentConfig(prev => ({ ...prev, [instKey]: idx }));
+                                AudioEngine.init();
+                                AudioEngine.trigger(variant, 0, soundSettings[instKey] || {});
+                                setShowSoundPicker(null);
+                              }}
+                              className={`flex items-center gap-2 p-2 rounded-lg transition-all text-left ${instrumentConfig[instKey] === idx
+                                ? `${instrumentInfo.color} text-white shadow-lg`
+                                : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
+                                }`}
+                            >
+                              <span className="text-lg">{variant.icon}</span>
+                              <span className="text-xs font-bold">{variant.name}</span>
+                            </button>
+                          ))}
+                        </div>
+                        <button
+                          onClick={() => setShowSoundPicker(null)}
+                          className="w-full mt-2 p-1.5 bg-slate-800 hover:bg-slate-700 rounded-lg text-xs text-slate-400 font-bold"
+                        >
+                          Close
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Mute Toggle */}
+                    <button
+                      onClick={() => handleSoundSettingChange(instKey, 'muted', !soundSettings[instKey]?.muted)}
+                      className={`w-7 h-7 rounded-md flex items-center justify-center transition-all text-xs shrink-0 ${soundSettings[instKey]?.muted ? 'bg-red-500/90 text-white' : 'bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-700 border border-slate-700/50'}`}
+                      title={soundSettings[instKey]?.muted ? 'Unmute' : 'Mute'}
+                    >
+                      {soundSettings[instKey]?.muted ? '🔇' : '🔊'}
+                    </button>
+                    <button onClick={() => setActiveSoundLab(activeSoundLab === instKey ? null : instKey)} className={`w-7 h-7 rounded-md flex items-center justify-center transition-all text-xs shrink-0 ${activeSoundLab === instKey ? 'bg-indigo-500 text-white' : 'bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-700 border border-slate-700/50'}`}><Icons.Sliders /></button>
+                    <button onClick={() => smartFill(instKey)} className="w-7 h-7 rounded-md bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center hover:from-indigo-400 hover:to-purple-500 shadow-sm text-xs shrink-0"><Icons.Wand /></button>
+                  </div>
+
+                  {activeSoundLab === instKey && soundSettings[instKey] && (<SoundLab instKey={instKey} config={soundSettings[instKey]} onChange={(k, v) => handleSoundSettingChange(instKey, k, v)} onClose={() => setActiveSoundLab(null)} />)}
+
+                  <div className={`grid gap-0.5 p-1 bg-slate-950/80 rounded-lg border border-slate-800/50 flex-1`} style={{ gridTemplateColumns: `repeat(${isMobile ? mobileStepsVisible : 32}, minmax(24px, 1fr))` }}>
+                    {visibleSteps.map((stepIndex) => {
+                      const isActive = grid[instKey][stepIndex];
+                      const isCurrent = currentStep === stepIndex;
+                      const isBeatStart = stepIndex % 4 === 0;
+
+                      const isTargetStep = isTutorialTarget && notesToClick.includes(stepIndex) && !isActive;
+                      const isCompletedTarget = isTutorialTarget && notesToClick.includes(stepIndex) && isActive;
+
+                      // Identify premade notes in Game Levels
+                      const isPremadeNote = currentScenario?.premadePattern?.[instKey]?.includes(stepIndex);
+
+                      return (
+                        <button
+                          key={stepIndex}
+                          onMouseDown={() => handleMouseDown(instKey, stepIndex)}
+                          onMouseEnter={() => handleMouseEnter(instKey, stepIndex)}
+                          onTouchStart={(e) => { e.preventDefault(); handleTouchStart(instKey, stepIndex); }}
+                          className={`
+                                 aspect-square rounded transition-all duration-75 ease-out relative overflow-hidden mobile-step
+                                 ${isActive
+                              ? `${instrumentInfo.color} shadow-md shadow-current/30 scale-95`
+                              : isBeatStart
+                                ? 'bg-slate-600/50 border border-slate-500/40 hover:bg-slate-500/60 hover:border-slate-400/50'
+                                : 'bg-slate-700/40 border border-slate-600/30 hover:bg-slate-600/50 hover:border-slate-500/50'
+                            }
+                                 ${isCurrent ? 'ring-2 ring-cyan-400 z-10 brightness-125' : ''}
+                                 ${isTargetStep ? 'bg-yellow-400 border-yellow-500 border-2 shadow-[0_0_15px_rgba(250,204,21,0.8)] z-30' : ''}
+                                 ${isCompletedTarget ? 'ring-2 ring-green-400 shadow-[0_0_10px_rgba(74,222,128,0.6)]' : ''}
+                                 ${isPremadeNote && isActive ? 'opacity-80 saturate-50 !border-2 !border-slate-400/50' : ''}
+                               `}
+                          style={isTargetStep ? { animation: 'pulse 0.5s ease-in-out infinite' } : {}}
+                        >
+                          {isTargetStep && (
+                            <span className="absolute inset-0 rounded bg-yellow-300 animate-ping opacity-50 pointer-events-none"></span>
+                          )}
+                          {isTargetStep && (
+                            <span className="absolute inset-0 flex items-center justify-center text-xs font-black text-yellow-900 pointer-events-none">!</span>
+                          )}
+                          {isCompletedTarget && (
+                            <span className="absolute inset-0 flex items-center justify-center text-xs pointer-events-none">✔</span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* ADD TRACK BUTTON */}
+            {activeInstrumentIds.length < 12 && (
+              <div className={`${isMobile ? 'pl-2' : 'ml-[280px] pl-6'} pt-4`}>
+                {!showAddTrackMenu ? (
+                  <button
+                    onClick={() => setShowAddTrackMenu(true)}
+                    className="flex items-center gap-2 px-3 py-1.5 bg-slate-800/60 border-2 border-dashed border-slate-600/50 rounded-lg text-slate-400 hover:text-white hover:border-slate-400 hover:bg-slate-700 transition-all font-bold text-xs active:scale-95"
+                  >
+                    <Icons.Plus /> ADD TRACK
+                  </button>
+                ) : (
+                  <div className="bg-slate-900 border border-slate-700 rounded-xl p-4 animate-bounce-in w-full max-w-3xl shadow-2xl">
+                    <div className="flex justify-between items-center mb-3">
+                      <h4 className="text-white font-black text-sm uppercase tracking-wide">🎵 All Instruments</h4>
+                      <button onClick={() => setShowAddTrackMenu(false)} className="text-slate-400 hover:text-white p-1 hover:bg-slate-800 rounded-lg transition-all"><Icons.Close /></button>
+                    </div>
+                    <p className="text-[10px] text-slate-500 mb-3">Click to add • Green = already added</p>
+                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
+                      {INSTRUMENTS_DATA.map(inst => {
+                        const isAdded = activeInstrumentIds.includes(inst.id);
+                        const variant = SOUND_VARIANTS[inst.id][0];
+                        return (
+                          <button
+                            key={inst.id}
+                            onClick={() => !isAdded && addTrack(inst.id)}
+                            disabled={isAdded}
+                            className={`flex flex-col items-center gap-1 p-3 rounded-xl transition-all text-center ${isAdded
+                              ? 'bg-green-500/20 border-2 border-green-500/50 cursor-default'
+                              : 'bg-slate-800 border border-slate-700 hover:border-slate-500 hover:bg-slate-700 active:scale-95 cursor-pointer'
+                              }`}
+                          >
+                            <div className={`w-10 h-10 rounded-xl ${inst.color} flex items-center justify-center text-xl shadow-lg ${isAdded ? 'opacity-60' : ''}`}>
+                              {variant.icon}
+                            </div>
+                            <span className={`text-xs font-bold ${isAdded ? 'text-green-400' : 'text-slate-300'}`}>{inst.name}</span>
+                            {isAdded && <span className="text-[8px] text-green-400 font-bold">✔ ADDED</span>}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <div className="mt-3 pt-3 border-t border-slate-700 flex justify-between items-center">
+                      <span className="text-xs text-slate-500">{activeInstrumentIds.length}/12 tracks added</span>
+                      <button
+                        onClick={() => setShowAddTrackMenu(false)}
+                        className="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-xs font-bold text-slate-300 transition-all"
+                      >
+                        Done
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Seek Bar - Timeline Scrubber */}
+      <div className="bg-slate-900 border-t border-slate-700 px-3 sm:px-6 py-2 shrink-0">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <span className="text-xs font-mono text-slate-400 w-10 sm:w-12 text-right">
+            {Math.floor(currentStep / 4) + 1}:{(currentStep % 4) + 1}
+          </span>
+          <div
+            ref={seekBarRef}
+            className="flex-1 grid gap-0.5 bg-slate-900 rounded-xl cursor-col-resize touch-none select-none relative h-10 overflow-hidden border border-slate-700/50"
+            style={{ gridTemplateColumns: `repeat(${isMobile ? mobileStepsVisible : 32}, minmax(24px, 1fr))` }}
+            onClick={handleSeekBarInteraction}
+            onMouseDown={(e) => { setIsDraggingSeek(true); handleSeekBarInteraction(e); }}
+            onMouseMove={(e) => isDraggingSeek && handleSeekBarInteraction(e)}
+            onMouseUp={() => setIsDraggingSeek(false)}
+            onMouseLeave={() => setIsDraggingSeek(false)}
+            onTouchStart={(e) => { setIsDraggingSeek(true); handleSeekBarInteraction(e); }}
+            onTouchMove={(e) => isDraggingSeek && handleSeekBarInteraction(e)}
+            onTouchEnd={() => setIsDraggingSeek(false)}
+            role="slider"
+            aria-label="Seek Bar"
+            aria-valuenow={currentStep}
+            aria-valuemin="0"
+            aria-valuemax={(isMobile ? mobileStepsVisible : 32) - 1}
+          >
+            {[...Array(isMobile ? mobileStepsVisible : 32)].map((_, i) => {
+              const isBeatStart = i % 4 === 0;
+              const beatNumber = Math.floor((isMobile ? i + mobileStepOffset : i) / 4) + 1;
+              const isCurrent = currentStep === i;
+
+              return (
+                <div
+                  key={i}
+                  className={`relative flex items-center justify-center transition-colors
+                    ${isCurrent ? 'bg-cyan-500/20' : 'hover:bg-white/5'}
+                    ${isBeatStart ? 'border-l border-slate-600' : ''}
+                  `}
+                >
+                  {/* Highlight bar for current step */}
+                  {isCurrent && (
+                    <div className="absolute inset-0 border-2 border-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.5)] z-10"></div>
+                  )}
+
+                  {/* Beat Number Marker */}
+                  {isBeatStart && (
+                    <span className="absolute top-0.5 left-1 text-[9px] font-mono font-bold text-slate-500 pointer-events-none">
+                      {beatNumber}
+                    </span>
+                  )}
+
+                  {/* Subtle tick for non-beats */}
+                  {!isBeatStart && (
+                    <div className="w-0.5 h-1 bg-slate-800 rounded-full"></div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          <span className="text-xs font-mono text-slate-400 w-10 sm:w-12">
+            {STEPS / 4}:4
+          </span>
+        </div>
+      </div>
+
+      {/* Bottom Control Bar - Mobile Responsive */}
+      <div className="h-auto sm:h-24 bg-white border-t-2 border-slate-100 flex flex-wrap sm:flex-nowrap items-center justify-center gap-2 sm:gap-3 shrink-0 z-20 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] px-2 sm:px-4 py-2 sm:py-0 mobile-controls">
+        {/* Play/Stop - Always prominent */}
+        <div className={`flex items-center ${isMobile ? 'order-first w-full justify-center mb-2' : ''} gap-3 sm:gap-6 bg-slate-50 px-3 sm:px-6 py-2 rounded-[2rem] border border-slate-100`}>
+          <button onClick={() => {
+            AudioEngine.init();
+            if (!isPlaying) {
+              // Track first play for achievement
+              setUserStats(prev => ({ ...prev, hasPlayedBeat: true }));
+            }
+            setIsPlaying(!isPlaying);
+          }} className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all duration-200 transform border-b-8 active:border-b-0 active:translate-y-2 ${isPlaying ? 'bg-red-500 border-red-700 text-white' : 'bg-green-500 border-green-700 text-white hover:bg-green-400'}`}>{isPlaying ? <Icons.Stop /> : <Icons.Play />}</button>
+        </div>
+        <Button onClick={clearGrid} variant="secondary" className="w-10 h-10 sm:w-12 sm:h-12 !px-0 !py-2 sm:!py-3 !rounded-xl sm:!rounded-2xl text-slate-400 hover:text-slate-600 flex justify-center items-center"><Icons.Trash /></Button>
+        <button onClick={() => setShowSaveModal(true)} className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl sm:rounded-2xl flex items-center justify-center text-white shadow-lg hover:scale-105 transition-all border-b-4 border-emerald-600 active:border-b-0 active:translate-y-1" title="Save Beat">
+          <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" /><polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" /></svg>
+        </button>
+        <button onClick={() => setShowLoadModal(true)} className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-xl sm:rounded-2xl flex items-center justify-center text-white shadow-lg hover:scale-105 transition-all border-b-4 border-indigo-600 active:border-b-0 active:translate-y-1" title="Load Beat">
+          <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 002-2v-4M17 8l-5-5-5 5M12 3v12" /></svg>
+        </button>
+        <div className="flex flex-col items-center justify-center bg-slate-50 px-2 sm:px-3 py-1 sm:py-2 rounded-xl sm:rounded-2xl border border-slate-100">
+          <span className="text-[8px] sm:text-[10px] text-slate-400 font-black uppercase tracking-widest leading-none mb-1">Tempo</span>
+          <div className="flex items-center gap-0.5 sm:gap-1">
+            <button onClick={() => setTempo(t => Math.max(60, t - 5))} className="px-1 sm:px-1.5 py-0.5 bg-slate-200 hover:bg-slate-300 rounded text-[10px] sm:text-xs font-bold text-slate-600">-5</button>
+            <button onClick={() => setTempo(t => Math.max(60, t - 1))} className="px-1 sm:px-1.5 py-0.5 bg-slate-100 hover:bg-slate-200 rounded text-[10px] sm:text-xs font-bold text-slate-500">-1</button>
+            <span className="text-sm sm:text-lg font-black text-slate-700 leading-none w-8 sm:w-10 text-center">{tempo}</span>
+            <button onClick={() => setTempo(t => Math.min(200, t + 1))} className="px-1 sm:px-1.5 py-0.5 bg-slate-100 hover:bg-slate-200 rounded text-[10px] sm:text-xs font-bold text-slate-500">+1</button>
+            <button onClick={() => setTempo(t => Math.min(200, t + 5))} className="px-1 sm:px-1.5 py-0.5 bg-slate-200 hover:bg-slate-300 rounded text-[10px] sm:text-xs font-bold text-slate-600">+5</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Save Beat Modal */}
+      {
+        showSaveModal && (
+          <div className="absolute inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+            <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl animate-bounce-in">
+              <h2 className="text-2xl font-black text-slate-800 mb-4 flex items-center gap-3">
+                <span className="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center text-white">
+                  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" /><polyline points="17 21 17 13 7 13 7 21" /><polyline points="7 3 7 8 15 8" /></svg>
+                </span>
+                Save Your Beat
+              </h2>
+              <input
+                type="text"
+                placeholder="Enter beat name..."
+                value={saveBeatName}
+                onChange={(e) => setSaveBeatName(e.target.value)}
+                className="w-full p-4 border-2 border-slate-200 rounded-2xl text-lg font-bold text-slate-700 focus:outline-none focus:border-green-400 mb-4"
+                autoFocus
+              />
+              <div className="flex gap-3">
+                <button
+                  onClick={() => { setShowSaveModal(false); setSaveBeatName(''); }}
+                  className="flex-1 p-4 bg-slate-100 hover:bg-slate-200 rounded-2xl font-bold text-slate-600 transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => saveBeat(saveBeatName)}
+                  className="flex-1 p-4 bg-gradient-to-r from-green-400 to-emerald-500 rounded-2xl font-bold text-white hover:scale-[1.02] transition-all shadow-lg"
+                >
+                  💾 Save Beat
+                </button>
+              </div>
+            </div>
+          </div>
+        )
+      }
+
+      {/* Load Beat Modal */}
+      {
+        showLoadModal && (
+          <div className="absolute inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+            <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl animate-bounce-in max-h-[80vh] flex flex-col">
+              <h2 className="text-xl sm:text-2xl font-black text-slate-800 mb-4 flex items-center gap-3">
+                <span className="w-10 h-10 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-xl flex items-center justify-center text-white">
+                  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 002-2v-4M17 8l-5-5-5 5M12 3v12" /></svg>
+                </span>
+                Load a Beat
+              </h2>
+
+              {/* Favorites Filter Toggle */}
+              {savedBeats.length > 0 && (
+                <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-200">
+                  <button
+                    onClick={() => setShowFavoritesOnly(false)}
+                    className={`px-4 py-2 rounded-xl font-bold text-sm transition-all ${!showFavoritesOnly ? 'bg-indigo-500 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                  >
+                    All ({savedBeats.length})
+                  </button>
+                  <button
+                    onClick={() => setShowFavoritesOnly(true)}
+                    className={`px-4 py-2 rounded-xl font-bold text-sm transition-all flex items-center gap-1 ${showFavoritesOnly ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                  >
+                    ⭐ Favorites ({savedBeats.filter(b => b.favorite).length})
+                  </button>
+                </div>
+              )}
+
+              <div className="flex-1 overflow-y-auto space-y-3 mb-4">
+                {savedBeats.length === 0 ? (
+                  <div className="text-center py-12 text-slate-400">
+                    <div className="text-5xl mb-4">🎵</div>
+                    <p className="font-bold">No saved beats yet!</p>
+                    <p className="text-sm">Create a beat and save it to see it here.</p>
+                  </div>
+                ) : (
+                  (() => {
+                    const beatsToShow = showFavoritesOnly ? savedBeats.filter(b => b.favorite) : savedBeats;
+                    if (beatsToShow.length === 0) {
+                      return (
+                        <div className="text-center py-12 text-slate-400">
+                          <div className="text-5xl mb-4">⭐</div>
+                          <p className="font-bold">No favorites yet!</p>
+                          <p className="text-sm">Tap the star icon on a beat to add it to favorites.</p>
+                        </div>
+                      );
+                    }
+                    return beatsToShow.map((beat) => (
+                      <div key={beat.id} className={`flex items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-2xl transition-all group ${beat.favorite ? 'bg-amber-50 border-2 border-amber-200' : 'bg-slate-50 hover:bg-slate-100'}`}>
+                        {/* Favorite Toggle */}
+                        <button
+                          onClick={() => toggleFavorite(beat.id)}
+                          className={`p-2 rounded-xl transition-all ${beat.favorite ? 'text-amber-500 hover:text-amber-600' : 'text-slate-300 hover:text-amber-400'}`}
+                          title={beat.favorite ? 'Remove from favorites' : 'Add to favorites'}
+                        >
+                          {beat.favorite ? '⭐' : '☆'}
+                        </button>
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-400 to-pink-500 rounded-xl flex items-center justify-center text-white text-lg sm:text-xl shrink-0">🎶</div>
+                        <div className="flex-1 min-w-0">
+                          <div className="font-bold text-slate-800 truncate">{beat.name}</div>
+                          <div className="text-xs text-slate-400">{beat.date} • {beat.tempo} BPM • {beat.activeInstrumentIds.length} tracks</div>
+                        </div>
+                        <button
+                          onClick={() => loadBeat(beat)}
+                          className="px-3 sm:px-4 py-2 bg-gradient-to-r from-blue-400 to-indigo-500 text-white rounded-xl font-bold hover:scale-105 transition-all shadow-md text-sm"
+                        >
+                          Load
+                        </button>
+                        <button
+                          onClick={() => setDeleteConfirm(beat)}
+                          className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                          title="Delete beat"
+                        >
+                          <Icons.Trash />
+                        </button>
+                      </div>
+                    ));
+                  })()
+                )}
+              </div>
+              <button
+                onClick={() => { setShowLoadModal(false); setShowFavoritesOnly(false); }}
+                className="w-full p-4 bg-slate-100 hover:bg-slate-200 rounded-2xl font-bold text-slate-600 transition-all"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )
+      }
+
+      {/* Delete Confirmation Modal */}
+      {
+        deleteConfirm && (
+          <div className="absolute inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+            <div className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl animate-bounce-in text-center">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-3xl">��️</span>
+              </div>
+              <h3 className="text-xl font-black text-slate-800 mb-2">Delete Beat?</h3>
+              <p className="text-slate-500 mb-1">Are you sure you want to delete</p>
+              <p className="text-lg font-bold text-slate-800 mb-4">"{deleteConfirm.name}"</p>
+              <p className="text-xs text-red-500 mb-6">âš ️ This action cannot be undone!</p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setDeleteConfirm(null)}
+                  className="flex-1 p-3 bg-slate-100 hover:bg-slate-200 rounded-xl font-bold text-slate-600 transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    deleteBeat(deleteConfirm.id);
+                    setDeleteConfirm(null);
+                  }}
+                  className="flex-1 p-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 rounded-xl font-bold text-white transition-all shadow-lg"
+                >
+                  ��️ Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )
+      }
+
+      {/* Interactive Onboarding Tutorial */}
+      {
+        showOnboarding && (
+          <OnboardingTutorial
+            step={onboardingStep}
+            onNext={() => {
+              // Special handling for click-grid step
+              if (ONBOARDING_STEPS[onboardingStep]?.action === 'click-grid') {
+                // Check if user clicked any cell
+                const hasAnyCell = Object.values(grid).some(row => row.some(cell => cell));
+                if (hasAnyCell) {
+                  setOnboardingStep(prev => prev + 1);
+                }
+              } else {
+                setOnboardingStep(prev => prev + 1);
+              }
+            }}
+            onSkip={() => {
+              setShowOnboarding(false);
+              setOnboardingStep(0);
+            }}
+            onFinish={() => {
+              setShowOnboarding(false);
+              setOnboardingStep(0);
+            }}
+          />
+        )
+      }
+
+      {
+        showVictory && (
+          <div className="absolute inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+            <div className="bg-white border-8 border-yellow-400 rounded-[3rem] p-12 max-w-md w-full text-center shadow-2xl transform scale-100">
+              <div className="text-yellow-400 mx-auto mb-6 flex justify-center drop-shadow-lg animate-bounce"><Icons.Trophy /></div>
+              <h2 className="text-5xl font-black text-slate-800 mb-2 tracking-tight">YOU DID IT!</h2>
+              <p className="text-slate-500 mb-4 font-bold text-xl">
+                {currentScore >= 90 ? "PERFECT RHYTHM! 🏆" : currentScore >= 70 ? "GREAT BEAT! 🎵" : "GOOD START! 👍"}
+              </p>
+              <div className="flex justify-center gap-3 mb-8 text-yellow-400">
+                <Icons.Star />
+                {currentScore >= 70 && <Icons.Star />}
+                {currentScore >= 90 && <Icons.Star />}
+              </div>
+              {/* Score Details for logged in users */}
+              {user && (
+                <div className="mb-6 p-4 bg-slate-100 rounded-2xl text-left">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-slate-600 font-bold">Score:</span>
+                    <span className="text-2xl font-black text-purple-600">+{Math.round(currentScore * 10)}</span>
+                  </div>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-slate-600 font-bold">Accuracy:</span>
+                    <span className="text-lg font-bold text-green-600">{Math.round(currentScore)}%</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-600 font-bold">XP Earned:</span>
+                    <span className="text-lg font-bold text-amber-600">+{Math.round(currentScore)} XP</span>
+                  </div>
+                </div>
+              )}
+              {!user && (
+                <div className="mb-6 p-4 bg-purple-100 rounded-2xl">
+                  <p className="text-purple-700 font-bold text-sm mb-2">🔐 Login to save your scores!</p>
+                  <button
+                    onClick={() => { setShowVictory(false); setShowAuthModal(true); }}
+                    className="px-4 py-2 bg-purple-500 text-white rounded-xl font-bold text-sm hover:bg-purple-400 transition-all"
+                  >
+                    Login Now
+                  </button>
+                </div>
+              )}
+              <Button onClick={() => {
+                // Save score if logged in and tutorial
+                if (user && currentScenario && tutorialActive) {
+                  saveTutorialScore(currentScenario.id, currentScenario.name, currentScore);
+                }
+                setShowVictory(false);
+                setView('splash');
+              }} size="lg" className="w-full">Back to Menu</Button>
+            </div>
+          </div>
+        )
+      }
+
+      {/* Verification Success Modal */}
+      {
+        showVerificationModal && (
+          <div className="absolute inset-0 z-[70] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+            <div className="bg-slate-900 border-2 border-green-500/50 rounded-3xl p-8 max-w-sm w-full shadow-2xl animate-bounce-in text-center relative overflow-hidden">
+              {/* Glow effect */}
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-400 to-emerald-500"></div>
+
+              <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-green-500/50 animate-pulse-slow">
+                <span className="text-4xl text-green-400">📧</span>
+              </div>
+
+              <h3 className="text-2xl font-black text-white mb-2">Check Your Email!</h3>
+              <p className="text-slate-400 mb-6 leading-relaxed">
+                We've sent a verification link to your email.
+                <br /><br />
+                Please click the link to activate your account and start making beats!
+              </p>
+
+              <button
+                onClick={() => setShowVerificationModal(false)}
+                className="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 rounded-xl font-bold text-white shadow-lg transition-all hover:scale-[1.02] active:scale-95"
+              >
+                OK, I'll Check It!
+              </button>
+            </div>
+          </div>
+        )
+      }
+
+    </div >
+  );
 }
+
